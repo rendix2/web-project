@@ -3,4 +3,5 @@
 config/local.neon
 
 www/node_modules
+www/dist
 vendor

@@ -1,1 +1,6 @@
+.idea
+
 config/local.neon
+
+www/node_modules
+vendor

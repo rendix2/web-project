@@ -9,24 +9,28 @@ use Nette\Bootstrap\Configurator;
 
 class Bootstrap
 {
-	public static function boot(): Configurator
-	{
-		$configurator = new Configurator;
-		$appDir = dirname(__DIR__);
+    public static function boot(): Configurator
+    {
+        $appDir = dirname(__DIR__);
+        $logDir = $appDir . DIRECTORY_SEPARATOR . 'log';
+        $tempDir = $appDir . DIRECTORY_SEPARATOR . 'temp';
+        $configDir = $appDir . DIRECTORY_SEPARATOR . 'config';
 
-		//$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
-		$configurator->enableTracy($appDir . '/log');
+        $configurator = new Configurator;
 
-		$configurator->setTempDirectory($appDir . '/temp');
+        //$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
+        $configurator->enableTracy($logDir);
 
-		$configurator->createRobotLoader()
-			->addDirectory(__DIR__)
-			->register();
+        $configurator->setTempDirectory($tempDir);
 
-		$configurator->addConfig($appDir . '/config/common.neon');
-		$configurator->addConfig($appDir . '/config/services.neon');
-		$configurator->addConfig($appDir . '/config/local.neon');
+        $configurator->createRobotLoader()
+            ->addDirectory(__DIR__)
+            ->register();
 
-		return $configurator;
-	}
+        $configurator->addConfig($configDir . DIRECTORY_SEPARATOR .'common.neon');
+        $configurator->addConfig($configDir . DIRECTORY_SEPARATOR .'services.neon');
+        $configurator->addConfig($configDir . DIRECTORY_SEPARATOR .'local.neon');
+
+        return $configurator;
+    }
 }

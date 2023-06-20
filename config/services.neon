@@ -8,3 +8,6 @@ search:
 
 services:
 	- App\Router\RouterFactory::createRouter
+
+includes:
+    - webpack.neon

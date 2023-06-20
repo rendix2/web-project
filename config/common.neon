@@ -2,16 +2,24 @@ parameters:
 
 
 application:
-	errorPresenter: Error
-	mapping:
-		*: [App, Modules\*, Presenters\*Presenter]
+    errorPresenter: Error
+    mapping:
+        *: [App, Modules\*, Presenters\*Presenter]
 
 
 session:
-	expiration: 14 days
+    expiration: 14 days
+    debugger: true
 
+latte:
+    debugger: true
+    strictTypes: true
 
 di:
-	export:
-		parameters: no
-		tags: no
+    export:
+        parameters: no
+        tags: no
+    debugger: true
+
+security:
+    debugger: true

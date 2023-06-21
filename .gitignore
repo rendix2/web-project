@@ -1,7 +1,14 @@
+# IDE
 .idea
 
+# nette
 config/local.neon
 
+# npm
 www/node_modules
+
+# assets
 www/dist
+
+# composer
 vendor

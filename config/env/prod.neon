@@ -1,0 +1,12 @@
+parameters:
+    env:
+        url:
+    database:
+        main:
+            host: "localhost"
+            username: "root"
+            password: ""
+            database: ""
+            dsn: "mysql:host=%database.main.host%;dbname=%database.main.database%"
+            charset: utf8
+            driver: pdo_mysql

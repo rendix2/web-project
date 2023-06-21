@@ -6,7 +6,6 @@
 	"license": ["MIT", "BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
 	"require": {
 		"php": ">= 8.0",
-
 		"ext-ctype": "*",
 		"ext-curl": "*",
 		"ext-fileinfo": "*",
@@ -19,10 +18,11 @@
 		"ext-session": "*",
 		"ext-simplexml": "*",
 		"ext-tokenizer": "*",
-
+		"contributte/console": "^0.9.3",
+		"contributte/console-extra": "^0.7.2",
+		"contributte/webpack": "^2.2",
+		"freezy-bee/doctrine-form-mapper": "^1.5",
 		"latte/latte": "^3.0",
-		"tracy/tracy": "^2.9",
-
 		"nette/application": "^3.1",
 		"nette/bootstrap": "^3.2",
 		"nette/caching": "^3.2",
@@ -33,8 +33,12 @@
 		"nette/robot-loader": "^4.0",
 		"nette/security": "^3.1",
 		"nette/utils": "^4.0",
-
-		"contributte/webpack": "^2.2"
+		"nettrine/cache": "^0.3.0",
+		"nettrine/dbal": "^0.8.2",
+		"nettrine/extensions-beberlei": "^0.2.0",
+		"nettrine/migrations": "^0.8.1",
+		"nettrine/orm": "^0.8.4",
+		"tracy/tracy": "^2.9"
 	},
 	"require-dev": {
 		"nette/tester": "^2.4",

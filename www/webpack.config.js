@@ -7,7 +7,9 @@ module.exports = (env, args) => {
     return {
         context: path.resolve(__dirname),
         entry: {
-            app: './scripts/app.js'
+            app: './scripts/app.js',
+            bootstrap: './scripts/bootstrap.js',
+            fontawesome: './scripts/fontawesome.js',
         },
         output: {
             path: path.join(__dirname, './dist'),
@@ -22,10 +24,6 @@ module.exports = (env, args) => {
                         'css-loader'
                     ],
                 },
-/*                {
-                    test: /\.js$/,
-                    use: 'js-loader'
-                }*/
             ]
         },
         plugins: [

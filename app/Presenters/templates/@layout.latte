@@ -4,18 +4,27 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
 
-	<title>{ifset title}{include title|stripHtml} | {/ifset}Nette Web</title>
+	<title>{ifset title}{include title|stripHtml}{/ifset}</title>
 
+    {block webpackScripts}
     <script src="{webpack app.js}" async></script>
+    <script src="{webpack bootstrap.js}" async></script>
+    <link rel="stylesheet" href="{webpack bootstrap.css}">
+    {/block}
 </head>
 
 <body>
-	<div n:foreach="$flashes as $flash" n:class="flash, $flash->type">{$flash->message}</div>
+    {snippet flashes}
+    {foreach $flashes as $flash}
+	<div class="flash, flash-{$flash->type}">{$flash->message}</div>
+    {/foreach}
+    {/snippet}
 
+    <div class="container-fluid">
 	{include content}
+    </div>
 
 	{block scripts}
-
 	{/block}
 </body>
 </html>

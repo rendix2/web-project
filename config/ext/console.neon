@@ -1,0 +1,17 @@
+extensions:
+    contributte.console: Contributte\Console\DI\ConsoleExtension(%consoleMode%)
+    contributte.console.extra: Contributte\Console\Extra\DI\ConsoleBridgesExtension(%consoleMode%)
+
+contributte.console:
+	name: Web Project
+	version: '1.0'
+	catchExceptions: true
+	autoExit: true
+	url: https://alfred.borec.cz
+	lazy: false
+
+decorator:
+	Symfony\Component\Console\Command\Command:
+		tags: [kdyby.console.command]
+	Symfony\Component\Console\Helper\Helper:
+		tags: [kdyby.console.helper]

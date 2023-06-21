@@ -2,6 +2,7 @@ parameters:
 
 
 application:
+    debugger: true
     errorPresenter: Error
     mapping:
         *: [App, Modules\*, Presenters\*Presenter]
@@ -16,10 +17,23 @@ latte:
     strictTypes: true
 
 di:
-    export:
-        parameters: no
-        tags: no
     debugger: true
+    export:
+        parameters: true
+        tags: true
+
+http:
+	cookieSecure: auto
 
 security:
     debugger: true
+
+routing:
+    debugger: true
+
+tracy:
+    maxLength: 500
+    maxDepth: 10
+    showLocation: true
+    strictMode: true
+    showBar: true

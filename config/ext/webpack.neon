@@ -1,7 +1,7 @@
 extensions:
-	webpack: Contributte\Webpack\DI\WebpackExtension(%debugMode%, %consoleMode%)
+	contributte.webpack: Contributte\Webpack\DI\WebpackExtension(%debugMode%, %consoleMode%)
 
-webpack:
+contributte.webpack:
 	build:
 		directory: %wwwDir%/dist
 		publicPath: dist/

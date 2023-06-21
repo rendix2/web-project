@@ -1,6 +1,10 @@
-import 'nette-forms/src/assets/netteForms'
+import {LiveForm, Nette} from 'live-form-validation/live-form-validation';
 
 LiveForm.setOptions({
-    messageErrorPrefix: 'Chyba: ',
+    messageErrorPrefix: 'Error: ',
     wait: 500
 });
+
+Nette.initOnLoad();
+window.Nette = Nette;
+window.LiveForm = LiveForm;

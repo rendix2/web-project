@@ -1,5 +1,6 @@
 const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const webpack = require('webpack')
 
 module.exports = (env, args) => {
     const isProduction = args.mode === 'production';
@@ -23,6 +24,13 @@ module.exports = (env, args) => {
                         MiniCssExtractPlugin.loader,
                         'css-loader'
                     ],
+                },
+                {
+                    test: require.resolve("jquery"),
+                    loader: "expose-loader",
+                    options: {
+                        exposes: ["$", "jQuery"],
+                    },
                 },
             ]
         },

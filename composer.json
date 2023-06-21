@@ -20,6 +20,7 @@
 		"ext-tokenizer": "*",
 		"contributte/console": "^0.9.3",
 		"contributte/console-extra": "^0.7.2",
+		"contributte/forms-bootstrap": "^0.5.6",
 		"contributte/webpack": "^2.2",
 		"freezy-bee/doctrine-form-mapper": "^1.5",
 		"latte/latte": "^3.0",

@@ -16,7 +16,7 @@
 <body>
     {snippet flashes}
     {foreach $flashes as $flash}
-	<div class="flash, flash-{$flash->type}">{$flash->message}</div>
+	<div class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">{$flash->message}</div>
     {/foreach}
     {/snippet}
 

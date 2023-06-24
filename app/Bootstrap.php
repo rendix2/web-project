@@ -4,24 +4,29 @@ declare(strict_types=1);
 
 namespace App;
 
+use Contributte\Console\Application as ConsoleApplication;
+use Nette\Application\Application as WebApplication;
 use Nette\Bootstrap\Configurator;
 
-
-class Bootstrap
+final class Bootstrap
 {
-    public static function boot() : Configurator
+    public static function boot(string $context) : Configurator
     {
         $sep = DIRECTORY_SEPARATOR;
         $dir = __DIR__;
 
-        $appDir = dirname($dir);
-        $binDir = $appDir . $sep . 'bin';
-        $configDir = $appDir . $sep . 'config';
-        $logDir = $appDir . $sep . 'log';
-        $migrationsDir = $appDir . $sep . 'app' . $sep . 'Migrations';
-        $tempDir = $appDir . $sep . 'temp';
-        $cacheDir = $appDir . $sep . 'temp' . $sep . 'cache';
-        $rootDir = $appDir . $sep;
+        $projectDir = dirname($dir);
+        $rootDir = $projectDir . $sep;
+
+        $appDir = $rootDir . 'app';
+        $binDir = $rootDir . 'bin';
+        $configDir = $rootDir . 'config';
+        $logDir = $rootDir . 'log';
+
+        $migrationsDir = $appDir . $sep . 'Migrations';
+
+        $tempDir = $rootDir . 'temp' . $sep . $context;
+        $cacheDir = $tempDir . $sep . 'cache';
 
         $configurator = new Configurator;
 
@@ -49,5 +54,22 @@ class Bootstrap
         $configurator->addConfig($configDir . $sep . 'env' . $sep . 'dev.neon');
 
         return $configurator;
+    }
+
+    public static function runWebApplication() : void
+    {
+        self::boot('web')
+            ->createContainer()
+            ->getByType(WebApplication::class)
+            ->run();
+    }
+
+    public static function runConsoleApplication() : void
+    {
+        self::boot('console')
+            ->createContainer()
+            ->getByType(ConsoleApplication::class)
+            ->run();
+
     }
 }

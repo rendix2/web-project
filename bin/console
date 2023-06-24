@@ -2,12 +2,7 @@
 <?php
 
 use App\Bootstrap;
-use Contributte\Console\Application;
 
 require __DIR__ . '/../vendor/autoload.php';
-require __DIR__ . '/../app/Bootstrap.php';
 
-Bootstrap::boot()
-    ->createContainer()
-    ->getByType(Application::class)
-    ->run();
+Bootstrap::runConsoleApplication();

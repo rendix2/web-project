@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types = 1);
 
 namespace App\Migrations;
 
@@ -14,16 +12,18 @@ use JetBrains\PhpStorm\Deprecated;
 #[Deprecated]
 final class Version20230621145918 extends AbstractMigration
 {
-    public function getDescription(): string
-    {
-        return '';
-    }
 
-    public function up(Schema $schema): void
-    {
-    }
+	public function getDescription(): string
+	{
+		return '';
+	}
 
-    public function down(Schema $schema): void
-    {
-    }
+	public function up(Schema $schema): void
+	{
+	}
+
+	public function down(Schema $schema): void
+	{
+	}
+
 }

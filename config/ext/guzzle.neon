@@ -1,0 +1,7 @@
+extensions:
+	guzzle: Contributte\Guzzlette\DI\GuzzleExtension
+
+guzzle:
+	debug: %debugMode%
+	client: # config for GuzzleHttp\Client
+		timeout: 30

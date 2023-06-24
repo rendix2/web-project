@@ -10,6 +10,7 @@ services:
 	- App\Router\RouterFactory::createRouter
 
 includes:
-    - %configDir%/ext/webpack.neon
-    - %configDir%/ext/nettrine.neon
     - %configDir%/ext/console.neon
+    - %configDir%/ext/guzzle.neon
+    - %configDir%/ext/nettrine.neon
+    - %configDir%/ext/webpack.neon

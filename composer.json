@@ -21,6 +21,7 @@
 		"contributte/console": "^0.9.3",
 		"contributte/console-extra": "^0.7.2",
 		"contributte/forms-bootstrap": "^0.5.6",
+		"contributte/guzzlette": "^3.3",
 		"contributte/webpack": "^2.2",
 		"freezy-bee/doctrine-form-mapper": "^1.5",
 		"latte/latte": "^3.0",
@@ -43,6 +44,7 @@
 	},
 	"require-dev": {
 		"nette/tester": "^2.4",
+		"ninjify/coding-standard": "^0.12.1",
 		"roave/security-advisories": "dev-latest",
 		"symfony/thanks": "^1"
 	},
@@ -54,7 +56,8 @@
 	"minimum-stability": "stable",
 	"config": {
 		"allow-plugins": {
-			"symfony/thanks": true
+			"symfony/thanks": true,
+			"dealerdirect/phpcodesniffer-composer-installer": true
 		},
 		"sort-packages": true
 	}

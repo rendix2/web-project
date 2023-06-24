@@ -1,8 +1,9 @@
-<?php
+<?php declare(strict_types = 1);
 
 namespace App\Presenters;
 
 use Contributte\FormsBootstrap\BootstrapForm;
+use GuzzleHttp\Client;
 use JetBrains\PhpStorm\Deprecated;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
@@ -10,31 +11,47 @@ use Nette\Application\UI\Presenter;
 #[Deprecated]
 class ExamplePresenter extends Presenter
 {
-    public function createComponentTestForm() : Form
-    {
-        $form = new BootstrapForm();
 
-        $form->addProtection('Please try again.');
+	public function __construct(
+		private Client $client
+	)
+	{
+	}
 
-        $form->addText('name', 'Name')
-            ->setRequired('Name should be filled.');
+	public function renderBootstrap(): void
+	{
+	}
 
-        $form->addText('surname', 'Surname')
-            ->setRequired('Surname should be filled.');
+	public function renderGuzzle(): void
+	{
+		$this->template->json = $this->client->get('http://httpbin.org/get')->getBody()->getContents();
+	}
 
-        $form->addSubmit('submit', 'Save');
+	public function createComponentTestForm(): Form
+	{
+		$form = new BootstrapForm();
 
-        $form->onSuccess[] = [$this, 'testFormSuccess'];
+		$form->addProtection('Please try again.');
 
-        return $form;
-    }
+		$form->addText('name', 'Name')
+			->setRequired('Name should be filled.');
 
-    public function testFormSuccess(Form $form) : void
-    {
-        $values = $form->values;
-        $fullName = sprintf('%s %s', $values->name, $values->surname);
+		$form->addText('surname', 'Surname')
+			->setRequired('Surname should be filled.');
 
-        $this->flashMessage($fullName, 'success');
-    }
+		$form->addSubmit('submit', 'Save');
+
+		$form->onSuccess[] = [$this, 'testFormSuccess'];
+
+		return $form;
+	}
+
+	public function testFormSuccess(Form $form): void
+	{
+		$values = $form->values;
+		$fullName = sprintf('%s %s', $values->name, $values->surname);
+
+		$this->flashMessage($fullName, 'success');
+	}
 
 }

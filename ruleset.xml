@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<ruleset name="Acme">
+    <rule ref="./vendor/ninjify/coding-standard/ruleset.xml"/>
+    <!--
+    Exclude folders
+    <exclude-pattern>/tests/tmp</exclude-pattern>
+    -->
+</ruleset>

@@ -7,7 +7,7 @@ contributte.console:
 	version: '1.0'
 	catchExceptions: true
 	autoExit: true
-	url: url
+	url: http://example.com
 	lazy: false
 
 decorator:

@@ -8,9 +8,9 @@ module.exports = (env, args) => {
     return {
         context: path.resolve(__dirname),
         entry: {
-            app: './scripts/app.js',
-            bootstrap: './scripts/bootstrap.js',
-            fontawesome: './scripts/fontawesome.js',
+            app: './www/scripts/app.js',
+            bootstrap: './www/scripts/bootstrap.js',
+            fontawesome: './www/scripts/fontawesome.js',
         },
         output: {
             path: path.join(__dirname, './dist'),

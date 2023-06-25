@@ -13,4 +13,5 @@ includes:
     - %configDir%/ext/console.neon
     - %configDir%/ext/guzzle.neon
     - %configDir%/ext/nettrine.neon
+    - %configDir%/ext/translation.neon
     - %configDir%/ext/webpack.neon

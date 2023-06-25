@@ -1,0 +1,9 @@
+{
+  "form.name.label": "Jméno",
+  "form.name.required": "Jméno je povinné.",
+
+  "form.surname.label": "Příjmení",
+  "form.surname.required": "Příjmení je povinné.",
+
+  "form.save": "Uložit"
+}

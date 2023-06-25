@@ -7,7 +7,7 @@ contributte.console:
 	version: '1.0'
 	catchExceptions: true
 	autoExit: true
-	url: https://alfred.borec.cz
+	url: url
 	lazy: false
 
 decorator:

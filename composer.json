@@ -32,6 +32,7 @@
     "contributte/console-extra": "^0.7.2",
     "contributte/forms-bootstrap": "^0.5.6",
     "contributte/guzzlette": "^3.3",
+    "contributte/translation": "^2.0",
     "contributte/webpack": "^2.2",
     "freezy-bee/doctrine-form-mapper": "^1.5",
     "latte/latte": "^3.0",
@@ -71,7 +72,7 @@
       "dealerdirect/phpcodesniffer-composer-installer": true
     },
     "platform": {
-      "php": "8.0"
+      "php": "8.0.15"
     },
     "optimize-autoloader": true,
     "sort-packages": true,

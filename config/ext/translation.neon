@@ -1,0 +1,15 @@
+extensions:
+    translation: Contributte\Translation\DI\TranslationExtension
+
+translation:
+    locales:
+        whitelist: [en, cs, sk]
+        default: cs
+        fallback: [cs]
+    dirs:
+        - %translationsDir%
+    returnOriginalMessage: true # to not translate undefined messages, default is true
+    localeResolvers:
+        - Contributte\Translation\LocalesResolvers\Router
+    loaders:
+        json: Symfony\Component\Translation\Loader\JsonFileLoader

@@ -7,13 +7,15 @@ use GuzzleHttp\Client;
 use JetBrains\PhpStorm\Deprecated;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Localization\Translator;
 
 #[Deprecated]
 class ExamplePresenter extends Presenter
 {
 
 	public function __construct(
-		private Client $client
+		private Client $client,
+		private Translator $translator,
 	)
 	{
 	}
@@ -31,15 +33,16 @@ class ExamplePresenter extends Presenter
 	{
 		$form = new BootstrapForm();
 
+		$form->setTranslator($this->translator);
 		$form->addProtection('Please try again.');
 
-		$form->addText('name', 'Name')
-			->setRequired('Name should be filled.');
+		$form->addText('name', 'example.form.name.label')
+			->setRequired('example.form.name.required');
 
-		$form->addText('surname', 'Surname')
-			->setRequired('Surname should be filled.');
+		$form->addText('surname', 'example.form.surname.label')
+			->setRequired('example.form.surname.required');
 
-		$form->addSubmit('submit', 'Save');
+		$form->addSubmit('submit', 'example.form.save');
 
 		$form->onSuccess[] = [$this, 'testFormSuccess'];
 

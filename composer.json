@@ -54,6 +54,7 @@
     "tracy/tracy": "^2.9"
   },
   "require-dev": {
+    "dg/composer-frontline": "^0.2.0",
     "nette/tester": "^2.4",
     "ninjify/coding-standard": "^0.12.1",
     "roave/security-advisories": "dev-latest",
@@ -69,7 +70,8 @@
   "config": {
     "allow-plugins": {
       "symfony/thanks": true,
-      "dealerdirect/phpcodesniffer-composer-installer": true
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "dg/composer-frontline": true
     },
     "platform": {
       "php": "8.0.15"

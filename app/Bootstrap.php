@@ -27,6 +27,7 @@ final class Bootstrap
 
 		$tempDir = $rootDir . 'temp' . $sep . $context;
 		$cacheDir = $tempDir . $sep . 'cache';
+		$proxiesDir = $tempDir . $sep . 'proxies';
 
 		$configurator = new Configurator();
 
@@ -38,6 +39,7 @@ final class Bootstrap
 				'migrationsDir' => $migrationsDir,
 				'rootDir' => $rootDir,
 				'translationsDir' => $translatonsDir,
+				'proxiesDir' => $proxiesDir,
 			]
 		);
 

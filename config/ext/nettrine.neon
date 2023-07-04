@@ -23,7 +23,7 @@ nettrine.dbal:
         dbname: %database.main.database%
         charset: %database.main.charset%
         default_table_options:
-            charset: %database.main.database%
+            charset: %database.main.charset%
             collate: utf8_czech_ci
 
 nettrine.cache:

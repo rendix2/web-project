@@ -3,6 +3,7 @@ all: php-build js-build migrations
 php-build: composer.json composer.lock
 	composer validate
 	composer install
+	composer dump-autoload --optimize
 
 js-build: package.json package-lock.json
 	npm install
@@ -18,6 +19,3 @@ create-dirs:
 	mkdir -p temp/web/cache
 	mkdir -p temp/console
 	mkdir -p temp/console/cache
-
-
-

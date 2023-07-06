@@ -1,4 +1,4 @@
-all: php-build js-build migrations
+all: php-build js-build migrations fixtures
 
 php-build: composer.json composer.lock
 	composer validate
@@ -12,6 +12,9 @@ js-build: package.json package-lock.json
 migrations:
 	php bin/console migrations:migrate --no-interaction
 
+fixtures:
+	php bin/console doctrine:fixtures:load
+
 create-dirs:
 	mkdir -p mkdir log
 	mkdir -p temp
@@ -19,3 +22,4 @@ create-dirs:
 	mkdir -p temp/web/cache
 	mkdir -p temp/console
 	mkdir -p temp/console/cache
+

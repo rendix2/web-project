@@ -49,6 +49,7 @@
     "nettrine/cache": "^0.3.0",
     "nettrine/dbal": "^0.8.2",
     "nettrine/extensions-beberlei": "^0.2.0",
+    "nettrine/fixtures": "^0.6.4",
     "nettrine/migrations": "^0.8.1",
     "nettrine/orm": "^0.8.4",
     "tracy/tracy": "^2.9"
@@ -62,7 +63,8 @@
   },
   "autoload": {
     "psr-4": {
-      "App\\": "app"
+      "App\\": "app",
+      "Database\\": "Database"
     }
   },
   "minimum-stability": "stable",

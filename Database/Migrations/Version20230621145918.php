@@ -1,11 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace App\Migrations;
+namespace Database\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
-use JetBrains\PhpStorm\Deprecated;
 
 /**
  * Auto-generated Migration: Please modify to your needs!

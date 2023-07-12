@@ -23,7 +23,7 @@ final class Bootstrap
 		$logDir = $rootDir . 'log';
 
 		$migrationsDir = $appDir . $sep . 'Migrations';
-		$translatonsDir = $appDir . $sep . 'Translations';
+		$translationsDir = $appDir . $sep . 'Translations';
 
 		$tempDir = $rootDir . 'temp' . $sep . $context;
 		$cacheDir = $tempDir . $sep . 'cache';
@@ -38,7 +38,7 @@ final class Bootstrap
 				'configDir' => $configDir,
 				'migrationsDir' => $migrationsDir,
 				'rootDir' => $rootDir,
-				'translationsDir' => $translatonsDir,
+				'translationsDir' => $translationsDir,
 				'proxiesDir' => $proxiesDir,
 			]
 		);

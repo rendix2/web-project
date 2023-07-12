@@ -20,6 +20,8 @@ create-dirs:
 	mkdir -p temp
 	mkdir -p temp/web
 	mkdir -p temp/web/cache
+	mkdir -p temp/web/proxies
 	mkdir -p temp/console
 	mkdir -p temp/console/cache
+	mkdir -p temp/console/proxies
 

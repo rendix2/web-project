@@ -5,6 +5,7 @@ namespace App;
 use Contributte\Console\Application as ConsoleApplication;
 use Nette\Application\Application as WebApplication;
 use Nette\Bootstrap\Configurator;
+use Nette\Utils\FileSystem;
 
 final class Bootstrap
 {
@@ -21,13 +22,39 @@ final class Bootstrap
 		$binDir = $rootDir . 'bin';
 		$configDir = $rootDir . 'config';
 		$logDir = $rootDir . 'log';
+		$databaseDir = $rootDir . 'Database';
 
-		$migrationsDir = $appDir . $sep . 'Migrations';
+		$migrationsDir = $databaseDir . $sep . 'Migrations';
+		$fixturesDir = $databaseDir . $sep . 'Fixtures';
+
 		$translationsDir = $appDir . $sep . 'Translations';
 
-		$tempDir = $rootDir . 'temp' . $sep . $context;
-		$cacheDir = $tempDir . $sep . 'cache';
-		$proxiesDir = $tempDir . $sep . 'proxies';
+		$tempDir = $rootDir . 'temp';
+		$tempContextDir = $tempDir . $sep . $context;
+
+		$cacheDir = $tempContextDir . $sep . 'cache';
+		$proxiesDir = $tempContextDir . $sep . 'proxies';
+		$sessionsDir = $tempContextDir . $sep . 'sessions';
+
+		if (!file_exists($tempDir)) {
+			FileSystem::createDir($tempDir);
+		}
+
+		if (!file_exists($tempContextDir)) {
+			FileSystem::createDir($tempContextDir);
+		}
+
+		if (!file_exists($cacheDir)) {
+			FileSystem::createDir($cacheDir);
+		}
+
+		if (!file_exists($proxiesDir)) {
+			FileSystem::createDir($proxiesDir);
+		}
+
+		if (!file_exists($sessionsDir)) {
+			FileSystem::createDir($sessionsDir);
+		}
 
 		$configurator = new Configurator();
 
@@ -37,6 +64,7 @@ final class Bootstrap
 				'cacheDir' => $cacheDir,
 				'configDir' => $configDir,
 				'migrationsDir' => $migrationsDir,
+				'fixturesDir' => $fixturesDir,
 				'rootDir' => $rootDir,
 				'translationsDir' => $translationsDir,
 				'proxiesDir' => $proxiesDir,

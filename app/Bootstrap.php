@@ -36,6 +36,10 @@ final class Bootstrap
 		$proxiesDir = $tempContextDir . $sep . 'proxies';
 		$sessionsDir = $tempContextDir . $sep . 'sessions';
 
+		if (!file_exists($logDir)) {
+			FileSystem::createDir($logDir);
+		}
+
 		if (!file_exists($tempDir)) {
 			FileSystem::createDir($tempDir);
 		}

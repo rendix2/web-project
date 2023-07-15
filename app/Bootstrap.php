@@ -60,6 +60,13 @@ final class Bootstrap
 			FileSystem::createDir($sessionsDir);
 		}
 
+		chmod($logDir, 0777);
+		chmod($tempDir, 0777);
+		chmod($tempContextDir, 0777);
+		chmod($cacheDir, 0777);
+		chmod($proxiesDir, 0777);
+		chmod($sessionsDir, 0777);
+
 		$configurator = new Configurator();
 
 		$configurator->addStaticParameters(
@@ -78,7 +85,7 @@ final class Bootstrap
 		//$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
 		$configurator->enableTracy($logDir);
 
-		$configurator->setTempDirectory($tempDir);
+		$configurator->setTempDirectory($tempContextDir);
 
 		$configurator->createRobotLoader()
 			->addDirectory($dir)

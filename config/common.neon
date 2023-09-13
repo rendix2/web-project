@@ -7,6 +7,10 @@ application:
 		*: [App, Modules\*, Presenters\*Presenter]
 
 
+latte:
+	strictTypes: yes
+
+
 session:
 	expiration: 14 days
 

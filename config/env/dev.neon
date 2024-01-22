@@ -3,10 +3,10 @@ parameters:
         url: localhost
     database:
         main:
-            host: "localhost"
+            host: web-project-database
             username: "root"
-            password: ""
-            database: ""
-            dsn: "mysql:host=%database.main.host%;dbname=%database.main.database%"
+            password: "mysqlroot"
+            database: "web-project"
+            dsn: "mysql:host=web-project-database;dbname=web-project"
             charset: utf8
             driver: pdo_mysql

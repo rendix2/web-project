@@ -12,12 +12,10 @@ use Nette\Localization\Translator;
 #[Deprecated]
 class ExamplePresenter extends Presenter
 {
-
 	public function __construct(
 		private Client $client,
 		private Translator $translator,
-	)
-	{
+	) {
 	}
 
 	public function renderBootstrap(): void

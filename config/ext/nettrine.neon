@@ -45,10 +45,10 @@ nettrine.extensions.beberlei:
 nettrine.migrations:
     table: migrations
     column: version
-    directory: %rootDir%/Migrations
+    directory: %migrationsDir%
     namespace: Database\Migrations
     versionsOrganization: null # null, year, year_and_month
 
 nettrine.fixtures:
   paths:
-    - %rootDir%/fixtures
+    - %fixturesDir%

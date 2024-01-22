@@ -12,3 +12,6 @@ www/dist
 
 # composer
 vendor
+
+# docker
+.docker/mysql

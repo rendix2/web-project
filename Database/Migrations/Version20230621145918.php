@@ -37,11 +37,13 @@ final class Version20230621145918 extends AbstractMigration
 			->setComment('Username')
 			->setLength(512);
 
-		$table->addColumn('email', Types::TEXT)
-			->setComment('Email');
+		$table->addColumn('email', Types::STRING)
+			->setComment('Email')
+            ->setLength(1024);
 
-		$table->addColumn('password', Types::TEXT)
-			->setComment('Password');
+		$table->addColumn('password', Types::STRING)
+			->setComment('Password')
+            ->setLength(1024);
 
 		$table->addColumn('isActive', Types::BOOLEAN)
 			->setComment('Is active?');
@@ -55,8 +57,8 @@ final class Version20230621145918 extends AbstractMigration
 
 		$table->setPrimaryKey(['id']);
 		$table->setComment('User');
-		$table->addIndex(['email'], 'K_User_Email');
-		$table->addIndex(['username'], 'K_User_Username');
+		$table->addUniqueIndex(['email'], 'K_User_Email');
+		$table->addUniqueIndex(['username'], 'K_User_Username');
 	}
 
 	public function down(Schema $schema): void

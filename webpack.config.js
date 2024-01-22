@@ -13,7 +13,7 @@ module.exports = (env, args) => {
             fontawesome: './www/scripts/fontawesome.js',
         },
         output: {
-            path: path.join(__dirname, './dist'),
+            path: path.join(__dirname, './www/dist'),
             publicPath: isProduction ? '/dist/' : '/',
         },
         module: {
@@ -38,7 +38,7 @@ module.exports = (env, args) => {
             new MiniCssExtractPlugin(),
         ],
         devServer: {
-            contentBase: path.join(__dirname, 'www/dist'),
+            contentBase: path.join(__dirname, './www/dist'),
             port: 3060,
         },
     };

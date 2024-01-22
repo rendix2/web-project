@@ -2,13 +2,13 @@
 
 namespace App\Model\Entity;
 
+use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
-use Nette\Utils\DateTime;
 
 /**
  * class UserEntity
@@ -21,36 +21,36 @@ class UserEntity
 {
 	#[Id()]
 	#[GeneratedValue()]
-	#[Column(name: 'id', type: Types::BIGINT, unique: true, nullable: false)]
-	public int $id;
+	#[Column(type: Types::BIGINT)]
+	public string $id;
 
-	#[Column(name: 'name', type: Types::STRING, unique: false, nullable: false)]
+	#[Column(type: Types::STRING, length: 512)]
 	public string $name;
 
-	#[Column(name: 'surname', type: Types::STRING, unique: false, nullable: false)]
+	#[Column(type: Types::STRING, length: 512)]
 	public string $surname;
 
-	#[Column(name: 'username', type: Types::STRING, unique: true, nullable: false)]
+	#[Column(type: Types::STRING, length: 512, unique: true)]
 	public string $username;
 
-	#[Column(name: 'email', type: Types::STRING, unique: true, nullable: false)]
+	#[Column(type: Types::STRING, length: 1024, unique: true)]
 	public string $email;
 
-	#[Column(name: 'password', type: Types::STRING, unique: true, nullable: false)]
+	#[Column(type: Types::STRING, length: 1024)]
 	public string $password;
 
-	#[Column(name: 'isActive', type: Types::BOOLEAN, unique: false, nullable: false)]
+	#[Column(type: Types::BOOLEAN)]
 	public bool $isActive;
 
-	#[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE, nullable: false)]
-	public DateTime $createdAt;
+	#[Column(type: Types::DATETIME_IMMUTABLE)]
+	public DateTimeImmutable $createdAt;
 
-	#[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
-	public ?DateTime $updatedAt;
+	#[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+	public ?DateTimeImmutable $updatedAt;
 
 	public function __construct()
 	{
-		$this->createdAt = new DateTime();
+		$this->createdAt = new DateTimeImmutable();
 		$this->updatedAt = null;
 	}
 

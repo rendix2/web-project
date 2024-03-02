@@ -13,14 +13,17 @@ services:
       - SERVERNAME=web-project
       - SERVERALIAS=example2.local *.example2.local
       - DOCUMENTROOT=www
+      - NETTE_DEBUG_SECRET=SC9NJHrQOrcys2sdaySIZvxQKKQp5Dx0HT0SMD9fsqkMEwPV93nGUzSW5ryXZ1sS
     volumes:
       - ./:/var/www/html/
+      # - /.docker/web/config/php.ini /usr/local/etc/php/php.ini
+      #- ./.docker/web/config/apache2.conf /etc/apache2/apache2.conf
     depends_on:
       - web-project-database
     tty: true
 
   web-project-database:
-    image: actency/docker-mysql:5.7
+    image: mysql:latest
     ports:
       - "4306:3306"
     environment:

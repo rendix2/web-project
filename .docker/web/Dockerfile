@@ -9,28 +9,28 @@ RUN apt install make -y --fix-missing
 # GD
 RUN apt install zlib1g-dev libpng-dev libjpeg-dev -y --fix-missing
 RUN docker-php-ext-configure gd --with-jpeg
-RUN docker-php-ext-install gd
+RUN docker-php-ext-install -j "$(nproc)" gd
 
 # PDO
-RUN docker-php-ext-install pdo
-RUN docker-php-ext-install pdo_mysql
+RUN docker-php-ext-install -j "$(nproc)" pdo
+RUN docker-php-ext-install -j "$(nproc)" pdo_mysql
 
 # Opcache
 RUN docker-php-ext-configure opcache --enable-opcache
-RUN docker-php-ext-install opcache
+RUN docker-php-ext-install -j "$(nproc)" opcache
 
 # google
-RUN docker-php-ext-install bcmath
+RUN docker-php-ext-install -j "$(nproc)" bcmath
 
 # crypting messages
 RUN apt install libssl-dev -y --fix-missing
-RUN docker-php-ext-install openssl; exit 0
+RUN docker-php-ext-install -j "$(nproc)" openssl; exit 0
 RUN cp /usr/src/php/ext/openssl/config0.m4 /usr/src/php/ext/openssl/config.m4
-RUN docker-php-ext-install openssl
+RUN docker-php-ext-install -j "$(nproc)" openssl
 
 # search by ascii
 RUN apt install libicu-dev -y --fix-missing
-RUN docker-php-ext-install intl
+RUN docker-php-ext-install -j "$(nproc)" intl
 
 # Custom Opcache
 RUN ( \
@@ -55,7 +55,7 @@ RUN echo "ServerName web-project-web" >> /etc/apache2/apache2.conf
 RUN apt install git zip libzip-dev -y --fix-missing
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-RUN composer config --global --auth github-oauth.github.com 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
+RUN composer config --global --auth github-oauth.github.com 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
 
 # Custom php.ini
 COPY ./.docker/web/config/php.ini /usr/local/etc/php/

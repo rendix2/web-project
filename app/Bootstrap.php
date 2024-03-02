@@ -82,7 +82,7 @@ final class Bootstrap
 			]
 		);
 
-		//$configurator->setDebugMode('secret@23.75.345.200'); // enable for your remote IP
+        $configurator->setDebugMode(getenv('NETTE_DEBUG_SECRET'). '@' . $_SERVER['REMOTE_ADDR']);
 		$configurator->enableTracy($logDir);
 
 		$configurator->setTempDirectory($tempContextDir);

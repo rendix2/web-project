@@ -52,7 +52,8 @@
     "nettrine/fixtures": "^0.6.4",
     "nettrine/migrations": "^0.8.1",
     "nettrine/orm": "^0.8.4",
-    "tracy/tracy": "^2.9"
+    "tracy/tracy": "^2.9",
+    "ublaboo/datagrid": "dev-next"
   },
   "require-dev": {
     "dg/composer-frontline": "^0.2.0",

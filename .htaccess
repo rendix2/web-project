@@ -1,1 +1,22 @@
-Require all denied
+#Require all denied
+
+
+RewriteEngine on
+
+# redirect na https
+RewriteCond %{HTTP:X-Forwarded-Proto} !https
+RewriteCond %{HTTP_HOST} ^(www\.)?alfred.borec.cz
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L]
+
+#RewriteBase /
+
+RewriteRule ^www$ / [R=301,L]
+RewriteRule ^www/(.*) /$1 [R=301,L]
+RewriteRule ^/www$ / [R=301,L]
+RewriteRule ^/www/(.*) /$1 [R=301,L]
+
+RewriteRule ^$ /www/index.php [L]
+
+
+RewriteCond %{REQUEST_URI} !sys/
+RewriteRule (.+) /www/$1 [L]

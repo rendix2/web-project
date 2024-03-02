@@ -39,13 +39,13 @@ class UserEntity
 	#[Column(type: Types::STRING, length: 1024)]
 	public string $password;
 
-	#[Column(type: Types::BOOLEAN)]
+    #[Column(name: 'isActive', type: Types::BOOLEAN)]
 	public bool $isActive;
 
-	#[Column(type: Types::DATETIME_IMMUTABLE)]
+	#[Column(name: 'createdAt',type: Types::DATETIME_IMMUTABLE)]
 	public DateTimeImmutable $createdAt;
 
-	#[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+	#[Column(name: 'updatedAt',type: Types::DATETIME_IMMUTABLE, nullable: true)]
 	public ?DateTimeImmutable $updatedAt;
 
 	public function __construct()

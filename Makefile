@@ -1,14 +1,17 @@
-all: dirs-build php-build js-build database-build
+all: dirs-build php js db
 
-php-build: composer.json composer.lock
+php: composer.json composer.lock
 	composer validate
 	composer install
 
-js-build: package.json package-lock.json
+js: package.json package-lock.json
 	npm install
-	npm run build
+	npm run vite-build
+	npm run webpack-build
+	chmod 777 www/dist -R
 
-database-build:
+db:
+	php bin/console orm:schema-tool:drop --force --full-database
 	php bin/console migrations:migrate --no-interaction
 	php bin/console doctrine:fixtures:load --no-interaction
 

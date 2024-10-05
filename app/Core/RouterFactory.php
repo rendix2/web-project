@@ -7,14 +7,12 @@ use Nette\StaticClass;
 
 final class RouterFactory
 {
-
-	use StaticClass;
+    use StaticClass;
 
 	public static function createRouter(): RouteList
 	{
 		$router = new RouteList();
 		$router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
-
 		return $router;
 	}
 

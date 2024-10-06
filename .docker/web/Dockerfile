@@ -1,4 +1,4 @@
-FROM php:8.0-apache
+FROM php:8.1-apache
 
 # update
 RUN apt update
@@ -55,7 +55,7 @@ RUN echo "ServerName web-project-web" >> /etc/apache2/apache2.conf
 RUN apt install git zip libzip-dev -y --fix-missing
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-RUN composer config --global --auth github-oauth.github.com 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
+#RUN composer config --global --auth github-oauth.github.com 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
 
 # Custom php.ini
 COPY ./.docker/web/config/php.ini /usr/local/etc/php/

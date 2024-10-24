@@ -1,0 +1,24 @@
+{
+  "title": "Uživatelé",
+
+  "id.name": "ID",
+  "id.search": "Hledat podle ID",
+
+  "fullName.name" : "Celé jméno",
+  "fullName.search": "Hledat podle Celého jména",
+
+  "userName.name" : "Uživatelské jméno",
+  "userName.search": "Hledat podle Uživatelského jména",
+
+  "edit.name": "Detail",
+  "edit.title": "Detail Uživatele",
+  "edit.success": "Uživatel %username% byl editován",
+
+  "edit.inline.name": "Inline editovat",
+  "edit.inline.title": "Inline editovat Uživatele",
+
+  "delete.name": "Smazat",
+  "delete.title": "Smazat Uživatele",
+  "delete.success": "Uživatel %username% byl smazán"
+
+}

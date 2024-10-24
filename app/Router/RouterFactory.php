@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace App\Router;
 
@@ -13,7 +13,7 @@ final class RouterFactory
 	public static function createRouter(): RouteList
 	{
 		$router = new RouteList();
-		$router->addRoute('<presenter>/<action>[/<id>]', 'Home:default');
+		$router->addRoute('<presenter>/<action>[/<id>]', 'Web:Home:default');
 
 		return $router;
 	}

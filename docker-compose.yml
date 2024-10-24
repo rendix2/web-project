@@ -4,8 +4,6 @@ services:
     build:
       context: ./
       dockerfile: ./.docker/web/Dockerfile
-    networks:
-      - default
     ports:
       - "9080:80"
       - "3060:3060"
@@ -23,7 +21,7 @@ services:
     tty: true
 
   web-project-database:
-    image: mysql:latest
+    image: mysql:8.0.36
     ports:
       - "4306:3306"
     environment:
@@ -43,7 +41,3 @@ services:
       ADMINER_DEFAULT_SERVER: web-project-database
     depends_on:
       - web-project-database
-
-networks:
-  shared:
-    external: false

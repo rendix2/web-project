@@ -52,3 +52,10 @@ chmod-dirs:
 	chmod 777 log/web
 	chmod 777 log/console
 
+migration:
+	php bin/console migrations:generate
+	chmod 777 /var/www/html/app/Database/Migrations
+
+migrate:
+	php bin/console migrations:migrate --no-interaction
+

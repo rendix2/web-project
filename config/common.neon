@@ -5,15 +5,16 @@ application:
     debugger: true
     errorPresenter: Error
     mapping:
-        *: [App, Modules\*, Presenters\*Presenter]
+        *: App\UI\*\**Presenter
 
 
 session:
-    expiration: 14 days
     debugger: true
+    expiration: 14 days
 
 latte:
     debugger: true
+    strictParsing: yes
     strictTypes: true
 
 di:
@@ -23,7 +24,7 @@ di:
         tags: true
 
 http:
-	cookieSecure: auto
+    cookieSecure: auto
 
 security:
     debugger: true
@@ -37,3 +38,6 @@ tracy:
     showLocation: true
     strictMode: true
     showBar: true
+
+services:
+    - App\UsernameAndPasswordAuthenticator

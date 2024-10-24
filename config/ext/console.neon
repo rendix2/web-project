@@ -8,7 +8,6 @@ contributte.console:
 	catchExceptions: true
 	autoExit: true
 	url: http://example.com
-	lazy: false
 
 decorator:
 	Symfony\Component\Console\Command\Command:

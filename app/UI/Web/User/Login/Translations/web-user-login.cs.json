@@ -1,0 +1,12 @@
+{
+  "form.username.label": "Uživatelské jméno",
+  "form.username.required": "Uživatelské jméné je povinné.",
+
+  "form.password.label": "Heslo",
+  "form.password.required": "Heslo je povinné.",
+
+  "form.submit.name": "Přihlásit se",
+  "form.submit.success": "Úspěšně přihlášen",
+
+  "registration": "Registrace"
+}

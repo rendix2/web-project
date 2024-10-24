@@ -1,0 +1,35 @@
+{
+  "form.username.label": "Username",
+  "form.username.required": "Username is required",
+  "form.username.exists": "Username already exists",
+
+  "form.email.label": "Email",
+  "form.email.required": "Email is required",
+  "form.email.exists": "Email already exists",
+
+  "form.password.label": "Password",
+  "form.password.required": "Password is required",
+  "form.password.ruleMinLength": "Password must be at least %minChars% chars long",
+  "form.password.ruleAtLeastNumber": "Password must contain number",
+  "form.password.ruleNotStartNumber": "Password must not start with number",
+  "form.password.ruleNotFinishNumber": "Password must not finish with number",
+  "form.password.ruleAtLeastLowerChar": "Password must contain lower char",
+  "form.password.ruleAtLeastUpperChar": "Password must contain upper char",
+  "form.password.ruleNotStartUpperChar": "Password must not start with upper char",
+  "form.password.ruleNotFinishUpperChar": "Password must not finish with upper char",
+  "form.password.alreadyUsed": "Password was already used, please use another one",
+
+  "form.password2.label": "Password for check",
+  "form.password2.required": "Password for check is required",
+  "form.password2.ruleMinLength": "Password for check must be at least %minChars% chars long",
+  "form.password2.ruleEqual": "Password for check must be same as Password",
+
+  "form.name.label": "Name",
+  "form.name.required": "Name is required.",
+
+  "form.surname.label": "Surname",
+  "form.surname.required": "Surname is required.",
+
+  "form.submit.label": "Save",
+  "form.submit.success": "User %username% successfully saved"
+}

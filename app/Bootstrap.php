@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 namespace App;
 
@@ -22,12 +22,10 @@ final class Bootstrap
 		$binDir = $rootDir . 'bin';
 		$configDir = $rootDir . 'config';
 		$logDir = $rootDir . 'log';
-		$databaseDir = $rootDir . 'Database';
+		$databaseDir = $appDir . $sep . 'Database';
 
 		$migrationsDir = $databaseDir . $sep . 'Migrations';
 		$fixturesDir = $databaseDir . $sep . 'Fixtures';
-
-		$translationsDir = $appDir . $sep . 'Translations';
 
 		$tempDir = $rootDir . 'temp';
 		$tempContextDir = $tempDir . $sep . $context;
@@ -77,14 +75,22 @@ final class Bootstrap
 				'migrationsDir' => $migrationsDir,
 				'fixturesDir' => $fixturesDir,
 				'rootDir' => $rootDir,
-				'translationsDir' => $translationsDir,
 				'proxiesDir' => $proxiesDir,
 			]
 		);
 
-        $configurator->setDebugMode(getenv('NETTE_DEBUG_SECRET'). '@' . $_SERVER['REMOTE_ADDR']);
-		$configurator->enableTracy($logDir);
+        if (isset($_SERVER['REMOTE_ADDR'])) {
+            $ipAddress = getenv('NETTE_DEBUG_SECRET'). '@' . $_SERVER['REMOTE_ADDR'];
 
+            //dump($ipAddress);
+            $configurator->setDebugMode($ipAddress);
+        } else {
+            $configurator->setDebugMode(false);
+        }
+
+        //$configurator->setDebugMode(true);
+
+		$configurator->enableTracy($logDir);
 		$configurator->setTempDirectory($tempContextDir);
 
 		$configurator->createRobotLoader()

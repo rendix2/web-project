@@ -1,0 +1,35 @@
+{
+  "form.username.label": "Uživatelské jméno",
+  "form.username.required": "Uživatelské jméno je povinné",
+  "form.username.exists": "Uživatelské jméno %username% už existuje",
+
+  "form.email.label": "Email",
+  "form.email.required": "Email je povinný",
+  "form.email.exists": "Email %email% už existuje",
+
+  "form.password.label": "Heslo",
+  "form.password.required": "Heslo je povinné",
+  "form.password.ruleMinLength": "Heslo musí mít alespoň %minChars% znaků",
+  "form.password.ruleAtLeastNumber": "Heslo musí obsahovat číslicí",
+  "form.password.ruleNotStartNumber": "Heslo nesmí začínat číslicí",
+  "form.password.ruleNotFinishNumber": "Heslo nesmí končit číslicí",
+  "form.password.ruleAtLeastLowerChar": "Heslo musí obsahovat malé písmeno",
+  "form.password.ruleAtLeastUpperChar": "Heslo musí obsahovat velké písmeno",
+  "form.password.ruleNotStartUpperChar": "Heslo nesmí začínat velkým písmenem",
+  "form.password.ruleNotFinishUpperChar": "Heslo nesmí končit velkým písmenem",
+  "form.password.alreadyUsed": "Heslo už bylo použite, použijte jiné",
+
+  "form.password2.label": "Heslo pro kontrolu",
+  "form.password2.required": "Heslo pro kontrolu je povinné",
+  "form.password2.ruleMinLength": "Heslo pro kontrolu musí mít alespoň %minChars% znaků",
+  "form.password2.ruleEqual": "Heslo pro kontrolu musí být stejné jako heslo",
+
+  "form.name.label": "Jméno",
+  "form.name.required": "Jméno je povinné.",
+
+  "form.surname.label": "Příjmení",
+  "form.surname.required": "Příjmení je povinné.",
+
+  "form.submit.label": "Uložit",
+  "form.submit.success": "Uživatel %username% byl uložen"
+}

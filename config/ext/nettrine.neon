@@ -46,7 +46,7 @@ nettrine.migrations:
     table: migrations
     column: version
     directory: %migrationsDir%
-    namespace: Database\Migrations
+    namespace: App\Database\Migrations
     versionsOrganization: null # null, year, year_and_month
 
 nettrine.fixtures:

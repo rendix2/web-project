@@ -1,0 +1,12 @@
+{
+  "form.username.label": "Username",
+  "form.username.required": "Username is required",
+
+  "form.password.label": "Password",
+  "form.password.required": "Password is required",
+
+  "form.submit.name": "Login",
+  "form.submit.success": "Successfully logged in",
+
+  "registration": "Registration"
+}

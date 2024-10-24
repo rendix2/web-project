@@ -1,9 +1,0 @@
-{
-  "form.name.label": "Name",
-  "form.name.required": "Name is required.",
-
-  "form.surname.label": "Surname",
-  "form.surname.required": "Surname is required.",
-
-  "form.save": "Save"
-}

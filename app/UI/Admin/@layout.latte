@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width">
+        <title>{ifset title}{include title|stripHtml}{/ifset}</title>
+
+        {block webpackScripts}
+        <script src="{webpack app.js}" async></script>
+        <script src="{webpack bootstrap.js}" async></script>
+        <script src="{webpack datagrid.js}" async></script>
+
+        <link rel="stylesheet" href="{webpack bootstrap.css}">
+        <link rel="stylesheet" href="{webpack datagrid.css}">
+        {/block}
+    </head>
+
+    <body>
+        {snippet flashes}
+        <div class="container-fluid">
+            {foreach $flashes as $flash}
+            <div class="alert alert-{$flash->type} alert-dismissible fade show mt-1" role="alert">{$flash->message}</div>
+            {/foreach}
+        </div>
+        {/snippet}
+
+        <div class="container-fluid">
+            {include content}
+        </div>
+
+	    {block scripts}
+        {/block}
+    </body>
+</html>

@@ -43,8 +43,22 @@ class EditPresenter extends Presenter
                 'surname' => $userEntity->surname,
                 'username' => $userEntity->username,
                 'email' => $userEntity->email,
+                'isActive' => $userEntity->isActive,
             ]
         );
+    }
+
+    public function renderDefault(int $id) : void
+    {
+        $userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'id' => $id,
+                ]
+            );
+
+        $this->template->userEntity = $userEntity;
     }
 
     public function createComponentEditForm() : BootstrapForm
@@ -93,6 +107,8 @@ class EditPresenter extends Presenter
                 ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
                 ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
             ->endCondition();
+
+        $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
 
         $form->addSubmit('send', 'admin-user-edit.form.submit.label');
 
@@ -169,6 +185,7 @@ class EditPresenter extends Presenter
         $userEntity->surname = $values->surname;
         $userEntity->username = $values->username;
         $userEntity->email = $values->email;
+        $userEntity->isActive = (bool) $values->isActive;
 
         if ($values->password !== '') {
             $userEntity->password = $this->passwords->hash($values->password);

@@ -6,9 +6,15 @@
 
   "fullName.name" : "Celé jméno",
   "fullName.search": "Hledat podle Celého jména",
+  "form.fullName.noSpace": "V celém jméně musí být mezera",
 
   "userName.name" : "Uživatelské jméno",
   "userName.search": "Hledat podle Uživatelského jména",
+
+  "email.name" : "Email",
+  "email.search": "Hledat podle Emailu",
+
+  "isActive.name" : "Aktivní",
 
   "edit.name": "Detail",
   "edit.title": "Detail Uživatele",
@@ -19,6 +25,8 @@
 
   "delete.name": "Smazat",
   "delete.title": "Smazat Uživatele",
-  "delete.success": "Uživatel %username% byl smazán"
+  "delete.success": "Uživatel %username% byl smazán",
+
+  "add-user": "Přidat Uživatele"
 
 }

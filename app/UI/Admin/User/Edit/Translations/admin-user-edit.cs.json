@@ -30,6 +30,8 @@
   "form.surname.label": "Příjmení",
   "form.surname.required": "Příjmení je povinné.",
 
+  "form.isActive.label" : "Aktivní",
+
   "form.submit.label": "Uložit",
   "form.submit.success": "Uživatel %username% byl uložen"
 }

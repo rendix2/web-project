@@ -7,6 +7,12 @@
 
   "userName.name" : "User name",
   "userName.search": "Search by user name",
+  "form.fullName.noSpace": "FullName must contain a space",
+
+  "email.name" : "Email",
+  "email.search": "Search by Email",
+
+  "isActive.name" : "Active",
 
   "edit.name": "Detail",
   "edit.title": "Detail User",
@@ -17,6 +23,8 @@
 
   "delete.name": "Delete",
   "delete.title": "Delete User",
-  "delete.success": "User %username% was deleted"
+  "delete.success": "User %username% was deleted",
+
+  "add-user": "Add User"
 
 }

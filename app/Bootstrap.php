@@ -88,7 +88,7 @@ final class Bootstrap
             $configurator->setDebugMode(false);
         }
 
-        //$configurator->setDebugMode(true);
+        $configurator->setDebugMode(true);
 
 		$configurator->enableTracy($logDir);
 		$configurator->setTempDirectory($tempContextDir);

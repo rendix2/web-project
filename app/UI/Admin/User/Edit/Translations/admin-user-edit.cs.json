@@ -33,5 +33,7 @@
   "form.isActive.label" : "Aktivní",
 
   "form.submit.label": "Uložit",
-  "form.submit.success": "Uživatel %username% byl uložen"
+  "form.submit.success": "Uživatel %username% byl uložen",
+
+  "role.header": "Role"
 }

@@ -11,6 +11,9 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
 
@@ -64,18 +67,45 @@ class UserEntity
     #[OneToMany(mappedBy: 'user', targetEntity: UserPasswordEntity::class, cascade: ['persist', 'remove'])]
     public Collection $passwords;
 
+
+    #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]
+    #[JoinTable(
+        name: 'userRole',
+        joinColumns: [
+            new JoinColumn('userId', 'id'),
+
+        ],
+        inverseJoinColumns: [
+            new JoinColumn('roleId', 'id'),
+        ]
+    )]
+    public Collection $roles;
+
     public function __construct()
     {
         $this->lastLoginAt = null;
         $this->lastLoginCount = 0;
 
         $this->passwords = new ArrayCollection();
+        $this->roles = new ArrayCollection();
 
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
 
-    public function addUserPassword(UserPasswordEntity $userPasswordEntity) : void
+    public function addRoleEntity(RoleEntity $roleEntity) : void
+    {
+        $this->roles->add($roleEntity);
+        $roleEntity->users->add($this);
+    }
+
+    public function removeRoleEntity(RoleEntity $roleEntity) : void
+    {
+        $this->roles->removeElement($roleEntity);
+        $roleEntity->users->removeElement($this);
+    }
+
+    public function addUserPasswordEntity(UserPasswordEntity $userPasswordEntity) : void
     {
         $this->passwords->add($userPasswordEntity);
     }
@@ -88,7 +118,7 @@ class UserEntity
         $userPassword->user = $this;
         $userPassword->password = $password;
 
-        $this->addUserPassword($userPassword);
+        $this->addUserPasswordEntity($userPassword);
     }
 
 }

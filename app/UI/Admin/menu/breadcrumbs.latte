@@ -1,0 +1,16 @@
+{varType Contributte\MenuControl\IMenu $menu}
+<nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+    {foreach $menu->getPath() as $item}
+        {if $menu->getActivePresenter() === $presenter}
+            <li class="breadcrumb-item active" aria-current="page">
+                <a href="{$item->getRealLink()}">{$item->getRealTitle()}</a>
+            </li>
+        {else}
+            <li class="breadcrumb-item">
+                <a href="{$item->getRealLink()}">{$item->getRealTitle()}</a>
+            </li>
+        {/if}
+    {/foreach}
+    </ol>
+</nav>

@@ -1,8 +1,22 @@
 {block content}
     <div class="d-flex justify-content-center mt-1">
         <div class="card col-3">
+            <div class="card-header">{_web-user-changePassword.form.header}</div>
             <div class="card-body">
                 {control changePasswordForm}
+            </div>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center mt-1">
+        <div class="card col-3">
+            <div class="card-header">{_web-user-changePassword.password-history.header}</div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {foreach $userEntity->passwords as $password}
+                        <li class="list-group-item {if $iterator->isLast()}active{/if}"
+                            {if $iterator->isLast()}aria-current="true"{/if}>{$password->createdAt|localDate:yMd}</li>
+                    {/foreach}
+                </ul>
             </div>
         </div>
     </div>

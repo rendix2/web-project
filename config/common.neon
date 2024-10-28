@@ -18,6 +18,7 @@ latte:
     debugger: true
     #strictParsing: yes
     strictTypes: true
+    locale: cs_CZ
 
 di:
     debugger: true
@@ -33,6 +34,7 @@ security:
 
 routing:
     debugger: true
+    cache: true
 
 tracy:
     maxLength: 500

@@ -5,9 +5,13 @@ namespace App\UI\Admin\User\Create;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
+use Contributte\MenuControl\UI\MenuComponent;
+use Contributte\MenuControl\UI\MenuComponentFactory;
 use Doctrine\DBAL\Exception;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use Nettrine\ORM\EntityManagerDecorator;
@@ -19,10 +23,24 @@ class CreatePresenter extends Presenter
         private readonly Translator             $translator,
         private readonly EntityManagerDecorator $em,
         private readonly Passwords              $passwords,
+        private readonly MenuComponentFactory   $menuFactory,
     )
     {
     }
 
+    public function startup() : void
+    {
+        parent::startup();
+
+        if (!$this->getUser()->isInRole('Admin')) {
+            $this->error('Forbidden', IResponse::S403_Forbidden);
+        }
+    }
+
+    protected function createComponentMenu() : MenuComponent
+    {
+        return $this->menuFactory->create('admin');
+    }
 
     public function createComponentCreateForm() : BootstrapForm
     {
@@ -31,6 +49,7 @@ class CreatePresenter extends Presenter
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
         $form->setAjax(true);
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
@@ -126,7 +145,7 @@ class CreatePresenter extends Presenter
         $userPasswordEntity->user = $userEntity;
         $userPasswordEntity->password = $this->passwords->hash($values->password);
 
-        $userEntity->addUserPassword($userPasswordEntity);
+        $userEntity->addUserPasswordEntity($userPasswordEntity);
 
         try {
             $this->em->persist($userEntity);

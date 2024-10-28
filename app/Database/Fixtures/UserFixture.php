@@ -2,6 +2,7 @@
 
 namespace App\Database\Fixtures;
 
+use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -30,7 +31,15 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
         $userPasswordEntity->password = $this->passwords->hash('secret');
         $userPasswordEntity->user = $userEntity;
 
-        $userEntity->addUserPassword($userPasswordEntity);
+        $adminRoleEntity = $manager->getRepository(RoleEntity::class)
+            ->findOneBy(
+                [
+                    'name' => 'admin',
+                ]
+            );
+
+        $userEntity->addRoleEntity($adminRoleEntity);
+        $userEntity->addUserPasswordEntity($userPasswordEntity);
 
         $manager->persist($userEntity);
         $manager->flush();

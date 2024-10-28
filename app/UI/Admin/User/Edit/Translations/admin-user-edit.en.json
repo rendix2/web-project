@@ -31,5 +31,7 @@
   "form.surname.required": "Surname is required.",
 
   "form.submit.label": "Save",
-  "form.submit.success": "User %username% successfully saved"
+  "form.submit.success": "User %username% successfully saved",
+
+  "role.header": "Role"
 }

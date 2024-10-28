@@ -4,10 +4,16 @@ namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
+use Contributte\Datagrid\Datagrid;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
+use Contributte\MenuControl\UI\MenuComponent;
+use Contributte\MenuControl\UI\MenuComponentFactory;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use Nettrine\ORM\EntityManagerDecorator;
@@ -19,8 +25,19 @@ class EditPresenter extends Presenter
         private readonly Translator             $translator,
         private readonly EntityManagerDecorator $em,
         private readonly Passwords              $passwords,
+        private readonly MenuComponentFactory   $menuFactory,
+        private readonly RolesDataGridFactory   $rolesDataGridFactory,
     )
     {
+    }
+
+    public function startup() : void
+    {
+        parent::startup();
+
+        if (!$this->getUser()->isInRole('Admin')) {
+            $this->error('Forbidden', IResponse::S403_Forbidden);
+        }
     }
 
     public function actionDefault(int $id) : void
@@ -61,9 +78,20 @@ class EditPresenter extends Presenter
         $this->template->userEntity = $userEntity;
     }
 
+    protected function createComponentRolesGrid() : DataGrid
+    {
+        return $this->rolesDataGridFactory->create();
+    }
+
+    protected function createComponentMenu() : MenuComponent
+    {
+        return $this->menuFactory->create('admin');
+    }
+
     public function createComponentEditForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
@@ -186,6 +214,7 @@ class EditPresenter extends Presenter
         $userEntity->username = $values->username;
         $userEntity->email = $values->email;
         $userEntity->isActive = (bool) $values->isActive;
+        $userEntity->updatedAt = new DateTimeImmutable();
 
         if ($values->password !== '') {
             $userEntity->password = $this->passwords->hash($values->password);
@@ -194,7 +223,7 @@ class EditPresenter extends Presenter
             $userPasswordEntity->user = $userEntity;
             $userPasswordEntity->password = $this->passwords->hash($values->password);
 
-            $userEntity->addUserPassword($userPasswordEntity);
+            $userEntity->addUserPasswordEntity($userPasswordEntity);
         }
 
         try {

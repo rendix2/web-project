@@ -1,4 +1,6 @@
 {
+  "form.header": "Registrace",
+
   "form.submit.label": "Registrovat",
   "form.submit.success": "Uživatel %username% byl vytvořen"
 }

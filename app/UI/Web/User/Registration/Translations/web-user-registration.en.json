@@ -1,4 +1,6 @@
 {
+  "form.header": "Regustration",
+
   "form.submit.label": "Register",
   "form.submit.success": "User successfully created"
 }

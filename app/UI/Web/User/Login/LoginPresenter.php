@@ -3,6 +3,7 @@
 namespace App\UI\Web\User\Login;
 
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
@@ -20,6 +21,7 @@ class LoginPresenter extends Presenter
     {
         if ($this->getUser()->isLoggedIn()) {
             $this->flashMessage('You are already logged in', 'danger');
+            $this->redrawControl('flashes');
         }
     }
 
@@ -29,6 +31,7 @@ class LoginPresenter extends Presenter
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('username', 'web-user-login.form.username.label')
             ->setRequired('web-user-login.form.username.required')
@@ -53,7 +56,10 @@ class LoginPresenter extends Presenter
     public function loginFormSuccess(Form $form) : void
     {
         try {
-            $this->getUser()->login($form->getValues()['username'], $form->getValues()['password']);
+            $this->getUser()->login(
+                $form->getValues()['username'],
+                $form->getValues()['password']
+            );
 
             $this->flashMessage(
                 $this->translator->translate('web-user-login.form.submit.success'),
@@ -62,6 +68,7 @@ class LoginPresenter extends Presenter
             $this->redirect(':Web:Home:default');
         } catch (\Nette\Security\AuthenticationException $e) {
             $this->flashMessage($e->getMessage(), 'danger');
+            $this->redrawControl('flashes');
         }
     }
 

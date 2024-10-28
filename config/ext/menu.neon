@@ -1,0 +1,17 @@
+extensions:
+    menu: Contributte\MenuControl\DI\MenuExtension
+
+menu:
+    web:
+        items:
+            Home:
+                action: :Web:Home:default
+    admin:
+        templates:
+            menu: %appDir%/UI/Admin/menu/menu.latte
+            breadcrumbs: %appDir%/UI/Admin/menu/breadcrumbs.latte
+        items:
+            Users:
+                action: :Admin:User:List:default
+                include:
+                    - '^Admin:User:Edit:default'

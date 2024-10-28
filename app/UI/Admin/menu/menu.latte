@@ -1,0 +1,25 @@
+{varType Contributte\MenuControl\IMenu $menu}
+{varType Contributte\MenuControl\IMenuItemsContainer $itemsParent}
+{varType Contributte\MenuControl\IMenuItem $item}
+{define menu-branch, $itemsParent}
+    {if $itemsParent->hasVisibleItemsOnMenu()}
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            {foreach $itemsParent->getVisibleItemsOnMenu() as $item}
+                <li n:if="$item->isAllowed()" class="nav-item">
+                    <a href="{$item->getRealLink()}" class="nav-link" {if $item->isActive()}active{/if}>
+                        {$item->getRealTitle()}
+                    </a>
+                    {include menu-branch, $item}
+                </li>
+            {/foreach}
+        </ul>
+    {/if}
+{/define}
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            {include menu-branch, $menu}
+        </div>
+    </div>
+</nav>

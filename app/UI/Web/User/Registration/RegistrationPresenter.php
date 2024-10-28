@@ -5,6 +5,7 @@ namespace App\UI\Web\User\Registration;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Doctrine\DBAL\Exception;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
@@ -28,6 +29,7 @@ class RegistrationPresenter extends Presenter
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
@@ -124,7 +126,7 @@ class RegistrationPresenter extends Presenter
         $userPasswordEntity->user = $userEntity;
         $userPasswordEntity->password = $this->passwords->hash($values->password);
 
-        $userEntity->addUserPassword($userPasswordEntity);
+        $userEntity->addUserPasswordEntity($userPasswordEntity);
 
         try {
             $this->em->persist($userEntity);

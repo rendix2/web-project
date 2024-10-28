@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Model\Entity\UserEntity;
+use DateTimeImmutable;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Authenticator;
 use Nette\Security\IIdentity;
@@ -43,7 +44,8 @@ class UsernameAndPasswordAuthenticator implements Authenticator
         }
 
         $userEntity->lastLoginCount++;
-        $userEntity->lastLoginAt = new \DateTimeImmutable();
+        $userEntity->lastLoginAt = new DateTimeImmutable();
+        $userEntity->updatedAt = new DateTimeImmutable();
 
         $this->em->persist($userEntity);
         $this->em->flush();
@@ -63,9 +65,22 @@ class UsernameAndPasswordAuthenticator implements Authenticator
             throw new AuthenticationException('Invalid password.');
         }
 
+        $userEntity->lastLoginCount = 0;
+        $userEntity->lastLoginAt = null;
+        $userEntity->updatedAt = new DateTimeImmutable();
+
+        $this->em->persist($userEntity);
+        $this->em->flush();
+
+        $roles = [];
+
+        foreach ($userEntity->roles as $role) {
+            $roles[] = $role->name;
+        }
+
         return new SimpleIdentity(
             $userEntity->id,
-            'user',
+            $roles,
             [
                 'name' => $userEntity->username
             ],

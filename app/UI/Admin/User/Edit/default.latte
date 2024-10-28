@@ -1,12 +1,42 @@
 {block content}
-    <div class="card col-3">
-        <div class="card-header">
-            <h2>
-                {$userEntity->name} {$userEntity->surname}
-            </h2>
-        </div>
-        <div class="card-body">
-            {control editForm}
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-header">
+                <h2>
+                    {$userEntity->name} {$userEntity->surname}
+                </h2>
+            </div>
+            <div class="card-body">
+                {control editForm}
+            </div>
         </div>
     </div>
+
+
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">{_admin-user-edit.role.header}</div>
+            <div class="card-body">
+                {control rolesGrid}
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col">
+        <div class="card">
+            <div class="card-header">{_web-user-changePassword.password-history.header}</div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {foreach $userEntity->passwords as $password}
+                        <li class="list-group-item {if $iterator->isLast()}active{/if}"
+                            {if $iterator->isLast()}aria-current="true"{/if}>{$password->createdAt|localDate:yMd}</li>
+                    {/foreach}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
 {/block}

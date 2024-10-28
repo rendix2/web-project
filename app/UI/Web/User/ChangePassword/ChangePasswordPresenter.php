@@ -5,6 +5,8 @@ namespace App\UI\Web\User\ChangePassword;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Nette\Application\UI\Form;
@@ -22,12 +24,29 @@ class ChangePasswordPresenter extends Presenter
     {
     }
 
+    public function renderDefault() : void
+    {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->flashMessage('not logged id', 'danger');
+            return;
+        }
+
+        $this->template->userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'id' => $this->getUser()->getId()
+                ]
+            );
+    }
+
     public function createComponentChangePasswordForm() : BootstrapForm
     {
         $form = new BootstrapForm();
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addPassword('currentPassword', 'web-user-changePassword.form.currentPassword.label')
             ->setRequired('admin-user-edit.form.password.required')
@@ -108,12 +127,13 @@ class ChangePasswordPresenter extends Presenter
             );
 
         $userEntity->password = $this->passwords->hash($form->getValues()->password);
+        $userEntity->updatedAt = new DateTimeImmutable();
 
         $userPasswordEntity = new UserPasswordEntity();
         $userPasswordEntity->user = $userEntity;
         $userPasswordEntity->password = $this->passwords->hash($form->getValues()->password);
 
-        $userEntity->addUserPassword($userPasswordEntity);
+        $userEntity->addUserPasswordEntity($userPasswordEntity);
 
         try {
             $this->em->persist($userEntity);

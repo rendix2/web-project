@@ -1,3 +1,5 @@
+{block title}{_admin-user-list.title}{/block}
+
 {block content}
     <a href="{link :Admin:User:Create:default}" class="btn btn-secondary mt-1">
         <i class="fa-solid fa-plus"></i> {_admin-user-list.add-user}
@@ -5,7 +7,7 @@
 
     <div class="card mt-1">
         <div class="card-header">
-            <h2>{_admin-user-list.title}</h2>
+            <h2>{_admin-user-list.header}</h2>
         </div>
         <div class="card-body">
             {control grid}

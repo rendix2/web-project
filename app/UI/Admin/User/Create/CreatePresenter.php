@@ -32,6 +32,10 @@ class CreatePresenter extends Presenter
     {
         parent::startup();
 
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->error('Not logged in', IResponse::S401_Unauthorized);
+        }
+
         if (!$this->getUser()->isInRole('Admin')) {
             $this->error('Forbidden', IResponse::S403_Forbidden);
         }

@@ -1,4 +1,6 @@
 {
+  "title": "Editace Uživatele",
+
   "form.username.label": "Uživatelské jméno",
   "form.username.required": "Uživatelské jméno je povinné",
   "form.username.exists": "Uživatelské jméno %username% už existuje",

@@ -1,4 +1,6 @@
 {
+  "title": "User edit",
+
   "form.username.label": "Username",
   "form.username.required": "Username is required",
   "form.username.exists": "Username already exists",

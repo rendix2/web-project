@@ -76,6 +76,8 @@ final class Bootstrap
 				'fixturesDir' => $fixturesDir,
 				'rootDir' => $rootDir,
 				'proxiesDir' => $proxiesDir,
+                'sessionDir' => $sessionsDir,
+                'logDir' => $logDir,
 			]
 		);
 

@@ -215,6 +215,12 @@ class RegistrationPresenter extends Presenter
         try {
             $this->em->persist($mailEntity);
             $this->em->flush();
+
+            $this->flashMessage(
+                $this->translator->translate('web-user-registration.form.submit.success'),
+                'success'
+            );
+            $this->redrawControl('flashes');
         } catch (DbalException $exception) {
             bdump($exception);
             $this->flashMessage($exception->getMessage());

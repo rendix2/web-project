@@ -28,6 +28,7 @@ class ChangePasswordPresenter extends Presenter
     {
         if (!$this->getUser()->isLoggedIn()) {
             $this->flashMessage('not logged id', 'danger');
+            $this->redrawControl('flashes');
             return;
         }
 

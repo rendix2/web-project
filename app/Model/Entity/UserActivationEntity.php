@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Model\Entity;
 
@@ -13,20 +13,25 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userPassword')]
-class UserPasswordEntity
+#[Table(name: 'userActivation')]
+class UserActivationEntity
 {
+
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::INTEGER)]
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', nullable: false)]
+    #[JoinColumn('userId', unique: true, nullable: false)]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 1024)]
-    public string $password;
+    #[Column(name: 'activationKey', type: Types::STRING, length: 1024)]
+    public string $activationKey;
+
+    #[Column(name: 'validUntil', type: Types::DATETIME_IMMUTABLE)]
+    public DateTimeImmutable $validUntil;
+
 
     #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
@@ -36,6 +41,7 @@ class UserPasswordEntity
 
     public function __construct()
     {
+        $this->validUntil = new DateTimeImmutable('+1 day');
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }

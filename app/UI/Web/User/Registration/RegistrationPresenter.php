@@ -2,15 +2,22 @@
 
 namespace App\UI\Web\User\Registration;
 
+use App\Model\Entity\MailEntity;
+use App\Model\Entity\UserActivationEntity;
+use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Doctrine\DBAL\Exception;
+use Contributte\Mailing\IMailBuilderFactory;
+use Contributte\Translation\Translator;
+use Doctrine\DBAL\Exception as DbalException;
+use Nette\Application\LinkGenerator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
-use Nette\Localization\Translator;
+use Nette\Mail\SmtpException;
 use Nette\Security\Passwords;
+use Nette\Utils\Random;
 use Nettrine\ORM\EntityManagerDecorator;
 
 class RegistrationPresenter extends Presenter
@@ -19,6 +26,8 @@ class RegistrationPresenter extends Presenter
         private readonly Translator             $translator,
         private readonly EntityManagerDecorator $em,
         private readonly Passwords              $passwords,
+        private readonly IMailBuilderFactory    $mailBuilderFactory,
+        private readonly LinkGenerator          $linkGenerator,
     )
     {
     }
@@ -128,6 +137,18 @@ class RegistrationPresenter extends Presenter
 
         $userEntity->addUserPasswordEntity($userPasswordEntity);
 
+        $userEmailEntity = new UserEmailEntity();
+        $userEmailEntity->email = $values->email;
+        $userEmailEntity->user = $userEntity;
+
+        $userEntity->addUserEmailEntity($userEmailEntity);
+
+        $userActivationEntity = new UserActivationEntity();
+        $userActivationEntity->user = $userEntity;
+        $userActivationEntity->activationKey = Random::generate(256);
+
+        $userEntity->addUserActivationEntity($userActivationEntity);
+
         try {
             $this->em->persist($userEntity);
             $this->em->flush();
@@ -137,8 +158,53 @@ class RegistrationPresenter extends Presenter
                 'success'
             );
             $this->redrawControl('flashes');
-        } catch (Exception $exception) {
-            $form->addError($exception->getMessage());
+        } catch (DbalException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
+        }
+
+        $mail = $this->mailBuilderFactory->create();
+
+        $subject = $this->translator->translate('web-user-registration.mail.subject');
+
+        $mail->addTo($values->email, $values->name . ' ' . $values->surname);
+        $mail->setSubject($subject);
+        $mail->setTemplateFile(__DIR__ . '/Mailing/registration.' . $this->translator->getLocale() . '.latte');
+        $mail->setParameters(
+            [
+                'name' => $values->name,
+                'surname' => $values->surname,
+                'username' => $values->username,
+                'userEntity' => $userEntity,
+            ]
+        );
+
+        try {
+            $mail->send();
+
+            $this->flashMessage(
+                $this->translator->translate('web-user-registration.mail.success', ['email' => $values->email]),
+                'success'
+            );
+            $this->redrawControl('flashes');
+        } catch (SmtpException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
+        }
+
+        $mailEntity = new MailEntity();
+        $mailEntity->emailTo = $values->email;
+        //$mailEntity->userEmail = $userEmailEntity;
+        $mailEntity->subject = $subject;
+        $mailEntity->body = $mail->getMessage()->getHtmlBody();
+
+        try {
+            $this->em->persist($mailEntity);
+            $this->em->flush();
+        } catch (DbalException $exception) {
+            bdump($exception);
+            $this->flashMessage($exception->getMessage());
+            $this->redrawControl('flashes');
         }
     }
 

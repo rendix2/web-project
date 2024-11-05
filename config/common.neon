@@ -43,5 +43,26 @@ tracy:
     strictMode: true
     showBar: true
 
+#mail:
+    #smtp: %mail.smtp%
+
+    #host: %mail.host%
+    #port: %mail.port%
+    #username: %mail.username%
+    #password: %mail.password%
+    #timeout: ...     # (int)
+    #encryption: ...  # (ssl|tls|null) výchozí je null (má alias 'secure')
+    #clientHost: ...  # (string) výchozí je $_SERVER['HTTP_HOST']
+    #persistent: ...  # (bool) výchozí je false
+
 services:
-    - App\UsernameAndPasswordAuthenticator
+    -
+        create: App\UsernameAndPasswordAuthenticator
+        autowired: self
+
+    -
+        create: App\AutoLoginAuthenticator
+        autowired: self
+
+
+

@@ -2,27 +2,20 @@
 
 namespace App\UI\Admin\User\List;
 
-use App\Model\Entity\UserEntity;
-use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
+use App\AutoLoginAuthenticator;
 use Contributte\Datagrid\Datagrid;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use Contributte\Translation\Translator;
-use DateTimeImmutable;
-use Doctrine\DBAL\Exception as DbalException;
-use Doctrine\ORM\QueryBuilder;
 use Nette\Application\UI\Presenter;
-use Nette\Forms\Container;
 use Nette\Http\IResponse;
-use Nette\Security\User;
-use Nette\Utils\ArrayHash;
-use Nettrine\ORM\EntityManagerDecorator;
+use Nette\Security\AuthenticationException;
 
 class ListPresenter extends Presenter
 {
     public function __construct(
         private readonly DataGridFactory      $dataGridFactory,
         private readonly MenuComponentFactory $menuFactory,
+        private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
     )
     {
     }
@@ -32,7 +25,19 @@ class ListPresenter extends Presenter
         parent::startup();
 
         if (!$this->getUser()->isLoggedIn()) {
-            $this->error('Not logged in', IResponse::S401_Unauthorized);
+            $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
+
+            $autoLoginCookie = $this->getHttpRequest()->getCookie('autoLogin');
+
+            if ($autoLoginCookie === null) {
+                $this->error('Not logged in', IResponse::S401_Unauthorized);
+            } else {
+                try {
+                    $this->getUser()->login($autoLoginCookie, null);
+                } catch (AuthenticationException $exception) {
+                    $this->error('Not logged in', IResponse::S401_Unauthorized);
+                }
+            }
         }
 
         if (!$this->getUser()->isInRole('Admin')) {

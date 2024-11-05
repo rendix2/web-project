@@ -16,7 +16,6 @@
   "homepage": "https://github.com/rendix2/web-project",
   "require": {
     "php": ">= 8.2",
-
     "ext-ctype": "*",
     "ext-curl": "*",
     "ext-fileinfo": "*",
@@ -29,20 +28,17 @@
     "ext-session": "*",
     "ext-simplexml": "*",
     "ext-tokenizer": "*",
-
     "contributte/console": "^0.10.1",
     "contributte/console-extra": "^0.8.0",
     "contributte/forms-bootstrap": "^0.8.3",
     "contributte/guzzlette": "^3.3",
+    "contributte/mail": "^0.8.0",
+    "contributte/mailing": "^0.6.0",
     "contributte/menu-control": "^3.2",
     "contributte/translation": "^2.0",
     "contributte/webpack": "^2.3",
-    "ublaboo/datagrid": "dev-next",
-
     "freezy-bee/doctrine-form-mapper": "^1.7",
     "latte/latte": "^3.0",
-    "tracy/tracy": "^2.10",
-
     "nette/application": "^3.2",
     "nette/bootstrap": "^3.2",
     "nette/caching": "^3.3",
@@ -53,13 +49,14 @@
     "nette/robot-loader": "^4.0",
     "nette/security": "^3.2",
     "nette/utils": "^4.0",
-    
     "nettrine/cache": "^0.3.0",
     "nettrine/dbal": "^0.8.2",
     "nettrine/extensions-beberlei": "^0.2.0",
     "nettrine/fixtures": "^0.7.2",
     "nettrine/migrations": "^0.9.1",
-    "nettrine/orm": "^0.8.4"
+    "nettrine/orm": "^0.8.4",
+    "tracy/tracy": "^2.10",
+    "ublaboo/datagrid": "dev-next"
   },
   "require-dev": {
     "dg/composer-frontline": "^0.2.0",

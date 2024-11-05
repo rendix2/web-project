@@ -2,7 +2,6 @@
 
 namespace App\Model\Entity;
 
-use Chatbot\App\Model\Entity\LogWebMessageEntity;
 use DateTimeImmutable;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -67,6 +66,23 @@ class UserEntity
     #[OneToMany(mappedBy: 'user', targetEntity: UserPasswordEntity::class, cascade: ['persist', 'remove'])]
     public Collection $passwords;
 
+    /**
+     * @var UserActivationEntity[] $activationKeys
+     */
+    #[OneToMany(mappedBy: 'user', targetEntity: UserActivationEntity::class, cascade: ['persist', 'remove'])]
+    public Collection $activationKeys;
+
+    /**
+     * @var UserAutoLoginEntity[] $activationKeys
+     */
+    #[OneToMany(mappedBy: 'user', targetEntity: UserAutoLoginEntity::class, cascade:  ['persist', 'remove'])]
+    public Collection $autoLogins;
+
+    /**
+     * @var UserEmailEntity[] $emails
+     */
+    #[OneToMany(mappedBy: 'user', targetEntity: UserEmailEntity::class, cascade:  ['persist', 'remove'])]
+    public Collection $emails;
 
     #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]
     #[JoinTable(
@@ -88,6 +104,9 @@ class UserEntity
 
         $this->passwords = new ArrayCollection();
         $this->roles = new ArrayCollection();
+        $this->activationKeys = new ArrayCollection();
+        $this->autoLogins = new ArrayCollection();
+        $this->emails = new ArrayCollection();
 
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
@@ -108,6 +127,21 @@ class UserEntity
     public function addUserPasswordEntity(UserPasswordEntity $userPasswordEntity) : void
     {
         $this->passwords->add($userPasswordEntity);
+    }
+
+    public function addUserActivationEntity(UserActivationEntity $userActivationEntity) : void
+    {
+        $this->activationKeys->add($userActivationEntity);
+    }
+
+    public function addAutoLoginEntity(UserAutoLoginEntity $autoLoginEntity) : void
+    {
+        $this->autoLogins->add($autoLoginEntity);
+    }
+
+    public function addUserEmailEntity(UserEmailEntity $userEmailEntity) : void
+    {
+        $this->emails->add($userEmailEntity);
     }
 
     public function setPassword(string $password) : void

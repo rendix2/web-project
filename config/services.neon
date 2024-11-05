@@ -14,3 +14,4 @@ includes:
     - %configDir%/ext/translation.neon
     - %configDir%/ext/webpack.neon
     - %configDir%/ext/menu.neon
+    - %configDir%/ext/mailing.neon

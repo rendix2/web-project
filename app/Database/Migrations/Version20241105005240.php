@@ -11,27 +11,31 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241027230245 extends AbstractMigration
+final class Version20241105005240 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create roles table';
+        return 'create mail table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('role');
+        $table = $schema->createTable('mail');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
-        $table->addColumn('name', Types::STRING)
-            ->setComment('Name')
-            ->setLength(512);
+        $table->addColumn('emailTo', Types::STRING)
+            ->setLength(1024)
+            ->setComment('Email to');
 
-        $table->addColumn('description', Types::TEXT)
-            ->setComment('Name');
+        $table->addColumn('subject', Types::STRING)
+            ->setLength(1024)
+            ->setComment('Subject');
+
+        $table->addColumn('body', Types::TEXT)
+            ->setComment('Body');
 
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
@@ -41,11 +45,14 @@ final class Version20241027230245 extends AbstractMigration
             ->setComment('Updated at');
 
         $table->setPrimaryKey(['id'])
-            ->setComment('Roles');
+            ->setComment('Mail history')
+            ->addIndex(['emailTo'], 'K_Mail_EmailTo')
+            ->addForeignKeyConstraint($schema->getTable('userEmail'), ['emailTo'], ['email'], name: 'FK_Mail_EmailTo');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('role');
+        $schema->dropTable('mail');
     }
+
 }

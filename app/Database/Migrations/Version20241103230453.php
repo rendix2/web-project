@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Database\Migrations;
 
@@ -9,16 +11,16 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241023000710 extends AbstractMigration
+final class Version20241103230453 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create userPassword table';
+        return 'create userAutoLogin table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('userPassword');
+        $table = $schema->createTable('userAutoLogin');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -27,9 +29,13 @@ final class Version20241023000710 extends AbstractMigration
         $table->addColumn('userId', Types::BIGINT)
             ->setComment('User ID');
 
-        $table->addColumn('password', Types::STRING)
-            ->setComment('Password')
+        $table->addColumn('token', Types::STRING)
+            ->setComment('Token; saved in cookie')
             ->setLength(1024);
+
+        $table->addColumn('ipAddress', Types::BINARY)
+            ->setComment('IP address')
+            ->setLength(16);
 
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
@@ -39,15 +45,14 @@ final class Version20241023000710 extends AbstractMigration
             ->setComment('Updated at');
 
         $table->setPrimaryKey(['id'])
-            ->setComment('User password history')
-            ->addIndex(['userId'], 'K_UserPassword_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserPassword_UserId');
+            ->setComment('User auto logins')
+            ->addIndex(['userId'], 'K_UserAutoLogin_UserId')
+            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserAutoLogin_UserId');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userPassword');
+        $schema->dropTable('userAutoLogin');
     }
 
 }
-

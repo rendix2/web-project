@@ -5,8 +5,11 @@
   "form.password.label": "Heslo",
   "form.password.required": "Heslo je povinné.",
 
+  "form.stayLoggedIn": "Zůstat přihlášen",
+
   "form.submit.name": "Přihlásit se",
   "form.submit.success": "Úspěšně přihlášen",
 
-  "registration": "Registrace"
+  "registration": "Registrace",
+  "login": "Přihlášení"
 }

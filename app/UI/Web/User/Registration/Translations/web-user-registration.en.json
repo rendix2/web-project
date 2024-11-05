@@ -2,5 +2,8 @@
   "form.header": "Regustration",
 
   "form.submit.label": "Register",
-  "form.submit.success": "User successfully created"
+  "form.submit.success": "User successfully created",
+
+  "mail.subject": "Registrace",
+  "mail.success": "Email was sen to %email%"
 }

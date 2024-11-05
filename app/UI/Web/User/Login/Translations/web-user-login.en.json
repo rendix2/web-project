@@ -5,8 +5,11 @@
   "form.password.label": "Password",
   "form.password.required": "Password is required",
 
+  "form.stayLoggedIn": "Stay logged in",
+
   "form.submit.name": "Login",
   "form.submit.success": "Successfully logged in",
 
-  "registration": "Registration"
+  "registration": "Registration",
+  "login": "Login"
 }

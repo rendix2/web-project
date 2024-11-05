@@ -1,8 +1,9 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Model\Entity;
 
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
@@ -13,20 +14,21 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userPassword')]
-class UserPasswordEntity
+#[Table(name: 'userEmail')]
+class UserEmailEntity
 {
+
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::INTEGER)]
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', nullable: false)]
+    #[JoinColumn('userId', unique: true, nullable: false)]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 1024)]
-    public string $password;
+    #[Column(type: Types::STRING, length: 1024, unique: true)]
+    public string $email;
 
     #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;

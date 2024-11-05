@@ -38,8 +38,7 @@ create-dirs:
 	mkdir -p log/console
 
 chmod-dirs:
-	chmod 777 temp
-	chmod 777 log
+	chmod 777 temp -R
 
 	chmod 777 temp/web/cache
 	chmod 777 temp/web/proxies
@@ -49,12 +48,14 @@ chmod-dirs:
 	chmod 777 temp/console/proxies
 	chmod 777 temp/console/sessions
 
+	chmod 777 log -R
+
 	chmod 777 log/web
 	chmod 777 log/console
 
 migration:
 	php bin/console migrations:generate
-	chmod 777 /var/www/html/app/Database/Migrations
+	chmod 777 /var/www/html/app/Database/Migrations -R
 
 migrate:
 	php bin/console migrations:migrate --no-interaction

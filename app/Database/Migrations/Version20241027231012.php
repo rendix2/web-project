@@ -13,12 +13,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20241027231012 extends AbstractMigration
 {
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return 'create userRoles table';
     }
 
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         $table = $schema->createTable('userRole');
 
@@ -28,17 +28,15 @@ final class Version20241027231012 extends AbstractMigration
         $table->addColumn('roleId', Types::INTEGER)
             ->setComment('Role ID');
 
-        $table->addIndex(['userId'], 'K_UserRole_UserId');
-        $table->addIndex(['roleId'], 'K_UserRole_RoleId');
-
-        $table->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserRole_UserId');
-        $table->addForeignKeyConstraint($schema->getTable('role'), ['roleId'], ['id'], name: 'FK_UserRole_RoleId');
-
-        $table->setPrimaryKey(['userId', 'roleId']);
-        $table->setComment('User Roles');
+        $table->setPrimaryKey(['userId', 'roleId'])
+            ->setComment('User roles')
+            ->addIndex(['userId'], 'K_UserRole_UserId')
+            ->addIndex(['roleId'], 'K_UserRole_RoleId')
+            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserRole_UserId')
+            ->addForeignKeyConstraint($schema->getTable('role'), ['roleId'], ['id'], name: 'FK_UserRole_RoleId');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         $schema->dropTable('userRole');
     }

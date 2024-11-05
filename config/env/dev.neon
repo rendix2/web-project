@@ -1,6 +1,7 @@
 parameters:
     env:
         url: localhost
+
     database:
         main:
             host: web-project-database
@@ -10,3 +11,8 @@ parameters:
             dsn: "mysql:host=web-project-database;dbname=web-project"
             charset: utf8
             driver: pdo_mysql
+
+services:
+	# Dump mails in folder
+	mail.mailer: Contributte\Mail\Mailer\FileMailer(%tempDir%/mails)
+

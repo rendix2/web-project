@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace App\Database\Migrations;
 
@@ -9,16 +11,16 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241023000710 extends AbstractMigration
+final class Version20241104124958 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create userPassword table';
+        return 'create userEmail history table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('userPassword');
+        $table = $schema->createTable('userEmail');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -27,8 +29,8 @@ final class Version20241023000710 extends AbstractMigration
         $table->addColumn('userId', Types::BIGINT)
             ->setComment('User ID');
 
-        $table->addColumn('password', Types::STRING)
-            ->setComment('Password')
+        $table->addColumn('email', Types::STRING)
+            ->setComment('Email')
             ->setLength(1024);
 
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
@@ -38,16 +40,16 @@ final class Version20241023000710 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
-            ->setComment('User password history')
-            ->addIndex(['userId'], 'K_UserPassword_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserPassword_UserId');
+        $table->setComment('User email history')
+            ->setPrimaryKey(['id'])
+            ->addIndex(['userId'], 'K_UserEmail_UserId')
+            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserEmail_UserId')
+            ->addUniqueIndex(['email'], 'UK_UserEmail_Email');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userPassword');
+        $schema->dropTable('userEmail');
     }
 
 }
-

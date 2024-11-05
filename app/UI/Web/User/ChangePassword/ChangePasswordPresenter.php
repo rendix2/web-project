@@ -7,7 +7,7 @@ use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use DateTimeImmutable;
-use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
@@ -144,8 +144,9 @@ class ChangePasswordPresenter extends Presenter
                 'success'
             );
             $this->redrawControl('flashes');
-        } catch (Exception $exception) {
-            $form->addError($exception->getMessage());
+        } catch (DbalException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
         }
     }
 

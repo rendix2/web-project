@@ -33,37 +33,7 @@ final class Bootstrap
 		$cacheDir = $tempContextDir . $sep . 'cache';
 		$proxiesDir = $tempContextDir . $sep . 'proxies';
 		$sessionsDir = $tempContextDir . $sep . 'sessions';
-
-		if (!file_exists($logDir)) {
-			FileSystem::createDir($logDir);
-		}
-
-		if (!file_exists($tempDir)) {
-			FileSystem::createDir($tempDir);
-		}
-
-		if (!file_exists($tempContextDir)) {
-			FileSystem::createDir($tempContextDir);
-		}
-
-		if (!file_exists($cacheDir)) {
-			FileSystem::createDir($cacheDir);
-		}
-
-		if (!file_exists($proxiesDir)) {
-			FileSystem::createDir($proxiesDir);
-		}
-
-		if (!file_exists($sessionsDir)) {
-			FileSystem::createDir($sessionsDir);
-		}
-
-		chmod($logDir, 0777);
-		chmod($tempDir, 0777);
-		chmod($tempContextDir, 0777);
-		chmod($cacheDir, 0777);
-		chmod($proxiesDir, 0777);
-		chmod($sessionsDir, 0777);
+        $mailDir = $tempContextDir . $sep . 'mails';
 
 		$configurator = new Configurator();
 
@@ -76,6 +46,8 @@ final class Bootstrap
 				'fixturesDir' => $fixturesDir,
 				'rootDir' => $rootDir,
 				'proxiesDir' => $proxiesDir,
+                'sessionsDir' => $sessionsDir,
+                'mailDir' => $mailDir,
 			]
 		);
 
@@ -99,7 +71,14 @@ final class Bootstrap
 
 		$configurator->addConfig($configDir . $sep . 'common.neon');
 		$configurator->addConfig($configDir . $sep . 'services.neon');
-		$configurator->addConfig($configDir . $sep . 'env' . $sep . 'dev.neon');
+
+        if ($configurator->isDebugMode()) {
+            $configurator->addConfig($configDir . $sep . 'env' . $sep . 'dev.neon');
+        } elseif (str_starts_with($_SERVER['REQUEST_URI'], 'https://test.')) {
+            $configurator->addConfig($configDir . $sep . 'env' . $sep . 'test.neon');
+        } else {
+            $configurator->addConfig($configDir . $sep . 'env' . $sep . 'prod.neon');
+        }
 
 		return $configurator;
 	}

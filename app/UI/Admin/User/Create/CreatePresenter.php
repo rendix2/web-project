@@ -2,17 +2,19 @@
 
 namespace App\UI\Admin\User\Create;
 
+use App\AutoLoginAuthenticator;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
+use Nette\Security\AuthenticationException;
 use Nette\Security\Passwords;
 use Nettrine\ORM\EntityManagerDecorator;
 
@@ -24,6 +26,7 @@ class CreatePresenter extends Presenter
         private readonly EntityManagerDecorator $em,
         private readonly Passwords              $passwords,
         private readonly MenuComponentFactory   $menuFactory,
+        private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
     )
     {
     }
@@ -33,7 +36,19 @@ class CreatePresenter extends Presenter
         parent::startup();
 
         if (!$this->getUser()->isLoggedIn()) {
-            $this->error('Not logged in', IResponse::S401_Unauthorized);
+            $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
+
+            $autoLoginCookie = $this->getHttpRequest()->getCookie('autoLogin');
+
+            if ($autoLoginCookie === null) {
+                $this->error('Not logged in', IResponse::S401_Unauthorized);
+            } else {
+                try {
+                    $this->getUser()->login($autoLoginCookie, null);
+                } catch (AuthenticationException $exception) {
+                    $this->error('Not logged in', IResponse::S401_Unauthorized);
+                }
+            }
         }
 
         if (!$this->getUser()->isInRole('Admin')) {
@@ -161,9 +176,8 @@ class CreatePresenter extends Presenter
             );
             $this->redrawControl('flashes');
             //$this->redirect('this');
-        } catch (Exception $exception) {
-            $form->addError($exception->getMessage());
-            $this->flashMessage($exception->getMessage());
+        } catch (DbalException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
 
         }

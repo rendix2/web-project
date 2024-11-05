@@ -1,0 +1,14 @@
+extensions:
+    post: Contributte\Mail\DI\MailExtension
+    mailing: Contributte\Mailing\DI\MailingExtension
+
+mailing:
+    template:
+        defaults:
+            layout: '@default'
+        config:
+            layout: '@default'
+
+post:
+    # Trace emails in Tracy
+    trace: %debugMode%

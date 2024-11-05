@@ -1,4 +1,4 @@
-<?php declare(strict_types=1);
+<?php
 
 namespace App\Model\Entity;
 
@@ -13,20 +13,27 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userPassword')]
-class UserPasswordEntity
+#[Table(name: 'mail')]
+class MailEntity
 {
+
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::INTEGER)]
-    public int $id;
+    #[Column(type: Types::BIGINT)]
+    public string $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', nullable: false)]
-    public UserEntity $user;
+    #[Column(name: 'emailTo', type: Types::STRING, nullable: false)]
+    public string $emailTo;
 
-    #[Column(type: Types::STRING, length: 1024)]
-    public string $password;
+    //#[ManyToOne(targetEntity: UserEmailEntity::class)]
+    //#[JoinColumn('emailTo', unique: true, nullable: false)]
+    //public UserEmailEntity $userEmail;
+
+    #[Column(type: Types::STRING, length: 1024, nullable: false)]
+    public string $subject;
+
+    #[Column(type: Types::TEXT, nullable: false)]
+    public string $body;
 
     #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;

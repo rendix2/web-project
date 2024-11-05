@@ -2,5 +2,8 @@
   "form.header": "Registrace",
 
   "form.submit.label": "Registrovat",
-  "form.submit.success": "Uživatel %username% byl vytvořen"
+  "form.submit.success": "Uživatel %username% byl vytvořen",
+
+  "mail.subject": "Registrace",
+  "mail.success": "Email byl odeslán na %email%"
 }

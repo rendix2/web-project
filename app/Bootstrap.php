@@ -48,6 +48,7 @@ final class Bootstrap
 				'proxiesDir' => $proxiesDir,
                 'sessionsDir' => $sessionsDir,
                 'mailDir' => $mailDir,
+                'logDir' => $logDir,
 			]
 		);
 

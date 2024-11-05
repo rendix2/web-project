@@ -116,6 +116,20 @@ class RegistrationPresenter extends Presenter
                 $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
             );
         }
+
+        $historyEmailExists = $this->em
+            ->getRepository(UserEmailEntity::class)
+            ->findOneBy(
+                [
+                    'email' => $form->getHttpData()['email']
+                ]
+            );
+
+        if ($historyEmailExists) {
+            $form->addError(
+                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
+            );
+        }
     }
 
     public function registrationFormSuccess(Form $form) : void

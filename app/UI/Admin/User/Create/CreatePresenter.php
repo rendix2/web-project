@@ -3,6 +3,7 @@
 namespace App\UI\Admin\User\Create;
 
 use App\AutoLoginAuthenticator;
+use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -146,6 +147,20 @@ class CreatePresenter extends Presenter
                 $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
             );
         }
+
+        $historyEmailExists = $this->em
+            ->getRepository(UserEmailEntity::class)
+            ->findOneBy(
+                [
+                    'email' => $form->getHttpData()['email']
+                ]
+            );
+
+        if ($historyEmailExists) {
+            $form->addError(
+                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
+            );
+        }
     }
 
     public function createFormSuccess(Form $form) : void
@@ -166,6 +181,12 @@ class CreatePresenter extends Presenter
 
         $userEntity->addUserPasswordEntity($userPasswordEntity);
 
+        $userEmailEntity = new UserEmailEntity();
+        $userEmailEntity->email = $values->email;
+        $userEmailEntity->user = $userEntity;
+
+        $userEntity->addUserEmailEntity($userEmailEntity);
+
         try {
             $this->em->persist($userEntity);
             $this->em->flush();
@@ -179,7 +200,6 @@ class CreatePresenter extends Presenter
         } catch (DbalException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
-
         }
     }
 

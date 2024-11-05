@@ -3,6 +3,7 @@
 namespace App\UI\Admin\User\Edit;
 
 use App\AutoLoginAuthenticator;
+use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\Datagrid\Datagrid;
@@ -205,6 +206,20 @@ class EditPresenter extends Presenter
                     $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
                 );
             }
+
+            $historyEmailExists = $this->em
+                ->getRepository(UserEmailEntity::class)
+                ->findOneBy(
+                    [
+                        'email' => $form->getHttpData()['email']
+                    ]
+                );
+
+            if ($historyEmailExists) {
+                $form->addError(
+                    $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
+                );
+            }
         }
 
         foreach ($userEntity->passwords as $usedPassword) {
@@ -243,6 +258,14 @@ class EditPresenter extends Presenter
             $userPasswordEntity->password = $this->passwords->hash($values->password);
 
             $userEntity->addUserPasswordEntity($userPasswordEntity);
+        }
+
+        if ($userEntity->email !== $form->getHttpData()['email']) {
+            $userEmailEntity = new UserEmailEntity();
+            $userEmailEntity->email = $values->email;
+            $userEmailEntity->user = $userEntity;
+
+            $userEntity->addUserEmailEntity($userEmailEntity);
         }
 
         try {

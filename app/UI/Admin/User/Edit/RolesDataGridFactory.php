@@ -1,14 +1,12 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
-use Chatbot\App\Model\Auth\Identity;
-use Chatbot\App\Model\Auth\Scope\CategoryScope;
-use Chatbot\App\Model\Entity\CategoryEntity;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
@@ -91,6 +89,10 @@ class RolesDataGridFactory
                     ]
                 );
 
+            if (!$userEntity) {
+                $this->grid->presenter->error('user not found');
+            }
+
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -99,7 +101,12 @@ class RolesDataGridFactory
                     ]
                 );
 
+            if (!$roleEntity) {
+                $this->grid->error('role not found');
+            }
+
             $userEntity->addRoleEntity($roleEntity);
+            $userEntity->updatedAt = new DateTimeImmutable();
 
             try {
                 $this->em->persist($userEntity);
@@ -118,7 +125,6 @@ class RolesDataGridFactory
         $this->grid
             ->addActionCallback('addRole', 'Add Role')
             ->onClick[] = $addRole;
-
 
         $this->grid->allowRowsAction(
             'addRole',
@@ -144,6 +150,10 @@ class RolesDataGridFactory
                     ]
                 );
 
+            if (!$userEntity) {
+                $this->grid->presenter->error('user not found');
+            }
+
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -152,12 +162,12 @@ class RolesDataGridFactory
                     ]
                 );
 
-            foreach ($userEntity->roles as $role) {
-                bdump($role->name);
+            if (!$roleEntity) {
+                $this->grid->error('role not found');
             }
 
-
             $userEntity->removeRoleEntity($roleEntity);
+            $userEntity->updatedAt = new DateTimeImmutable();
 
             try {
                 $this->em->persist($userEntity);
@@ -171,7 +181,6 @@ class RolesDataGridFactory
                 $this->grid->presenter->redrawControl('flashes');
             }
         };
-
 
         $this->grid
             ->addActionCallback('deleteRole', 'Delete Role')

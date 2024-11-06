@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Admin\User\List;
 
@@ -250,6 +250,10 @@ class DataGridFactory
                         'id' => $id,
                     ]
                 );
+
+            if (!$userEntity) {
+                $this->grid->presenter->error('user not found');
+            }
 
             $userEntity->name = $name;
             $userEntity->surname = $surname;

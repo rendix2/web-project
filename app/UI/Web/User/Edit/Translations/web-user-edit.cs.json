@@ -1,3 +1,6 @@
 {
-  "header": "Editace"
+  "form.header": "Editace",
+
+  "form.submit.label": "Uložit",
+  "form.submit.success": "Uživatel uložen."
 }

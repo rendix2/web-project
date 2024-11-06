@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Web\User\ChangeEmail;
 
@@ -6,6 +6,7 @@ use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
@@ -23,8 +24,8 @@ class ChangeEmailPresenter extends Presenter
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
-        private readonly Translator $translator,
-        private readonly Passwords $passwords,
+        private readonly Translator             $translator,
+        private readonly Passwords              $passwords,
     ) {
     }
 
@@ -75,6 +76,10 @@ class ChangeEmailPresenter extends Presenter
                     'id' => $this->getUser()->getIdentity()->getId()
                 ]
             );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
 
         if ($this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
             foreach ($userEntity->passwords as $userPassword) {
@@ -129,7 +134,12 @@ class ChangeEmailPresenter extends Presenter
                 ]
             );
 
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
         $userEntity->email = $values->email;
+        $userEntity->updatedAt = new DateTimeImmutable();
 
         $userEmailEntity = new UserEmailEntity();
         $userEmailEntity->email = $values->email;

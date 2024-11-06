@@ -12,7 +12,6 @@ use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Mailing\IMailBuilderFactory;
 use Contributte\Translation\Translator;
 use Doctrine\DBAL\Exception as DbalException;
-use Nette\Application\LinkGenerator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Mail\SmtpException;
@@ -27,8 +26,11 @@ class RegistrationPresenter extends Presenter
         private readonly EntityManagerDecorator $em,
         private readonly Passwords              $passwords,
         private readonly IMailBuilderFactory    $mailBuilderFactory,
-        private readonly LinkGenerator          $linkGenerator,
     )
+    {
+    }
+
+    public function actionDefault() : void
     {
     }
 

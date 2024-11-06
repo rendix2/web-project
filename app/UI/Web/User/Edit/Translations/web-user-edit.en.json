@@ -1,3 +1,6 @@
 {
-  "header": "Editation"
+  "form.header": "Editation",
+
+  "form.submit.label": "Save",
+  "form.submit.success": "User saved."
 }

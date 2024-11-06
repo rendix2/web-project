@@ -18,8 +18,8 @@ class ChangePasswordPresenter extends Presenter
 {
     public function __construct(
         private readonly EntityManagerDecorator $em,
-        private readonly Translator $translator,
-        private readonly Passwords  $passwords,
+        private readonly Translator             $translator,
+        private readonly Passwords              $passwords,
     )
     {
     }
@@ -54,13 +54,13 @@ class ChangePasswordPresenter extends Presenter
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
 
             ->addCondition(Form::MinLength, 8)
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
             ->endCondition();
 
         $form->addPassword('password', 'web-user-changePassword.form.newPassword.label')
@@ -68,13 +68,13 @@ class ChangePasswordPresenter extends Presenter
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
 
             ->addCondition(Form::MinLength, 8)
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
+                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
+                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
             ->endCondition();
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
@@ -83,7 +83,7 @@ class ChangePasswordPresenter extends Presenter
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
             ->addConditionOn($form['password'], Form::Filled, true)
-            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
             ->endCondition();
 
         $form->addSubmit('changePassword', 'web-user-changePassword.form.submit.name');
@@ -103,6 +103,10 @@ class ChangePasswordPresenter extends Presenter
                     'id' => $this->getUser()->getIdentity()->getId()
                 ]
             );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
 
         if ($this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
             foreach ($userEntity->passwords as $userPassword) {
@@ -126,6 +130,10 @@ class ChangePasswordPresenter extends Presenter
                     'id' => $this->getUser()->getIdentity()->getId()
                 ]
             );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
 
         $userEntity->password = $this->passwords->hash($form->getValues()->password);
         $userEntity->updatedAt = new DateTimeImmutable();

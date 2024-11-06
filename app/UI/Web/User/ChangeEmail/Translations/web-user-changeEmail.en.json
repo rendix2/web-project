@@ -1,3 +1,5 @@
 {
-  "header": "Password change"
+  "form.header": "Email change",
+
+  "form.submit.name": "Change email"
 }

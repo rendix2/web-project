@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Web\User\Activation;
 
@@ -18,10 +18,6 @@ class ActivationPresenter extends Presenter
 
     public function actionDefault(string $key, string $userId) : void
     {
-
-        bdump($key, 'key');
-        bdump($userId);
-
         $user = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
@@ -52,6 +48,7 @@ class ActivationPresenter extends Presenter
         }
 
         $userActivationEntity->user->isActive = true;
+        $userActivationEntity->user->updatedAt = new DateTimeImmutable();
 
         $this->em->persist($userActivationEntity);
         $this->em->remove($userActivationEntity);

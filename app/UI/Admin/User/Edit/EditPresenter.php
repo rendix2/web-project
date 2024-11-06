@@ -176,6 +176,10 @@ class EditPresenter extends Presenter
                 ]
             );
 
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
         if ($userEntity->username !== $form->getHttpData()['username']) {
             $usernameExists = $this->em
                 ->getRepository(UserEntity::class)

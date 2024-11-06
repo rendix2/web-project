@@ -3,6 +3,7 @@
 namespace App\Database\Fixtures;
 
 use App\Model\Entity\RoleEntity;
+use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Doctrine\Common\DataFixtures\FixtureInterface;
@@ -21,15 +22,19 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
     {
         $userEntity = new UserEntity();
         $userEntity->isActive = true;
-        $userEntity->name = 'Test';
-        $userEntity->surname = 'Test';
-        $userEntity->username = 'Test';
+        $userEntity->name = 'TestName';
+        $userEntity->surname = 'TestSurname';
+        $userEntity->username = 'TestUsername';
         $userEntity->email = 'test@test.test';
         $userEntity->password = $this->passwords->hash('secret');
 
         $userPasswordEntity = new UserPasswordEntity();
         $userPasswordEntity->password = $this->passwords->hash('secret');
         $userPasswordEntity->user = $userEntity;
+
+        $userEmailEntity = new UserEmailEntity();
+        $userEmailEntity->email = 'test@test.test';
+        $userEmailEntity->user = $userEntity;
 
         $adminRoleEntity = $manager->getRepository(RoleEntity::class)
             ->findOneBy(
@@ -40,6 +45,7 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
 
         $userEntity->addRoleEntity($adminRoleEntity);
         $userEntity->addUserPasswordEntity($userPasswordEntity);
+        $userEntity->addUserEmailEntity($userEmailEntity);
 
         $manager->persist($userEntity);
         $manager->flush();

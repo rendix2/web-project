@@ -67,6 +67,12 @@ class UserEntity
     public Collection $passwords;
 
     /**
+     * @var UserPasswordRequestEntity $passwordRequests
+     */
+    #[OneToMany(mappedBy: 'user', targetEntity: UserPasswordRequestEntity::class, cascade: ['persist', 'remove'])]
+    public Collection $passwordRequests;
+
+    /**
      * @var UserActivationEntity[] $activationKeys
      */
     #[OneToMany(mappedBy: 'user', targetEntity: UserActivationEntity::class, cascade: ['persist', 'remove'])]
@@ -107,6 +113,7 @@ class UserEntity
         $this->activationKeys = new ArrayCollection();
         $this->autoLogins = new ArrayCollection();
         $this->emails = new ArrayCollection();
+        $this->passwordRequests = new ArrayCollection();
 
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
@@ -127,6 +134,11 @@ class UserEntity
     public function addUserPasswordEntity(UserPasswordEntity $userPasswordEntity) : void
     {
         $this->passwords->add($userPasswordEntity);
+    }
+
+    public function addUserPasswordRequestEntity(UserPasswordRequestEntity $userPasswordRequestEntity) : void
+    {
+        $this->passwordRequests->add($userPasswordRequestEntity);
     }
 
     public function addUserActivationEntity(UserActivationEntity $userActivationEntity) : void

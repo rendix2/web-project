@@ -11,6 +11,7 @@ use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
+use Nette\Security\AuthenticationException;
 use Nette\Utils\Random;
 use Nettrine\ORM\EntityManagerDecorator;
 
@@ -106,7 +107,7 @@ class LoginPresenter extends Presenter
                 'success'
             );
             $this->redirect(':Web:Home:default');
-        } catch (\Nette\Security\AuthenticationException $exception) {
+        } catch (AuthenticationException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
         }

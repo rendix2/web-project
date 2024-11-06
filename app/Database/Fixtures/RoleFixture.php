@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Database\Fixtures;
 
@@ -28,8 +28,9 @@ class RoleFixture implements FixtureInterface, OrderedFixtureInterface
         $manager->flush();
     }
 
-    public function getOrder()
+    public function getOrder() : int
     {
         return 0;
     }
+
 }

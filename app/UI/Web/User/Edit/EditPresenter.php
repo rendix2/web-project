@@ -1,15 +1,15 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Web\User\Edit;
 
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Doctrine\DBAL\Exception;
+use DateTimeImmutable;
+use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
-use Nette\Http\Response;
 use Nette\Localization\Translator;
 use Nettrine\ORM\EntityManagerDecorator;
 
@@ -32,6 +32,25 @@ class EditPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->error('user not logged in', IResponse::S403_Forbidden);
         }
+
+        $userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'id' => $this->getUser()->getId(),
+                ]
+            );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
+        $this['editForm']->setDefaults(
+            [
+                'name' => $userEntity->name,
+                'surname' => $userEntity->surname,
+            ]
+        );
     }
 
     protected function createComponentEditForm() : BootstrapForm
@@ -69,19 +88,24 @@ class EditPresenter extends Presenter
                 ]
             );
 
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
         $userEntity->name = $values->name;
         $userEntity->surname = $values->surname;
+        $userEntity->updatedAt = new DateTimeImmutable();
 
         try {
             $this->em->persist($userEntity);
             $this->em->flush();
 
             $this->flashMessage(
-                $this->translator->translate('web-user-edit.submit.success'),
+                $this->translator->translate('web-user-edit.form.submit.success'),
                 'success',
             );
             $this->redrawControl('flashes');
-        } catch (Exception $exception) {
+        } catch (DbalException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
         }

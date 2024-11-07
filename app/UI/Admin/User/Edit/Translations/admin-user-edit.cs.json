@@ -37,5 +37,11 @@
   "form.submit.label": "Uložit",
   "form.submit.success": "Uživatel %username% byl uložen",
 
-  "role.header": "Role"
+  "role.header": "Role",
+  "email.header": "Emaily",
+
+  "emailGrid.createdAt": "Vytvořeno",
+
+  "roleGrid.addRole": "Přidat roli",
+  "roleGrid.removeRole": "Odebrat roli"
 }

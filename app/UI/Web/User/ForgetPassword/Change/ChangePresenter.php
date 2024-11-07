@@ -10,10 +10,11 @@ use Contributte\Mailing\IMailBuilderFactory;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Mail\SmtpException;
 use Nettrine\ORM\EntityManagerDecorator;
 
 
-class SetPresenter extends Presenter
+class ChangePresenter extends Presenter
 {
 
     public function __construct(
@@ -84,7 +85,13 @@ class SetPresenter extends Presenter
             $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
             $mail->setSubject($this->translator->translate('web-user-forgetPassword-request-subject'));
             $mail->setTemplateFile(__DIR__ . '/Mailing/request.' . $this->translator->getLocale() . '.latte');
-            $mail->send();
+
+            try {
+                $mail->send();
+            } catch (SmtpException $exception) {
+                $this->flashMessage($exception->getMessage());
+                $this->redrawControl('flashes');
+            }
 
             $mailEntity = new MailEntity();
             $mailEntity->emailTo = $userEntity->email;

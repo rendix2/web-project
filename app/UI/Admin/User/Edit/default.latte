@@ -5,9 +5,7 @@
     <div class="col">
         <div class="card">
             <div class="card-header">
-                <h2>
-                    {$userEntity->name} {$userEntity->surname}
-                </h2>
+                {$userEntity->name} {$userEntity->surname}
             </div>
             <div class="card-body">
                 {control editForm}
@@ -26,7 +24,16 @@
         </div>
     </div>
 
+    <div class="col">
+        <div class="card">
+            <div class="card-header">{_admin-user-edit.email.header}</div>
+            <div class="card-body">
+                {control emailsGrid}
+            </div>
+        </div>
+    </div>
 
+    {snippet passwordHistory}
     <div class="col">
         <div class="card">
             <div class="card-header">{_web-user-changePassword.password-history.header}</div>
@@ -40,5 +47,6 @@
             </div>
         </div>
     </div>
+    {/snippet}
 </div>
 {/block}

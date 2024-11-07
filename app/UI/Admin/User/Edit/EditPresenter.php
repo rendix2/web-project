@@ -30,6 +30,7 @@ class EditPresenter extends Presenter
         private readonly Passwords              $passwords,
         private readonly MenuComponentFactory   $menuFactory,
         private readonly RolesDataGridFactory   $rolesDataGridFactory,
+        private readonly EmailsDataGridFactory  $emailsDataGridFactory,
         private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
     )
     {
@@ -103,6 +104,13 @@ class EditPresenter extends Presenter
         return $this->rolesDataGridFactory->create();
     }
 
+    protected function createComponentEmailsGrid() : Datagrid
+    {
+        return $this->emailsDataGridFactory
+            ->setUser($this->getUser())
+            ->create();
+    }
+
     protected function createComponentMenu() : MenuComponent
     {
         return $this->menuFactory->create('admin');
@@ -132,6 +140,8 @@ class EditPresenter extends Presenter
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
             ->setMaxLength(1024);
+
+        $form->addGroup('web-user-changePassword.form.header');
 
         $form->addPassword('password', 'admin-user-edit.form.password.label')
             ->addCondition(Form::Filled)
@@ -245,7 +255,19 @@ class EditPresenter extends Presenter
                 ]
             );
 
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
         $values = $form->getValues();
+
+        if ($userEntity->email !== $form->getHttpData()['email']) {
+            $userEmailEntity = new UserEmailEntity();
+            $userEmailEntity->email = $values->email;
+            $userEmailEntity->user = $userEntity;
+
+            $userEntity->addUserEmailEntity($userEmailEntity);
+        }
 
         $userEntity->name = $values->name;
         $userEntity->surname = $values->surname;
@@ -264,14 +286,6 @@ class EditPresenter extends Presenter
             $userEntity->addUserPasswordEntity($userPasswordEntity);
         }
 
-        if ($userEntity->email !== $form->getHttpData()['email']) {
-            $userEmailEntity = new UserEmailEntity();
-            $userEmailEntity->email = $values->email;
-            $userEmailEntity->user = $userEntity;
-
-            $userEntity->addUserEmailEntity($userEmailEntity);
-        }
-
         try {
             $this->em->persist($userEntity);
             $this->em->flush();
@@ -281,6 +295,8 @@ class EditPresenter extends Presenter
                 'success'
             );
             $this->redrawControl('flashes');
+            $this->redrawControl('passwordHistory');
+            $this['emailsGrid']->reload();
             //$this->redirect('this');
         } catch (DbalException $exception) {
            $this->flashMessage($exception->getMessage(), 'danger');

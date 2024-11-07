@@ -35,5 +35,11 @@
   "form.submit.label": "Save",
   "form.submit.success": "User %username% successfully saved",
 
-  "role.header": "Role"
+  "role.header": "Role",
+  "email.header": "Emails",
+
+  "emailGrid.createdAt": "Vytvořeno",
+
+  "roleGrid.addRole": "Add Role",
+  "roleGrid.removeRole": "Remove Role"
 }

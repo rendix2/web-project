@@ -12,7 +12,7 @@ use Nettrine\ORM\EntityManagerDecorator;
 class LogoutPresenter extends Presenter
 {
     public function __construct(
-        private readonly Translator $translator,
+        private readonly Translator             $translator,
         private readonly EntityManagerDecorator $em,
     )
     {
@@ -27,6 +27,10 @@ class LogoutPresenter extends Presenter
                     'id' => $this->getUser()->getId(),
                 ]
             );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
 
         $userAutoLoginEntity = $this->em
             ->getRepository(UserAutoLoginEntity::class)

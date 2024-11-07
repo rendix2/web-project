@@ -4,14 +4,11 @@ namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
-use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
-use Nette\Forms\Container;
 use Nette\Localization\Translator;
-use Nette\Utils\ArrayHash;
 use Nettrine\ORM\EntityManagerDecorator;
 
 class RolesDataGridFactory
@@ -121,9 +118,9 @@ class RolesDataGridFactory
             }
         };
 
-
         $this->grid
-            ->addActionCallback('addRole', 'Add Role')
+            ->addActionCallback('addRole', 'admin-user-edit.roleGrid.addRole')
+            ->setIcon('plus')
             ->onClick[] = $addRole;
 
         $this->grid->allowRowsAction(
@@ -136,6 +133,10 @@ class RolesDataGridFactory
                             'id' => $this->grid->presenter->getUser()->getId(),
                         ]
                     );
+
+                if (!$userEntity) {
+                    $this->grid->presenter->error('user not found');
+                }
 
                 return !$userEntity->roles->contains($roleEntity);
             }
@@ -183,7 +184,9 @@ class RolesDataGridFactory
         };
 
         $this->grid
-            ->addActionCallback('deleteRole', 'Delete Role')
+            ->addActionCallback('deleteRole', 'admin-user-edit.roleGrid.removeRole')
+            ->setClass('btn btn-xs btn-default btn-danger')
+            ->setIcon('trash')
             ->onClick[] = $removeRole;
 
         $this->grid->allowRowsAction(
@@ -196,6 +199,10 @@ class RolesDataGridFactory
                             'id' => $this->grid->presenter->getUser()->getId(),
                         ]
                     );
+
+                if (!$userEntity) {
+                    $this->grid->presenter->error('user not found');
+                }
 
                 return $userEntity->roles->contains($roleEntity);
             }

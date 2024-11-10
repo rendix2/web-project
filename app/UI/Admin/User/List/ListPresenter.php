@@ -2,7 +2,7 @@
 
 namespace App\UI\Admin\User\List;
 
-use App\AutoLoginAuthenticator;
+use App\Core\AutoLoginAuthenticator;
 use Contributte\Datagrid\Datagrid;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
@@ -27,7 +27,7 @@ class ListPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
 
-            $autoLoginCookie = $this->getHttpRequest()->getCookie('autoLogin');
+            $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
             if ($autoLoginCookie === null) {
                 $this->error('Not logged in', IResponse::S401_Unauthorized);

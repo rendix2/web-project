@@ -1,6 +1,6 @@
 <?php
 
-namespace App\UI\Web\User\ForgetPassword\Set;
+namespace App\UI\Web\User\ForgetPassword\Change;
 
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;

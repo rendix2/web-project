@@ -2,7 +2,7 @@
 
 namespace App\UI\Admin\User\Edit;
 
-use App\AutoLoginAuthenticator;
+use App\Core\AutoLoginAuthenticator;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -43,7 +43,7 @@ class EditPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
 
-            $autoLoginCookie = $this->getHttpRequest()->getCookie('autoLogin');
+            $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
             if ($autoLoginCookie === null) {
                 $this->error('Not logged in', IResponse::S401_Unauthorized);

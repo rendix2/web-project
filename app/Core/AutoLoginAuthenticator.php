@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App;
+namespace App\Core;
 
 use App\Model\Entity\UserAutoLoginEntity;
 use Nette\Security\AuthenticationException;
@@ -11,6 +11,8 @@ use Nettrine\ORM\EntityManagerDecorator;
 
 class AutoLoginAuthenticator implements Authenticator
 {
+    public const COOKIE_NAME = 'autoLogin';
+
 
     public function __construct(
         private readonly EntityManagerDecorator $em,

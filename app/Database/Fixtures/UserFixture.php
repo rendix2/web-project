@@ -20,16 +20,18 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
 
     public function load(ObjectManager $manager)
     {
+        $password = $this->passwords->hash('secret');
+
         $userEntity = new UserEntity();
         $userEntity->isActive = true;
         $userEntity->name = 'TestName';
         $userEntity->surname = 'TestSurname';
         $userEntity->username = 'TestUsername';
         $userEntity->email = 'test@test.test';
-        $userEntity->password = $this->passwords->hash('secret');
+        $userEntity->password = $password;
 
         $userPasswordEntity = new UserPasswordEntity();
-        $userPasswordEntity->password = $this->passwords->hash('secret');
+        $userPasswordEntity->password = $password;
         $userPasswordEntity->user = $userEntity;
 
         $userEmailEntity = new UserEmailEntity();
@@ -39,7 +41,7 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
         $adminRoleEntity = $manager->getRepository(RoleEntity::class)
             ->findOneBy(
                 [
-                    'name' => 'admin',
+                    'name' => 'Admin',
                 ]
             );
 

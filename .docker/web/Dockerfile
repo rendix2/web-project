@@ -5,10 +5,12 @@ RUN apt update
 
 # SW needed
 RUN apt install make -y --fix-missing
+RUN apt install ccache apt-utils -y --fix-missing
+RUN apt install gcc -y --fix-missing
 
 # GD
-RUN apt install zlib1g-dev libpng-dev libjpeg-dev -y --fix-missing
-RUN docker-php-ext-configure gd --with-jpeg
+RUN apt install zlib1g-dev libpng-dev libavif-dev libwebp-dev libjpeg-dev libxpm-dev libfreetype6-dev -y --fix-missing
+RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype --with-webp --with-avif --with-xpm
 RUN docker-php-ext-install -j "$(nproc)" gd
 
 # PDO

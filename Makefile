@@ -28,6 +28,7 @@ create-dirs:
 	mkdir -p temp/web/cache
 	mkdir -p temp/web/proxies
 	mkdir -p temp/web/sessions
+	mkdir -p temp/web/mails
 
 	mkdir -p temp/console
 	mkdir -p temp/console/cache
@@ -43,6 +44,7 @@ chmod-dirs:
 	chmod 777 temp/web/cache
 	chmod 777 temp/web/proxies
 	chmod 777 temp/web/sessions
+	chmod 777 temp/web/mails
 
 	chmod 777 temp/console/cache
 	chmod 777 temp/console/proxies

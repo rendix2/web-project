@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App;
+namespace App\Core;
 
 use App\Model\Entity\UserEntity;
 use DateTimeImmutable;
@@ -38,7 +38,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
 
         if (
             $userEntity->lastLoginAt &&
-            (new \DateTimeImmutable())->diff($userEntity->lastLoginAt)->i > 30
+            (new DateTimeImmutable())->diff($userEntity->lastLoginAt)->i > 30
         ) {
             $userEntity->lastLoginCount = 0;
         }
@@ -52,7 +52,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
 
         if (
             $userEntity->lastLoginCount >= static::MAX_LOGIN_COUNT &&
-            $userEntity->lastLoginAt && (new \DateTimeImmutable())->diff($userEntity->lastLoginAt)->i < 30
+            $userEntity->lastLoginAt && (new DateTimeImmutable())->diff($userEntity->lastLoginAt)->i < 30
         ) {
             throw new AuthenticationException('There was so much tries. Try again later please.');
         }

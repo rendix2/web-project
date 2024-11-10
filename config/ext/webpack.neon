@@ -3,7 +3,7 @@ extensions:
 
 contributte.webpack:
 	build:
-		directory: %wwwDir%/dist
+		directory: %distDir%
 		publicPath: dist/
 	devServer:
 		enabled: %debugMode% # default

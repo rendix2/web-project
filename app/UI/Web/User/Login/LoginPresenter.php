@@ -2,9 +2,10 @@
 
 namespace App\UI\Web\User\Login;
 
+use App\Core\AutoLoginAuthenticator;
+use App\Core\UsernameAndPasswordAuthenticator;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
-use App\UsernameAndPasswordAuthenticator;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Doctrine\DBAL\Exception as DbalException;
@@ -76,7 +77,7 @@ class LoginPresenter extends Presenter
             if ($form->getValues()['stayLoggedIn']) {
                 $autoLoginToken = Random::generate(128);
 
-                $this->getHttpResponse()->setCookie('autoLogin', $autoLoginToken, null);
+                $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, null);
 
                 $userEntity = $this->em
                     ->getRepository(UserEntity::class)

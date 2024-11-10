@@ -57,11 +57,11 @@ tracy:
 
 services:
     -
-        create: App\UsernameAndPasswordAuthenticator
+        create: App\Core\UsernameAndPasswordAuthenticator
         autowired: self
 
     -
-        create: App\AutoLoginAuthenticator
+        create: App\Core\AutoLoginAuthenticator
         autowired: self
 
 

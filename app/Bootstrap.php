@@ -22,14 +22,19 @@ final class Bootstrap
 		$binDir = $rootDir . 'bin';
 		$configDir = $rootDir . 'config';
 		$logDir = $rootDir . 'log';
+        $tempDir = $rootDir . 'temp';
+        $wwwDir = $rootDir . 'www';
+
+        $distDir = $wwwDir . $sep . 'dist';
+
 		$databaseDir = $appDir . $sep . 'Database';
+        $migrationsDir = $databaseDir . $sep . 'Migrations';
+        $fixturesDir = $databaseDir . $sep . 'Fixtures';
 
-		$migrationsDir = $databaseDir . $sep . 'Migrations';
-		$fixturesDir = $databaseDir . $sep . 'Fixtures';
+        $modelDir = $appDir . $sep . 'Model';
+        $entityDir = $modelDir . $sep . 'Entity';
 
-		$tempDir = $rootDir . 'temp';
 		$tempContextDir = $tempDir . $sep . $context;
-
 		$cacheDir = $tempContextDir . $sep . 'cache';
 		$proxiesDir = $tempContextDir . $sep . 'proxies';
 		$sessionsDir = $tempContextDir . $sep . 'sessions';
@@ -49,13 +54,14 @@ final class Bootstrap
                 'sessionsDir' => $sessionsDir,
                 'mailDir' => $mailDir,
                 'logDir' => $logDir,
+                'distDir' => $distDir,
+                'entityDir' => $entityDir,
 			]
 		);
 
         if (isset($_SERVER['REMOTE_ADDR'])) {
             $ipAddress = getenv('NETTE_DEBUG_SECRET'). '@' . $_SERVER['REMOTE_ADDR'];
 
-            //dump($ipAddress);
             $configurator->setDebugMode($ipAddress);
         } else {
             $configurator->setDebugMode(false);

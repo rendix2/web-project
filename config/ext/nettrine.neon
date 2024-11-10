@@ -42,7 +42,7 @@ nettrine.orm:
 
 nettrine.orm.attributes:
   mapping:
-      App\Model\Entity: %appDir%/Model/Entity
+      App\Model\Entity: %entityDir%
 
 nettrine.extensions.beberlei:
     driver: mysql

@@ -55,6 +55,8 @@
     "nettrine/fixtures": "^0.7.2",
     "nettrine/migrations": "^0.9.1",
     "nettrine/orm": "^0.8.4",
+    "ramsey/uuid": "^4.8",
+    "ramsey/uuid-doctrine": "^2.1",
     "tracy/tracy": "^2.10",
     "ublaboo/datagrid": "dev-next"
   },

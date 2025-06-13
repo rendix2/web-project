@@ -56,7 +56,7 @@ class RegistrationPresenter extends Presenter
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(1024);
+            ->setMaxLength(512);
 
         $form->addPassword('password', 'admin-user-edit.form.password.label')
             ->setRequired('admin-user-edit.form.password.required')

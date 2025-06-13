@@ -40,7 +40,7 @@ class RequestPresenter extends Presenter
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(1024);
+            ->setMaxLength(512);
 
         $form->addSubmit('request', 'web-user-forgetPassword-request.form.submit.label');
 

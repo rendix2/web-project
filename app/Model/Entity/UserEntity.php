@@ -15,6 +15,9 @@ use Doctrine\ORM\Mapping\JoinTable;
 use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\Table;
+use Ramsey\Uuid\Doctrine\UuidType;
+use Ramsey\Uuid\Uuid;
+use Ramsey\Uuid\UuidInterface;
 
 /**
  * class UserEntity
@@ -27,8 +30,11 @@ class UserEntity
 {
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::BIGINT)]
+    #[Column(type: Types::BIGINT, unique: true)]
     public string $id;
+
+    #[Column(type: UuidType::NAME, unique: true)]
+    public UuidInterface $uuid;
 
     #[Column(type: Types::STRING, length: 512)]
     public string $name;
@@ -39,7 +45,7 @@ class UserEntity
     #[Column(type: Types::STRING, length: 512, unique: true)]
     public string $username;
 
-    #[Column(type: Types::STRING, length: 1024, unique: true)]
+    #[Column(type: Types::STRING, length: 512, unique: true)]
     public string $email;
 
     #[Column(type: Types::STRING, length: 1024)]
@@ -105,6 +111,8 @@ class UserEntity
 
     public function __construct()
     {
+        $this->uuid = Uuid::uuid4();
+
         $this->lastLoginAt = null;
         $this->lastLoginCount = 0;
 

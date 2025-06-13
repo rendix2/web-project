@@ -26,7 +26,7 @@ class UserEmailEntity
     #[JoinColumn('userId', unique: true, nullable: false)]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 1024, unique: true)]
+    #[Column(type: Types::STRING, length: 512, unique: true)]
     public string $email;
 
     #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]

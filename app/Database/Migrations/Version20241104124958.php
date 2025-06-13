@@ -29,7 +29,7 @@ final class Version20241104124958 extends AbstractMigration
 
         $table->addColumn('email', Types::STRING)
             ->setComment('Email')
-            ->setLength(1024);
+            ->setLength(512);
 
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');

@@ -8,9 +8,10 @@ parameters:
             username: "root"
             password: ""
             database: ""
-            dsn: "mysql:host=%database.main.host%;dbname=%database.main.database%"
-            charset: utf8
+            dsn: "mysql:host=web-project-database;dbname=web-project;charset=utf8mb4"
+            charset: utf8mb4
             driver: pdo_mysql
+            collation: utf8mb4_unicode_ci
 
     mail:
         smtp: false

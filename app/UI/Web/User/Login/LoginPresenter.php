@@ -71,7 +71,7 @@ class LoginPresenter extends Presenter
             $this->getUser()->setAuthenticator($this->usernameAndPasswordAuthenticator);
             $this->getUser()->login(
                 $form->getValues()['username'],
-                $form->getValues()['password']
+                $form->getHttpData()['password']
             );
 
             if ($form->getValues()['stayLoggedIn']) {

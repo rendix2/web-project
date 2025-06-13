@@ -25,7 +25,7 @@ final class Version20241105005240 extends AbstractMigration
             ->setComment('ID');
 
         $table->addColumn('emailTo', Types::STRING)
-            ->setLength(1024)
+            ->setLength(512)
             ->setComment('Email to');
 
         $table->addColumn('subject', Types::STRING)

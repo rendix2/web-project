@@ -1,4 +1,7 @@
-all: dirs-build php js db
+all: dirs-build git php js db
+
+git:
+	git config --global --add safe.directory /var/www/html
 
 php: composer.json composer.lock
 	composer validate
@@ -11,6 +14,7 @@ js: package.json package-lock.json
 	chmod 777 www/dist -R
 
 db:
+	php bin/console database:create
 	php bin/console orm:schema-tool:drop --force --full-database
 	php bin/console migrations:migrate --no-interaction
 	php bin/console doctrine:fixtures:load --no-interaction

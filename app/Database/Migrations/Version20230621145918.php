@@ -5,6 +5,7 @@ namespace App\Database\Migrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
+use Ramsey\Uuid\Doctrine\UuidType;
 
 /**
  * Auto-generated Migration: Please modify to your needs!
@@ -25,6 +26,9 @@ final class Version20230621145918 extends AbstractMigration
             ->setAutoincrement(true)
             ->setComment('ID');
 
+        $table->addColumn('uuid', UuidType::NAME)
+            ->setComment('UUID');
+
         $table->addColumn('name', Types::STRING)
             ->setComment('Name')
             ->setLength(512);
@@ -39,7 +43,7 @@ final class Version20230621145918 extends AbstractMigration
 
         $table->addColumn('email', Types::STRING)
             ->setComment('Email')
-            ->setLength(1024);
+            ->setLength(512);
 
         $table->addColumn('password', Types::STRING)
             ->setComment('Password')
@@ -65,6 +69,7 @@ final class Version20230621145918 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('Users')
             ->addUniqueIndex(['email'], 'UK_User_Email')
+            ->addUniqueIndex(['uuid'], 'UK_User_UUID')
             ->addUniqueIndex(['username'], 'UK_User_Username');
     }
 

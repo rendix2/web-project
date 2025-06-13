@@ -287,7 +287,7 @@ class DataGridFactory
 
             $container->addEmail('email')
                 ->setRequired('admin-user-edit.form.email.required')
-                ->setMaxLength(1024);
+                ->setMaxLength(512);
 
             $container->addSelect('isActive', items: [0 => 'no', 1 => 'yes'])
                 ->setPrompt('select');

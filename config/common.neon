@@ -64,5 +64,8 @@ services:
         create: App\Core\AutoLoginAuthenticator
         autowired: self
 
+extensions:
+    chatbot: App\DI\ServicesExtension
+
 
 

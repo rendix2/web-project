@@ -20,7 +20,7 @@ services:
     tty: true
 
   web-project-database:
-    image: mysql:8.0.36
+    image: mysql:8.0.40
     ports:
       - "4306:3306"
     environment:

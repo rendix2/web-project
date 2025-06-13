@@ -57,7 +57,7 @@ class ChangeEmailPresenter extends Presenter
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(1024);
+            ->setMaxLength(512);
 
         $form->addSubmit('changePassword', 'web-user-changeEmail.form.submit.name');
 

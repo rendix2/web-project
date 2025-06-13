@@ -7,10 +7,11 @@ parameters:
             host: "localhost"
             username: "root"
             password: ""
-            database: ""
-            dsn: "mysql:host=%database.main.host%;dbname=%database.main.database%"
-            charset: utf8
+            database: "web-project"
+            dsn: "mysql:host=localhost;dbname=web-project;charset=utf8mb4"
+            charset: utf8mb4
             driver: pdo_mysql
+            collation: utf8mb4_unicode_ci
 
     mail:
         smtp: false

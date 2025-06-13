@@ -32,6 +32,8 @@ nettrine.dbal:
         default_table_options:
             charset: %database.main.charset%
             collate: utf8_czech_ci
+        types:
+            uuid: Ramsey\Uuid\Doctrine\UuidType
 
 nettrine.cache:
     driver: Doctrine\Common\Cache\SQLite3Cache(SQLite3('%cacheDir%/doctrineCache.db'), 'cache')

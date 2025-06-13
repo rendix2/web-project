@@ -43,10 +43,11 @@ class DataGridFactory
 
     private function createColumns() : void
     {
-        $this->grid->setDataSource($this->createDataSource());
+        $this->grid->setPrimaryKey('uuid');
         $this->grid->setDefaultPerPage(10);
         $this->grid->setTranslator($this->translator);
         $this->grid->setColumnsHideable();
+        $this->grid->setDataSource($this->createDataSource());
 
         $this->grid
             ->addColumnNumber('id', 'admin-user-list.id.name')
@@ -123,12 +124,12 @@ class DataGridFactory
             ->setTitle('admin-user-list.edit.title')
             ->setIcon('edit');
 
-        $onClick = function($id) : void {
+        $onClick = function(string $uuid) : void {
             $userEntity = $this->em
                 ->getRepository(UserEntity::class)
                 ->findOneBy(
                     [
-                        'id' => $id,
+                        'uuid' => $uuid,
                     ]
                 );
 
@@ -181,12 +182,12 @@ class DataGridFactory
             );
         };
 
-        $onSubmitEdit = function($id, ArrayHash $values) : void {
+        $onSubmitEdit = function(string $uuid, ArrayHash $values) : void {
             $userEntity = $this->em
                 ->getRepository(UserEntity::class)
                 ->findOneBy(
                     [
-                        'id' => $id,
+                        'uuid' => $uuid,
                     ]
                 );
 
@@ -247,7 +248,7 @@ class DataGridFactory
                 ->getRepository(UserEntity::class)
                 ->findOneBy(
                     [
-                        'id' => $id,
+                        'uuid' => $uuid,
                     ]
                 );
 

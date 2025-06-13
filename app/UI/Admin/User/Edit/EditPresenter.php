@@ -61,13 +61,13 @@ class EditPresenter extends Presenter
         }
     }
 
-    public function actionDefault(int $id) : void
+    public function actionDefault(string $uuid) : void
     {
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $id,
+                    'uuid' => $uuid,
                 ]
             );
 
@@ -86,13 +86,13 @@ class EditPresenter extends Presenter
         );
     }
 
-    public function renderDefault(int $id) : void
+    public function renderDefault(string $uuid) : void
     {
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $id,
+                    'uuid' => $uuid,
                 ]
             );
 

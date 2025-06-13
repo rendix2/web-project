@@ -31,7 +31,7 @@ nettrine.dbal:
         charset: %database.main.charset%
         default_table_options:
             charset: %database.main.charset%
-            collate: utf8_czech_ci
+            collate: %database.main.collation%
         types:
             uuid: Ramsey\Uuid\Doctrine\UuidType
 

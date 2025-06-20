@@ -11,7 +11,7 @@ use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Mail\SmtpException;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 
 class ChangePresenter extends Presenter
@@ -32,10 +32,10 @@ class ChangePresenter extends Presenter
     public function createComponentSetForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addPassword('password', 'web-user-changePassword.form.newPassword.label')
             ->setRequired('admin-user-edit.form.password.required')

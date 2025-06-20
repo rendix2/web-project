@@ -11,14 +11,14 @@ use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Nette\DI\Container;
 use Nette\Security\Passwords;
-use Nettrine\Fixtures\ContainerAwareInterface;
+use Nettrine\Fixtures\Fixture\ContainerAwareInterface;
 
 class UserFixture implements FixtureInterface, OrderedFixtureInterface, ContainerAwareInterface
 {
 
     private Passwords $passwords;
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager) : void
     {
         $password = $this->passwords->hash('secret');
 

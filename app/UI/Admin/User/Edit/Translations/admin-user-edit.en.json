@@ -41,5 +41,8 @@
   "emailGrid.createdAt": "Vytvořeno",
 
   "roleGrid.addRole": "Add Role",
-  "roleGrid.removeRole": "Remove Role"
+  "roleGrid.removeRole": "Remove Role",
+  "roleGrid.role.id": "ID",
+  "roleGrid.role.name": "Role",
+  "roleGrid.role.search": "Search by Role name"
 }

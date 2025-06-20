@@ -6,12 +6,11 @@ use App\Model\Entity\RoleEntity;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Nettrine\Fixtures\ContainerAwareInterface;
 
 class RoleFixture implements FixtureInterface, OrderedFixtureInterface
 {
 
-    public function load(ObjectManager $manager)
+    public function load(ObjectManager $manager) : void
     {
         $roleEntity = new RoleEntity();
         $roleEntity->name = "Normal";

@@ -13,10 +13,12 @@ application:
 session:
     debugger: true
     expiration: 14 days
+    autoStart: true
+    handler: @SessionHandler
 
 latte:
     debugger: true
-    #strictParsing: yes
+    strictParsing: yes
     strictTypes: true
     locale: cs_CZ
 

@@ -6,7 +6,7 @@ use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserEntity;
 use DateTimeImmutable;
 use Nette\Application\UI\Presenter;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class ActivationPresenter extends Presenter
 {

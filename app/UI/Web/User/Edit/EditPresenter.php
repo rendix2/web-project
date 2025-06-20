@@ -11,7 +11,7 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 /**
  * class EditPresenter
@@ -56,10 +56,10 @@ class EditPresenter extends Presenter
     protected function createComponentEditForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')

@@ -9,7 +9,7 @@ use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class LogoutPresenter extends Presenter
 {

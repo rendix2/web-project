@@ -12,7 +12,7 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 /**
  * class ChangeEmailPresenter
@@ -36,10 +36,10 @@ class ChangeEmailPresenter extends Presenter
     public function createComponentChangeEmailForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addPassword('currentPassword', 'web-user-changePassword.form.currentPassword.label')
             ->setRequired('admin-user-edit.form.password.required')

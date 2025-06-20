@@ -19,7 +19,7 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Passwords;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class EditPresenter extends Presenter
 {

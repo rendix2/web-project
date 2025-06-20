@@ -2,5 +2,8 @@
   "select": "Select",
 
   "yes": "Yes",
-  "no": "no"
+  "no": "no",
+
+  "Please enter a valid email address." : "Please enter a valid email address",
+  "This field is required.": "This field is required."
 }

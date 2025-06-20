@@ -97,16 +97,6 @@ class UserEntity
     public Collection $emails;
 
     #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]
-    #[JoinTable(
-        name: 'userRole',
-        joinColumns: [
-            new JoinColumn('userId', 'id'),
-
-        ],
-        inverseJoinColumns: [
-            new JoinColumn('roleId', 'id'),
-        ]
-    )]
     public Collection $roles;
 
     public function __construct()

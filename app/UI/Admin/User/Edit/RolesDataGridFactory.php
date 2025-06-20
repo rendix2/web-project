@@ -9,7 +9,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class RolesDataGridFactory
 {
@@ -46,14 +46,14 @@ class RolesDataGridFactory
         $this->grid->setColumnsHideable();
 
         $this->grid
-            ->addColumnNumber('id', 'admin-user-list.id.name')
+            ->addColumnNumber('id', 'admin-user-edit.roleGrid.role.id')
             ->setDefaultHide(true)
             ->setSortable(true)
             ->setFilterText()
             ->setPlaceholder('admin-user-list.id.search');
 
         $this->grid
-            ->addColumnText('name', 'Name')
+            ->addColumnText('name', 'admin-user-edit.roleGrid.role.name')
             ->setRenderer(
                 function(RoleEntity $roleEntity) : string {
                     return $roleEntity->name;
@@ -72,7 +72,7 @@ class RolesDataGridFactory
                         ->setParameter('role', $role);
                 }
             )
-            ->setPlaceholder('admin-user-list.fullName.search');
+            ->setPlaceholder('admin-user-edit.roleGrid.role.search');
     }
 
     private function createActions() : void

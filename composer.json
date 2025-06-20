@@ -10,8 +10,8 @@
   "license": [
     "MIT",
     "BSD-3-Clause",
-    "GPL-2.0",
-    "GPL-3.0"
+    "GPL-2.0-only",
+    "GPL-3.0-only"
   ],
   "homepage": "https://github.com/rendix2/web-project",
   "require": {
@@ -30,7 +30,7 @@
     "ext-tokenizer": "*",
     "contributte/console": "^0.10.1",
     "contributte/console-extra": "^0.8.0",
-    "contributte/forms-bootstrap": "^0.8.3",
+    "contributte/forms-bootstrap": "^0.8",
     "contributte/guzzlette": "^3.3",
     "contributte/mail": "^0.8.0",
     "contributte/mailing": "^0.6.0",
@@ -49,16 +49,16 @@
     "nette/robot-loader": "^4.0",
     "nette/security": "^3.2",
     "nette/utils": "^4.0",
-    "nettrine/cache": "^0.3.0",
-    "nettrine/dbal": "^0.8.2",
-    "nettrine/extensions-beberlei": "^0.2.0",
-    "nettrine/fixtures": "^0.7.2",
-    "nettrine/migrations": "^0.9.1",
-    "nettrine/orm": "^0.8.4",
+    "nettrine/cache": "^v0.5",
+    "nettrine/dbal": "^v0.10",
+    "nettrine/extensions-beberlei": "dev-master",
+    "nettrine/fixtures": "^v0.8",
+    "nettrine/migrations": "^v0.10",
+    "nettrine/orm": "^v0.10",
     "ramsey/uuid": "^4.8",
     "ramsey/uuid-doctrine": "^2.1",
-    "tracy/tracy": "^2.10",
-    "ublaboo/datagrid": "dev-next"
+    "tracy/tracy": "^v2.10",
+    "ublaboo/datagrid": "^7.0"
   },
   "require-dev": {
     "dg/composer-frontline": "^0.2.0",

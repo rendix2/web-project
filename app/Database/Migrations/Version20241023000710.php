@@ -41,7 +41,7 @@ final class Version20241023000710 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('User password history')
             ->addIndex(['userId'], 'K_UserPassword_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserPassword_UserId');
+            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserPassword_UserId');
     }
 
     public function down(Schema $schema) : void

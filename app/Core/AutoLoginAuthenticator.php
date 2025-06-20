@@ -7,7 +7,7 @@ use Nette\Security\AuthenticationException;
 use Nette\Security\Authenticator;
 use Nette\Security\IIdentity;
 use Nette\Security\SimpleIdentity;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class AutoLoginAuthenticator implements Authenticator
 {

@@ -5,7 +5,8 @@ search:
 			- *Facade
 
 services:
-	- App\Core\RouterFactory::createRouter
+    RouterFactory: App\Core\RouterFactory::createRouter
+    SessionHandler: App\Model\SessionHandler
 
 includes:
     - %configDir%/ext/console.neon

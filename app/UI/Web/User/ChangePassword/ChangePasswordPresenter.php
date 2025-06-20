@@ -44,10 +44,10 @@ class ChangePasswordPresenter extends Presenter
     public function createComponentChangePasswordForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addPassword('currentPassword', 'web-user-changePassword.form.currentPassword.label')
             ->setRequired('admin-user-edit.form.password.required')

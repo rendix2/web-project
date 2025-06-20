@@ -14,7 +14,7 @@ use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
 use Nette\Utils\Random;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class LoginPresenter extends Presenter
 {
@@ -38,10 +38,10 @@ class LoginPresenter extends Presenter
     public function createComponentLoginForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('username', 'web-user-login.form.username.label')
             ->setRequired('web-user-login.form.username.required')

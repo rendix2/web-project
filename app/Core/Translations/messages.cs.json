@@ -2,5 +2,8 @@
   "select": "Vyberte",
 
   "yes": "Ano",
-  "no": "Ne"
+  "no": "Ne",
+
+  "Please enter a valid email address." : "Prosím vložte validní emailovou andresu",
+  "This field is required.": "Tato položka je povinná."
 }

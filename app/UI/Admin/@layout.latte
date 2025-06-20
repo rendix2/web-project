@@ -5,13 +5,8 @@
         <meta name="viewport" content="width=device-width">
         <title>{ifset title}{include title|stripHtml}{/ifset}</title>
 
-        {block webpackScripts}
-        <script src="{webpack app.js}" async></script>
-        <script src="{webpack bootstrap.js}" async></script>
-        <script src="{webpack datagrid.js}" async></script>
-
-        <link rel="stylesheet" href="{webpack bootstrap.css}">
-        <link rel="stylesheet" href="{webpack datagrid.css}">
+        {block styles}
+            <link rel="stylesheet" href="{webpack app.css}">
         {/block}
     </head>
 
@@ -33,6 +28,7 @@
         </div>
 
 	    {block scripts}
+	        <script src="{webpack app.js}" async></script>
         {/block}
     </body>
 </html>

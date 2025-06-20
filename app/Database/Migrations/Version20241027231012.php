@@ -30,8 +30,8 @@ final class Version20241027231012 extends AbstractMigration
             ->setComment('User roles')
             ->addIndex(['userId'], 'K_UserRole_UserId')
             ->addIndex(['roleId'], 'K_UserRole_RoleId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserRole_UserId')
-            ->addForeignKeyConstraint($schema->getTable('role'), ['roleId'], ['id'], name: 'FK_UserRole_RoleId');
+            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserRole_UserId')
+            ->addForeignKeyConstraint('role', ['roleId'], ['id'], name: 'FK_UserRole_RoleId');
     }
 
     public function down(Schema $schema) : void

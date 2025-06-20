@@ -2,16 +2,13 @@
 
 namespace App\UI\Admin\User\Edit;
 
-use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\Datagrid\Datagrid;
-use DateTimeImmutable;
-use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
 use Nette\Security\User;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class EmailsDataGridFactory
 {

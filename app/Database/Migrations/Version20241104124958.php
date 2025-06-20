@@ -41,7 +41,7 @@ final class Version20241104124958 extends AbstractMigration
         $table->setComment('User email history')
             ->setPrimaryKey(['id'])
             ->addIndex(['userId'], 'K_UserEmail_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserEmail_UserId')
+            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserEmail_UserId')
             ->addUniqueIndex(['email'], 'UK_UserEmail_Email');
     }
 

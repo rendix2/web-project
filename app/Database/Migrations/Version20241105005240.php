@@ -45,7 +45,7 @@ final class Version20241105005240 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('Mail history')
             ->addIndex(['emailTo'], 'K_Mail_EmailTo')
-            ->addForeignKeyConstraint($schema->getTable('userEmail'), ['emailTo'], ['email'], name: 'FK_Mail_EmailTo');
+            ->addForeignKeyConstraint('userEmail', ['emailTo'], ['email'], name: 'FK_Mail_EmailTo');
     }
 
     public function down(Schema $schema) : void

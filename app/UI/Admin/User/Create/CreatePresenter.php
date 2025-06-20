@@ -17,7 +17,7 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Passwords;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class CreatePresenter extends Presenter
 {
@@ -65,11 +65,11 @@ class CreatePresenter extends Presenter
     public function createComponentCreateForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
         $form->setAjax(true);
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')

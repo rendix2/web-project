@@ -17,7 +17,7 @@ use Nette\Application\UI\Presenter;
 use Nette\Mail\SmtpException;
 use Nette\Security\Passwords;
 use Nette\Utils\Random;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class RegistrationPresenter extends Presenter
 {
@@ -37,10 +37,10 @@ class RegistrationPresenter extends Presenter
     public function createComponentRegistrationForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')

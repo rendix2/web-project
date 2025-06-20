@@ -46,7 +46,7 @@ final class Version20241106003834 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('User forgotten passwords requests')
             ->addUniqueIndex(['userId'], 'UK_UserPasswordRequest_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserPasswordRequest_UserId');
+            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserPasswordRequest_UserId');
 
     }
 

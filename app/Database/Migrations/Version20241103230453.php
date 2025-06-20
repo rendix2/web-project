@@ -45,7 +45,7 @@ final class Version20241103230453 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('User auto logins')
             ->addIndex(['userId'], 'K_UserAutoLogin_UserId')
-            ->addForeignKeyConstraint($schema->getTable('user'), ['userId'], ['id'], name: 'FK_UserAutoLogin_UserId');
+            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserAutoLogin_UserId');
     }
 
     public function down(Schema $schema) : void

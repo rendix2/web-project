@@ -11,10 +11,10 @@ use Contributte\Mailing\IMailBuilderFactory;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Localization\Translator;
 use Nette\Mail\SmtpException;
 use Nette\Utils\Random;
-use Nettrine\ORM\EntityManagerDecorator;
-use Symfony\Component\Translation\Translator;
+use App\Database\EntityManagerDecorator;
 
 class RequestPresenter extends Presenter
 {
@@ -33,10 +33,10 @@ class RequestPresenter extends Presenter
     public function createComponentRequestForm() : BootstrapForm
     {
         $form = new BootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')

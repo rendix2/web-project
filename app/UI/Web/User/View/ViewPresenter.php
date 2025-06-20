@@ -4,7 +4,7 @@ namespace App\UI\Web\User\View;
 
 use App\Model\Entity\UserEntity;
 use Nette\Application\UI\Presenter;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 /**
  * class ViewPresenter

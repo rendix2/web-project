@@ -11,7 +11,7 @@ use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
 use Nette\Utils\ArrayHash;
-use Nettrine\ORM\EntityManagerDecorator;
+use App\Database\EntityManagerDecorator;
 
 class DataGridFactory
 {

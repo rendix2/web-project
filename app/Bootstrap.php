@@ -22,6 +22,7 @@ final class Bootstrap
 		$binDir = $rootDir . 'bin';
 		$configDir = $rootDir . 'config';
 		$logDir = $rootDir . 'log';
+		$logContextDir = $rootDir . 'log' . $sep . $context;
         $tempDir = $rootDir . 'temp';
         $wwwDir = $rootDir . 'www';
 
@@ -36,8 +37,8 @@ final class Bootstrap
 
 		$tempContextDir = $tempDir . $sep . $context;
 		$cacheDir = $tempContextDir . $sep . 'cache';
-		$proxiesDir = $tempContextDir . $sep . 'proxies';
-		$sessionsDir = $tempContextDir . $sep . 'sessions';
+		$nettrineCacheDir = $cacheDir . $sep . 'nettrine';
+		$proxiesDir = $nettrineCacheDir . $sep . 'proxies';
         $mailDir = $tempContextDir . $sep . 'mails';
 
 		$configurator = new Configurator();
@@ -47,13 +48,13 @@ final class Bootstrap
 				'binDir' => $binDir,
 				'cacheDir' => $cacheDir,
 				'configDir' => $configDir,
+				'nettrineCacheDir' => $nettrineCacheDir,
 				'migrationsDir' => $migrationsDir,
 				'fixturesDir' => $fixturesDir,
 				'rootDir' => $rootDir,
 				'proxiesDir' => $proxiesDir,
-                'sessionsDir' => $sessionsDir,
                 'mailDir' => $mailDir,
-                'logDir' => $logDir,
+                'logDir' => $logContextDir,
                 'distDir' => $distDir,
                 'entityDir' => $entityDir,
 			]
@@ -69,7 +70,7 @@ final class Bootstrap
 
         $configurator->setDebugMode(true);
 
-		$configurator->enableTracy($logDir);
+		$configurator->enableTracy($logContextDir);
 		$configurator->setTempDirectory($tempContextDir);
 
 		$configurator->createRobotLoader()

@@ -1,61 +1,65 @@
 extensions:
-    #nettrine.annotations: Nettrine\Annotations\DI\AnnotationsExtension
-    nettrine.cache: Nettrine\Cache\DI\CacheExtension
+
     nettrine.migrations: Nettrine\Migrations\DI\MigrationsExtension
     nettrine.fixtures: Nettrine\Fixtures\DI\FixturesExtension
     nettrine.extensions.beberlei: Nettrine\Extensions\Beberlei\DI\BeberleiBehaviorExtension
 
+    nettrine.cache: Nettrine\Cache\DI\CacheExtension(%debugMode%)
+
     # Dbal
     nettrine.dbal: Nettrine\DBAL\DI\DbalExtension
-    nettrine.dbal.console: Nettrine\DBAL\DI\DbalConsoleExtension(%consoleMode%)
 
-    # Orm
+    #Orm
     nettrine.orm: Nettrine\ORM\DI\OrmExtension
-    nettrine.orm.cache: Nettrine\ORM\DI\OrmCacheExtension
-    nettrine.orm.console: Nettrine\ORM\DI\OrmConsoleExtension(%consoleMode%)
-    #nettrine.orm.annotations: Nettrine\ORM\DI\OrmAnnotationsExtension
-    nettrine.orm.attributes: Nettrine\ORM\DI\OrmAttributesExtension
 
     formMapper: FreezyBee\DoctrineFormMapper\DI\FormMapperExtension
+
+services:
+    - Doctrine\ORM\Configuration
 
 nettrine.dbal:
     debug:
         panel: %debugMode%
         sourcePaths: [%appDir%]
-    connection:
-        driver: %database.main.driver%
-        host: %database.main.host%
-        user: %database.main.username%
-        password: %database.main.password%
-        dbname: %database.main.database%
-        charset: %database.main.charset%
-        default_table_options:
-            charset: %database.main.charset%
-            collate: %database.main.collation%
-        types:
-            uuid: Ramsey\Uuid\Doctrine\UuidType
-
-nettrine.cache:
-    driver: Doctrine\Common\Cache\SQLite3Cache(SQLite3('%cacheDir%/doctrineCache.db'), 'cache')
+    types:
+        uuid: Ramsey\Uuid\Doctrine\UuidType
+    connections:
+        default:
+            driver: %database.default.driver%
+            host: %database.default.host%
+            port: %database.default.port%
+            user: %database.default.username%
+            password: %database.default.password%
+            dbname: %database.default.database%
+            charset: %database.default.charset%
+            defaultTableOptions:
+                charset: %database.default.charset%
+                collate: %database.default.collation%
 
 nettrine.orm:
-    configuration:
-        autoGenerateProxyClasses: %debugMode%
-
-nettrine.orm.attributes:
-  mapping:
-      App\Model\Entity: %entityDir%
+    managers:
+        default:
+            connection: default
+            entityManagerDecoratorClass: App\Database\EntityManagerDecorator
+            autoGenerateProxyClasses: %debugMode%
+            proxyDir: %nettrineCacheDir%
+            defaultCache: Symfony\Component\Cache\Adapter\FilesystemAdapter('default', 3600, %nettrineCacheDir%)
+            mapping:
+                App:
+                    type: attributes
+                    directories: [%entityDir%]
+                    namespace: App\Model\Entity
 
 nettrine.extensions.beberlei:
-    driver: mysql
+    driver: %database.default.driver%
 
 nettrine.migrations:
     table: migrations
     column: version
-    directory: %migrationsDir%
-    namespace: App\Database\Migrations
-    versionsOrganization: null # null, year, year_and_month
+    directories:
+        App\Database\Migrations: %migrationsDir%
+    manager: default
 
 nettrine.fixtures:
-  paths:
-    - %fixturesDir%
+    paths:
+        - %fixturesDir%

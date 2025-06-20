@@ -5,7 +5,7 @@ export default defineConfig(({ mode }) => {
     const DEV = mode === 'development';
 
     return {
-        publicDir: './www/scripts',
+        publicDir: './assets',
         resolve: {
             alias: {
                 '@': resolve(__dirname, 'assets/js'),
@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
                     assetFileNames: '[name].[ext]', // DEV ? '[name].[ext]' : '[name].[hash].[ext]',
                 },
                 input: {
-                    datagrid: './www/scripts/datagrid.js'
+                    app: './assets/js/main.js'
                 }
             }
         },

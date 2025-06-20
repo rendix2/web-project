@@ -17,13 +17,16 @@ import {
     TomSelect,
     TreeViewPlugin,
     VanillaDatepicker
-} from "../../vendor/ublaboo/datagrid/assets"
-import { NajaAjax } from "../../vendor/ublaboo/datagrid/assets/ajax";
+} from "../vendor/ublaboo/datagrid/assets/index.ts"
+import { NajaAjax } from "../vendor/ublaboo/datagrid/assets/ajax/index.ts";
 import Select from "tom-select";
 import { Dropdown } from "bootstrap";
 
 // Styles
-import '../css/main.css';
+import './app.css';
+
+//netteForms.initOnLoad();
+//naja.initialize();
 
 // Datagrid + UI
 document.addEventListener("DOMContentLoaded", () => {

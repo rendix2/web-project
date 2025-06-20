@@ -8,7 +8,7 @@ config/local.neon
 node_modules
 
 # assets
-www/dist
+www/assets
 
 # composer
 vendor

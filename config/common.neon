@@ -45,6 +45,16 @@ tracy:
     strictMode: true
     showBar: true
 
+assets:
+    basePath: /var/www/html/www
+    mapping:
+        default:
+            type: vite
+            path: assets
+        styles:
+            path: css
+
+
 #mail:
     #smtp: %mail.smtp%
 

@@ -22,11 +22,11 @@ final class Bootstrap
 		$binDir = $rootDir . 'bin';
 		$configDir = $rootDir . 'config';
 		$logDir = $rootDir . 'log';
-		$logContextDir = $rootDir . 'log' . $sep . $context;
+		$logContextDir = $logDir . $sep . $context;
         $tempDir = $rootDir . 'temp';
         $wwwDir = $rootDir . 'www';
 
-        $distDir = $wwwDir . $sep . 'dist';
+        $assetsDir = $wwwDir . $sep . 'assets';
 
 		$databaseDir = $appDir . $sep . 'Database';
         $migrationsDir = $databaseDir . $sep . 'Migrations';
@@ -55,7 +55,7 @@ final class Bootstrap
 				'proxiesDir' => $proxiesDir,
                 'mailDir' => $mailDir,
                 'logDir' => $logContextDir,
-                'distDir' => $distDir,
+                'assetsDir' => $assetsDir,
                 'entityDir' => $entityDir,
 			]
 		);

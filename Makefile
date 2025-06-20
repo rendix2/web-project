@@ -9,8 +9,7 @@ php: composer.json composer.lock
 
 js: package.json package-lock.json
 	npm install
-	npm run vite-build
-	chmod 777 www/dist -R
+	npm run build
 
 db:
 	php bin/console database:create
@@ -56,4 +55,10 @@ migration:
 
 migrate:
 	php bin/console migrations:migrate --no-interaction
+
+update:
+	git config --global --add safe.directory /var/www/html
+	composer update
+	npm update
+	npm run build
 

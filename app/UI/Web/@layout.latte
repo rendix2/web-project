@@ -5,16 +5,22 @@
         <meta name="viewport" content="width=device-width">
         <title>{ifset title}{include title|stripHtml}{/ifset}</title>
 
-        {block styles}
-            <link rel="stylesheet" href="{webpack app.css}">
-        {/block}
+        {asset app.js}
     </head>
 
     <body>
         {snippet flashes}
         <div class="container-fluid">
             {foreach $flashes as $flash}
-            <div class="alert alert-{$flash->type} alert-dismissible fade show mt-1" role="alert">{$flash->message}</div>
+            <div class="alert alert-{$flash->type} alert-dismissible fade show mt-1" role="alert">
+                {if $flash->type === 'success'}
+		            <i class="fas fa-check"></i>
+		        {elseif $flash->type === 'danger'}
+		            <i class="fas fa-times"></i>
+		        {/if}
+
+                {$flash->message}
+            </div>
             {/foreach}
         </div>
         {/snippet}
@@ -22,9 +28,5 @@
         <div class="container-fluid">
             {include content}
         </div>
-
-	    {block scripts}
-	        <script src="{webpack app.js}" async></script>
-        {/block}
     </body>
 </html>

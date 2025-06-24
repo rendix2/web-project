@@ -36,8 +36,8 @@ final class Version20250619222221 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated At');
 
-        $table->setComment('Sessions');
-        $table->setPrimaryKey(['id']);
+        $table->setPrimaryKey(['id'])
+            ->setComment('Sessions');
     }
 
     public function down(Schema $schema): void

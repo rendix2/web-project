@@ -2,6 +2,7 @@
 
 namespace App\Database\Migrations;
 
+use App\Model\Doctrine\Type\IpAddressType;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -31,9 +32,8 @@ final class Version20241103230453 extends AbstractMigration
             ->setComment('Token; saved in cookie')
             ->setLength(1024);
 
-        $table->addColumn('ipAddress', Types::BINARY)
-            ->setComment('IP address')
-            ->setLength(16);
+        $table->addColumn('ipAddress', IpAddressType::NAME)
+            ->setComment('IP address');
 
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');

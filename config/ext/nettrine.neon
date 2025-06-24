@@ -23,6 +23,7 @@ nettrine.dbal:
         sourcePaths: [%appDir%]
     types:
         uuid: Ramsey\Uuid\Doctrine\UuidType
+        ip_address: App\Model\Doctrine\Type\IpAddressType
     connections:
         default:
             driver: %database.default.driver%
@@ -42,7 +43,7 @@ nettrine.orm:
             connection: default
             entityManagerDecoratorClass: App\Database\EntityManagerDecorator
             autoGenerateProxyClasses: %debugMode%
-            proxyDir: %nettrineCacheDir%
+            proxyDir: %proxiesDir%
             defaultCache: Symfony\Component\Cache\Adapter\FilesystemAdapter('default', 3600, %nettrineCacheDir%)
             mapping:
                 App:
@@ -51,7 +52,9 @@ nettrine.orm:
                     namespace: App\Model\Entity
 
 nettrine.extensions.beberlei:
-    driver: %database.default.driver%
+    connections:
+        default:
+            driver: %database.default.driver%
 
 nettrine.migrations:
     table: migrations

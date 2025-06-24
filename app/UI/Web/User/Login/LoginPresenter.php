@@ -23,6 +23,7 @@ class LoginPresenter extends Presenter
         private readonly Translator $translator,
         private readonly EntityManagerDecorator $em,
         private readonly UsernameAndPasswordAuthenticator $usernameAndPasswordAuthenticator,
+        private readonly UserLoginAttemptCheckService $userLoginAttemptCheckService,
     )
     {
     }
@@ -67,14 +68,29 @@ class LoginPresenter extends Presenter
 
     public function loginFormSuccess(Form $form) : void
     {
-        try {
-            $this->getUser()->setAuthenticator($this->usernameAndPasswordAuthenticator);
-            $this->getUser()->login(
-                $form->getValues()['username'],
-                $form->getHttpData()['password']
-            );
+        $username = $form->getValues()['username'];
+        $password = $form->getHttpData()['password'];
+        $stayLoggedIn = $form->getValues()['stayLoggedIn'];
+        $ip = $this->getHttpRequest()->getRemoteAddress();
 
-            if ($form->getValues()['stayLoggedIn']) {
+        try {
+            if ($this->userLoginAttemptCheckService->isIpBlocked($ip)) {
+                $this->flashMessage('Z této IP adresy je příliš mnoho pokusů. Zkuste to později.', 'danger');
+                return;
+            }
+
+            if ($this->userLoginAttemptCheckService->isLocked($username)) {
+                $this->flashMessage('Tento účet je dočasně zablokován. Zkuste to prosím později.', 'danger');
+                return;
+            }
+
+            $this->getUser()->setAuthenticator($this->usernameAndPasswordAuthenticator);
+            $this->getUser()->login($username, $password);
+            $this->getUser()->setExpiration('2 hours');
+
+            $this->userLoginAttemptCheckService->clearAttempts($username, $ip);
+
+            if ($stayLoggedIn) {
                 $autoLoginToken = Random::generate(128);
 
                 $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, null);
@@ -84,15 +100,19 @@ class LoginPresenter extends Presenter
                     ->findOneBy(
                         [
                             'id' => $this->getUser()->getId(),
-                            'username' => $form->getValues()['username'],
+                            'username' => $username,
 
                         ]
                     );
 
+                if (!$userEntity) {
+                    throw new AuthenticationException('Uživatel nebyl nalezen po přihlášení.');
+                }
+
                 $userAutoLoginEntity = new UserAutoLoginEntity();
                 $userAutoLoginEntity->user = $userEntity;
                 $userAutoLoginEntity->token = $autoLoginToken;
-                $userAutoLoginEntity->setIpAddress($this->getHttpRequest()->getRemoteAddress());
+                $userAutoLoginEntity->ipAddress = $ip;
 
                 try {
                     $this->em->persist($userAutoLoginEntity);
@@ -109,6 +129,7 @@ class LoginPresenter extends Presenter
             );
             $this->redirect(':Web:Home:default');
         } catch (AuthenticationException $exception) {
+            $this->userLoginAttemptCheckService->logAttempt($username, $ip);
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
         }

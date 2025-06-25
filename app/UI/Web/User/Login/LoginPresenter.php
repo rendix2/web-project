@@ -79,7 +79,7 @@ class LoginPresenter extends Presenter
                 return;
             }
 
-            if ($this->userLoginAttemptCheckService->isLocked($username)) {
+            if ($this->userLoginAttemptCheckService->isUserNameBlocked($username)) {
                 $this->flashMessage('Tento účet je dočasně zablokován. Zkuste to prosím později.', 'danger');
                 return;
             }
@@ -101,7 +101,6 @@ class LoginPresenter extends Presenter
                         [
                             'id' => $this->getUser()->getId(),
                             'username' => $username,
-
                         ]
                     );
 

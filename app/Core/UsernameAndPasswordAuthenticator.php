@@ -13,7 +13,6 @@ use App\Database\EntityManagerDecorator;
 
 class UsernameAndPasswordAuthenticator implements Authenticator
 {
-    public const MAX_LOGIN_COUNT = 5;
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
@@ -36,27 +35,6 @@ class UsernameAndPasswordAuthenticator implements Authenticator
             throw new AuthenticationException('User not found.');
         }
 
-        if (
-            $userEntity->lastLoginAt &&
-            (new DateTimeImmutable())->diff($userEntity->lastLoginAt)->i > 30
-        ) {
-            $userEntity->lastLoginCount = 0;
-        }
-
-        $userEntity->lastLoginCount++;
-        $userEntity->lastLoginAt = new DateTimeImmutable();
-        $userEntity->updatedAt = new DateTimeImmutable();
-
-        $this->em->persist($userEntity);
-        $this->em->flush();
-
-        if (
-            $userEntity->lastLoginCount >= static::MAX_LOGIN_COUNT &&
-            $userEntity->lastLoginAt && (new DateTimeImmutable())->diff($userEntity->lastLoginAt)->i < 30
-        ) {
-            throw new AuthenticationException('There was so much tries. Try again later please.');
-        }
-
         if (!$userEntity->isActive) {
             throw new AuthenticationException('User is not active');
         }
@@ -64,13 +42,6 @@ class UsernameAndPasswordAuthenticator implements Authenticator
         if (!$this->passwords->verify($password, $userEntity->password)) {
             throw new AuthenticationException('Invalid password.');
         }
-
-        $userEntity->lastLoginCount = 0;
-        $userEntity->lastLoginAt = null;
-        $userEntity->updatedAt = new DateTimeImmutable();
-
-        $this->em->persist($userEntity);
-        $this->em->flush();
 
         $roles = [];
 

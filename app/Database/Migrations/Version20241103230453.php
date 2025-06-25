@@ -2,7 +2,7 @@
 
 namespace App\Database\Migrations;
 
-use App\Model\Doctrine\Type\IpAddressType;
+use App\Database\Types\IpAddressType;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;

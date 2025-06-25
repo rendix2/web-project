@@ -5,8 +5,7 @@ namespace App\UI\Web\User\Login;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserLoginAttemptEntity;
 use DateTimeImmutable;
-use Nette\Mail\Mailer;
-use Nette\Mail\Message;
+use InvalidArgumentException;
 
 class UserLoginAttemptCheckService
 {
@@ -17,7 +16,6 @@ class UserLoginAttemptCheckService
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
-        private readonly Mailer $mailer,
     ) {
         $this->maxAttempts = 5;
         $this->lockTimeSeconds = 900;
@@ -26,7 +24,7 @@ class UserLoginAttemptCheckService
     public function logAttempt(string $username, string $ipAddress): void
     {
         if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
-            throw new \InvalidArgumentException("Neplatná IP adresa: $ipAddress");
+            throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
         }
 
         $userLoginAttemptEntity = new UserLoginAttemptEntity();
@@ -42,7 +40,7 @@ class UserLoginAttemptCheckService
         $since = new DateTimeImmutable("-{$this->lockTimeSeconds} seconds");
 
         if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
-            throw new \InvalidArgumentException("Neplatná IP adresa: $ipAddress");
+            throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
         }
 
         $count = $this->em
@@ -63,7 +61,7 @@ class UserLoginAttemptCheckService
         return $count >= $this->maxAttempts;
     }
 
-    public function isLocked(string $username): bool
+    public function isUserNameBlocked(string $username): bool
     {
         $since = new DateTimeImmutable("-{$this->lockTimeSeconds} seconds");
 
@@ -82,23 +80,7 @@ class UserLoginAttemptCheckService
             ->getQuery()
             ->getSingleScalarResult();
 
-        if ($count >= $this->maxAttempts) {
-            $this->sendAlertEmail($username, $count);
-            return true;
-        }
-
-        return false;
-    }
-
-    private function sendAlertEmail(string $username, int $count): void
-    {
-        $mail = new Message();
-        $mail->setFrom('noreply@chatbot.cz')
-            ->addTo('admin@chatbot.cz')
-            ->setSubject('Podezřelá aktivita při přihlašování')
-            ->setBody("Uživatel '{$username}' se pokusil {$count}x přihlásit neúspěšně během posledních 15 minut.");
-
-        $this->mailer->send($mail);
+        return $count >= $this->maxAttempts;
     }
 
     public function clearAttempts(string $username, string $ipAddress): void

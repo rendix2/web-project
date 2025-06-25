@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Model\Doctrine\Type;
+namespace App\Database\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;

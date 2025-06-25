@@ -54,12 +54,6 @@ class UserEntity
     #[Column(name: 'isActive', type: Types::BOOLEAN)]
     public bool $isActive;
 
-    #[Column(name: 'lastLoginAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
-    public ?DateTimeImmutable $lastLoginAt;
-
-    #[Column(name: 'lastLoginCount', type: Types::INTEGER)]
-    public int $lastLoginCount;
-
     #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
@@ -102,9 +96,6 @@ class UserEntity
     public function __construct()
     {
         $this->uuid = Uuid::uuid4();
-
-        $this->lastLoginAt = null;
-        $this->lastLoginCount = 0;
 
         $this->passwords = new ArrayCollection();
         $this->roles = new ArrayCollection();

@@ -52,13 +52,6 @@ final class Version20230621145918 extends AbstractMigration
         $table->addColumn('isActive', Types::BOOLEAN)
             ->setComment('Is active?');
 
-        $table->addColumn('lastLoginAt', Types::DATETIME_IMMUTABLE)
-            ->setNotnull(false)
-            ->setComment('Last login at');
-
-        $table->addColumn('lastLoginCount', Types::INTEGER)
-            ->setComment('Last login count');
-
         $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 

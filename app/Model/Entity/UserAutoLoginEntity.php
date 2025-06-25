@@ -2,7 +2,7 @@
 
 namespace App\Model\Entity;
 
-use App\Model\Doctrine\Type\IpAddressType;
+use App\Database\Types\IpAddressType;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;

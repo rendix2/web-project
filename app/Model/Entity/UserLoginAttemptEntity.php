@@ -21,7 +21,7 @@ class UserLoginAttemptEntity
     #[Column(type: Types::INTEGER, unique: true)]
     public int $id;
 
-    #[Column(type: Types::STRING, length: 255, unique: false)]
+    #[Column(type: Types::STRING, length: 512, unique: false)]
     public string $username;
 
     #[Column(name: 'ipAddress', type: IpAddressType::NAME, nullable: false)]

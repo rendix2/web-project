@@ -14,8 +14,10 @@ RUN docker-php-ext-configure gd --enable-gd --with-jpeg --with-freetype --with-w
 RUN docker-php-ext-install -j "$(nproc)" gd
 
 # PDO
+RUN apt install libpq-dev -y --fix-missing
 RUN docker-php-ext-install -j "$(nproc)" pdo
 RUN docker-php-ext-install -j "$(nproc)" pdo_mysql
+RUN docker-php-ext-install -j "$(nproc)" pdo_pgsql
 
 # Opcache
 RUN docker-php-ext-configure opcache --enable-opcache

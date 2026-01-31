@@ -14,7 +14,7 @@ session:
     debugger: true
     expiration: 14 days
     autoStart: true
-    handler: @SessionHandler
+    #handler: @SessionHandler
 
 latte:
     debugger: true

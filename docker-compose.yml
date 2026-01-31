@@ -13,20 +13,32 @@ services:
     volumes:
       - ./:/var/www/html/
     depends_on:
-      - web-project-database
+      - web-project-mysql
+      - web-project-postgres
     tty: true
 
-  web-project-database:
+  web-project-mysql:
     image: mysql:8.0.40
     ports:
       - "4306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=mysqlroot
-      - MYSQL_DATABASE=example
-      - MYSQL_USER=example_user
-      - MYSQL_PASSWORD=mysqlpwd
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=web-project
+      - MYSQL_USER=web-project
+      - MYSQL_PASSWORD=password
     volumes:
       - ./.docker/mysql/data:/var/lib/mysql
+
+  web-project-postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: web-project
+      POSTGRES_USER: web-project
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./.docker/postgres/data:/var/lib/postgresql/data
 
   web-project-adminer:
     image: adminer
@@ -34,6 +46,7 @@ services:
     ports:
       - "9082:8080"
     environment:
-      ADMINER_DEFAULT_SERVER: web-project-database
+      ADMINER_DEFAULT_SERVER: web-project-postgres
     depends_on:
-      - web-project-database
+      - web-project-mysql
+      - web-project-postgres

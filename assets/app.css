@@ -3,7 +3,6 @@
 @import '../node_modules/bootstrap/dist/css/bootstrap.css';
 @import 'vanillajs-datepicker/css/datepicker-bs5.css';
 @import "../node_modules/tom-select/dist/css/tom-select.css";
-@import '../vendor/ublaboo/datagrid/assets/css/happy.css';
 @import '../vendor/ublaboo/datagrid/assets/css/datagrid.css';
 
 /* App styles */

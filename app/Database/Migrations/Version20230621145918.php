@@ -20,7 +20,7 @@ final class Version20230621145918 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('user');
+        $table = $schema->createTable('users');
 
         $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
@@ -68,7 +68,7 @@ final class Version20230621145918 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('user');
+        $schema->dropTable('users');
     }
 
 }

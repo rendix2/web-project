@@ -25,22 +25,40 @@ class CreateDatabaseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
     {
-        $databaseConnections = $this->container->getParameters()['database'];
+        $dbConfig = $this->container->getParameters()['database']['default'];
 
-        foreach ($databaseConnections as $databaseConnection) {
-            try {
-                $pdo = new PDO('mysql:host=' . $databaseConnection['host'], $databaseConnection['username'], $databaseConnection['password']);
+        $host = $dbConfig['host'];
+        $user = $dbConfig['username'];
+        $password = $dbConfig['password'];
+        $database = $dbConfig['database'];
+        $dsn = $dbConfig['dsn'];
+        $charset = $dbConfig['charset'];
+
+        try {
+            $pdo = new PDO($dsn, $user, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $pdo = new PDO('pgsql:host=' . $host . ';dbname=postgres', $user, $password);
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                $pdo->exec('CREATE DATABASE IF NOT EXISTS `' . $databaseConnection['database'] . '` CHARACTER SET ' . $databaseConnection['charset'] . ' COLLATE '.$databaseConnection['collation'].';');
-                $output->writeln('Database "' . $databaseConnection['database'] . '" created (if it did not exist).');
-            } catch (PDOException $e) {
-                $output->writeln('Error: Could not connect to database: ' . $e->getMessage() . "\n");
+                $stmt = $pdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
+                $stmt->execute([$database]);
+                $exists = $stmt->fetchColumn();
 
-                return 1;
-            }
+                if (!$exists) {
+                    $pdo->exec('CREATE DATABASE "' . $database . '" WITH ENCODING ' . ($charset === 'utf8mb4' ? "'UTF8'" : "'" . $charset . "'") . ';');
+                    $output->writeln('Database "' . $database . '" created.');
+                } else {
+                    $output->writeln('Database "' . $database . '" already exists.');
+                }
+
+            $output->writeln('Database "' . $database . '" created (if it did not exist).');
+
+            return 0;
+        } catch (PDOException $e) {
+            $output->writeln('Error: Could not connect to database: ' . $e->getMessage() . "\n");
+
+            return 1;
         }
-
-        return 0;
     }
 }

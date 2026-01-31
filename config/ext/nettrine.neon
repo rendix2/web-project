@@ -23,7 +23,7 @@ nettrine.dbal:
         sourcePaths: [%appDir%]
     types:
         uuid: Ramsey\Uuid\Doctrine\UuidType
-        ip_address: App\Model\Doctrine\Type\IpAddressType
+        ip_address: App\Database\Types\IpAddressType
     connections:
         default:
             driver: %database.default.driver%
@@ -35,7 +35,6 @@ nettrine.dbal:
             charset: %database.default.charset%
             defaultTableOptions:
                 charset: %database.default.charset%
-                collate: %database.default.collation%
 
 nettrine.orm:
     managers:

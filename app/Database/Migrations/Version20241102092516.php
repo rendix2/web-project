@@ -44,7 +44,7 @@ final class Version20241102092516 extends AbstractMigration
         $table->setPrimaryKey(['id'])
             ->setComment('User activation keys')
             ->addUniqueIndex(['userId'], 'UK_UserActivation_UserId')
-            ->addForeignKeyConstraint('user', ['userId'], ['id'], name: 'FK_UserActivation_UserId');
+            ->addForeignKeyConstraint('users', ['userId'], ['id'], name: 'FK_UserActivation_UserId');
     }
 
     public function down(Schema $schema) : void

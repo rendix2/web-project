@@ -6,8 +6,6 @@ import {
     ConfirmPlugin,
     createDatagrids,
     DatepickerPlugin,
-    Happy,
-    HappyPlugin,
     InlinePlugin,
     ItemDetailPlugin,
     NetteFormsPlugin,

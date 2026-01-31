@@ -25,7 +25,7 @@ use Ramsey\Uuid\UuidInterface;
  * @package App\Model\Entity
  */
 #[Entity()]
-#[Table(name: 'user')]
+#[Table(name: 'users')]
 class UserEntity
 {
     #[Id()]

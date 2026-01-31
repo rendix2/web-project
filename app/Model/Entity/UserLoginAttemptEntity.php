@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\Id;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userLoginAttempt')]
+#[Table(name: 'user_login_attempt')]
 class UserLoginAttemptEntity
 {
 
@@ -24,10 +24,10 @@ class UserLoginAttemptEntity
     #[Column(type: Types::STRING, length: 512, unique: false)]
     public string $username;
 
-    #[Column(name: 'ipAddress', type: IpAddressType::NAME, nullable: false)]
+    #[Column(type: IpAddressType::NAME, nullable: false)]
     public string $ipAddress;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

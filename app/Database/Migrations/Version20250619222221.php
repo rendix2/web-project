@@ -29,10 +29,10 @@ final class Version20250619222221 extends AbstractMigration
             ->setComment('Data')
             ->setNotnull(true);
 
-        $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created At');
 
-        $table->addColumn('updatedAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('updated_at', Types::DATETIME_IMMUTABLE)
             ->setNotnull(false)
             ->setComment('Updated At');
 

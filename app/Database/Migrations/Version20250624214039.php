@@ -19,7 +19,7 @@ final class Version20250624214039 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $table = $schema->createTable('userLoginAttempt');
+        $table = $schema->createTable('user_login_attempt');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -29,10 +29,10 @@ final class Version20250624214039 extends AbstractMigration
             ->setComment('Username')
             ->setLength(512);
 
-        $table->addColumn('ipAddress', IpAddressType::NAME)
+        $table->addColumn('ip_address', IpAddressType::NAME)
             ->setComment('IP Address');
 
-        $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
         $table->setPrimaryKey(['id'])

@@ -24,7 +24,7 @@ final class Version20241105005240 extends AbstractMigration
             ->setAutoincrement(true)
             ->setComment('ID');
 
-        $table->addColumn('emailTo', Types::STRING)
+        $table->addColumn('email_to', Types::STRING)
             ->setLength(512)
             ->setComment('Email to');
 
@@ -35,17 +35,17 @@ final class Version20241105005240 extends AbstractMigration
         $table->addColumn('body', Types::TEXT)
             ->setComment('Body');
 
-        $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->addColumn('updatedAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('updated_at', Types::DATETIME_IMMUTABLE)
             ->setNotnull(false)
             ->setComment('Updated at');
 
         $table->setPrimaryKey(['id'])
             ->setComment('Mail history')
-            ->addIndex(['emailTo'], 'K_Mail_EmailTo')
-            ->addForeignKeyConstraint('userEmail', ['emailTo'], ['email'], name: 'FK_Mail_EmailTo');
+            ->addIndex(['email_to'], 'K_Mail_EmailTo')
+            ->addForeignKeyConstraint('user_email', ['email_to'], ['email'], name: 'FK_Mail_EmailTo');
     }
 
     public function down(Schema $schema) : void

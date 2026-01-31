@@ -50,7 +50,7 @@ class UserLoginAttemptCheckService
             ->select('count(_attempt.id)')
 
             ->where('_attempt.ipAddress = :ipAddress')
-            ->setParameter('ipAddress', str_pad(inet_pton($ipAddress), 16, "\0", STR_PAD_RIGHT))
+            ->setParameter('ipAddress', $ipAddress)
 
             ->andWhere('_attempt.createdAt >= :since')
             ->setParameter('since', $since)
@@ -93,11 +93,15 @@ class UserLoginAttemptCheckService
             ->getQuery()
             ->execute();
 
+        if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+            throw new InvalidArgumentException("Neplatná IP adresa při mazání: $ipAddress");
+        }
+
         $this->em
             ->createQueryBuilder()
             ->delete(UserLoginAttemptEntity::class, 'a')
             ->where('a.ipAddress = :ipAddress')
-            ->setParameter('ipAddress', inet_pton($ipAddress))
+            ->setParameter('ipAddress', $ipAddress)
             ->getQuery()
             ->execute();
     }

@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userPasswordRequest')]
+#[Table(name: 'user_password_request')]
 class UserPasswordRequestEntity
 {
     #[Id()]
@@ -22,20 +22,20 @@ class UserPasswordRequestEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', unique: true, nullable: false)]
+    #[JoinColumn(unique: true, nullable: false)]
     public UserEntity $user;
 
-    #[Column(name: 'forgetKey', type: Types::STRING, length: 1024)]
+    #[Column(type: Types::STRING, length: 1024)]
     public string $forgetKey;
 
-    #[Column(name: 'validUntil', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $validUntil;
 
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

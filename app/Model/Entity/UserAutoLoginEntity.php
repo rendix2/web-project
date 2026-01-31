@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userAutoLogin')]
+#[Table(name: 'user_auto_login')]
 class UserAutoLoginEntity
 {
 
@@ -24,19 +24,19 @@ class UserAutoLoginEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', unique: false, nullable: false)]
+    #[JoinColumn(unique: false, nullable: false)]
     public UserEntity $user;
 
     #[Column(type: Types::STRING, length: 1024)]
     public string $token;
 
-    #[Column(name: 'ipAddress', type: IpAddressType::NAME, length: 16)]
+    #[Column(type: IpAddressType::NAME, length: 16)]
     public string $ipAddress;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

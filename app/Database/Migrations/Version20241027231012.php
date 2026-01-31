@@ -18,20 +18,20 @@ final class Version20241027231012 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('userRole');
+        $table = $schema->createTable('user_role');
 
-        $table->addColumn('userId', Types::BIGINT)
+        $table->addColumn('user_id', Types::BIGINT)
             ->setComment('User ID');
 
-        $table->addColumn('roleId', Types::INTEGER)
+        $table->addColumn('role_id', Types::INTEGER)
             ->setComment('Role ID');
 
-        $table->setPrimaryKey(['userId', 'roleId'])
+        $table->setPrimaryKey(['user_id', 'role_id'])
             ->setComment('User roles')
-            ->addIndex(['userId'], 'K_UserRole_UserId')
-            ->addIndex(['roleId'], 'K_UserRole_RoleId')
-            ->addForeignKeyConstraint('users', ['userId'], ['id'], name: 'FK_UserRole_UserId')
-            ->addForeignKeyConstraint('role', ['roleId'], ['id'], name: 'FK_UserRole_RoleId');
+            ->addIndex(['user_id'], 'K__UserRole__User_id')
+            ->addIndex(['role_id'], 'K__UserRole__Role_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__UserRole__User_id')
+            ->addForeignKeyConstraint('role', ['role_id'], ['id'], name: 'FK__UserRole__Role_id');
     }
 
     public function down(Schema $schema) : void

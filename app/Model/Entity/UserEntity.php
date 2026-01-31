@@ -51,43 +51,43 @@ class UserEntity
     #[Column(type: Types::STRING, length: 1024)]
     public string $password;
 
-    #[Column(name: 'isActive', type: Types::BOOLEAN)]
+    #[Column(type: Types::BOOLEAN)]
     public bool $isActive;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     /**
      * @var UserPasswordEntity[] $passwords
      */
-    #[OneToMany(mappedBy: 'user', targetEntity: UserPasswordEntity::class, cascade: ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserPasswordEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwords;
 
     /**
      * @var UserPasswordRequestEntity $passwordRequests
      */
-    #[OneToMany(mappedBy: 'user', targetEntity: UserPasswordRequestEntity::class, cascade: ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserPasswordRequestEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwordRequests;
 
     /**
      * @var UserActivationEntity[] $activationKeys
      */
-    #[OneToMany(mappedBy: 'user', targetEntity: UserActivationEntity::class, cascade: ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserActivationEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $activationKeys;
 
     /**
      * @var UserAutoLoginEntity[] $activationKeys
      */
-    #[OneToMany(mappedBy: 'user', targetEntity: UserAutoLoginEntity::class, cascade:  ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserAutoLoginEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $autoLogins;
 
     /**
      * @var UserEmailEntity[] $emails
      */
-    #[OneToMany(mappedBy: 'user', targetEntity: UserEmailEntity::class, cascade:  ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserEmailEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $emails;
 
     #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]

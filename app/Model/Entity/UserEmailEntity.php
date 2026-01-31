@@ -13,7 +13,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
 #[Entity()]
-#[Table(name: 'userEmail')]
+#[Table(name: 'user_email')]
 class UserEmailEntity
 {
 
@@ -23,16 +23,16 @@ class UserEmailEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn('userId', unique: true, nullable: false)]
+    #[JoinColumn(unique: true, nullable: false)]
     public UserEntity $user;
 
     #[Column(type: Types::STRING, length: 512, unique: true)]
     public string $email;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

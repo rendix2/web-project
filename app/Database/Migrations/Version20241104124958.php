@@ -18,30 +18,30 @@ final class Version20241104124958 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('userEmail');
+        $table = $schema->createTable('user_email');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
             ->setComment('ID');
 
-        $table->addColumn('userId', Types::BIGINT)
+        $table->addColumn('user_id', Types::BIGINT)
             ->setComment('User ID');
 
         $table->addColumn('email', Types::STRING)
             ->setComment('Email')
             ->setLength(512);
 
-        $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->addColumn('updatedAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('updated_at', Types::DATETIME_IMMUTABLE)
             ->setNotnull(false)
             ->setComment('Updated at');
 
         $table->setComment('User email history')
             ->setPrimaryKey(['id'])
-            ->addIndex(['userId'], 'K_UserEmail_UserId')
-            ->addForeignKeyConstraint('users', ['userId'], ['id'], name: 'FK_UserEmail_UserId')
+            ->addIndex(['user_id'], 'K__UserEmail__User_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__UserEmail__User_id')
             ->addUniqueIndex(['email'], 'UK_UserEmail_Email');
     }
 

@@ -22,7 +22,7 @@ class MailEntity
     #[Column(type: Types::BIGINT)]
     public string $id;
 
-    #[Column(name: 'emailTo', type: Types::STRING, nullable: false)]
+    #[Column(type: Types::STRING, nullable: false)]
     public string $emailTo;
 
     //#[ManyToOne(targetEntity: UserEmailEntity::class)]
@@ -35,10 +35,10 @@ class MailEntity
     #[Column(type: Types::TEXT, nullable: false)]
     public string $body;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

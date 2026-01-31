@@ -13,24 +13,20 @@ final class IpAddressType extends Type
 
     public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getBinaryTypeDeclarationSQL([
-            'length' => 16,
-            'fixed' => true,
-        ]);
+        return 'INET';
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if ($value === null || $value === '') {
             return null;
         }
 
-        $ip = @inet_ntop($value);
-        if ($ip === false) {
-            throw new UnexpectedValueException('Invalid IP address in database.');
+        if (!is_string($value) || !filter_var($value, FILTER_VALIDATE_IP)) {
+            throw new UnexpectedValueException('Invalid IP address returned from database.');
         }
 
-        return $ip;
+        return $value;
     }
 
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
@@ -43,7 +39,11 @@ final class IpAddressType extends Type
             throw new InvalidArgumentException("Invalid IP Address: $value");
         }
 
-        return inet_pton($value);
+        return (string) $value;
     }
 
+    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    {
+        return false;
+    }
 }

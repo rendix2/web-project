@@ -31,21 +31,21 @@ class RoleEntity
     #[Column(type: Types::TEXT)]
     public string $description;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     #[ManyToMany(targetEntity: UserEntity::class, inversedBy: 'roles', cascade: ['persist', 'remove'])]
     #[JoinTable(
-        name: 'userRole',
+        name: 'user_role',
         joinColumns: [
-            new JoinColumn('roleId', 'id'),
+            new JoinColumn('role_id', 'id'),
 
         ],
         inverseJoinColumns: [
-            new JoinColumn('userId', 'id'),
+            new JoinColumn('user_id', 'id'),
         ]
     )]
     public Collection $users;

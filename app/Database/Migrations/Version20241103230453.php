@@ -19,33 +19,33 @@ final class Version20241103230453 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('userAutoLogin');
+        $table = $schema->createTable('user_auto_login');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
             ->setComment('ID');
 
-        $table->addColumn('userId', Types::BIGINT)
+        $table->addColumn('user_id', Types::BIGINT)
             ->setComment('User ID');
 
         $table->addColumn('token', Types::STRING)
             ->setComment('Token; saved in cookie')
             ->setLength(1024);
 
-        $table->addColumn('ipAddress', IpAddressType::NAME)
+        $table->addColumn('ip_address', IpAddressType::NAME)
             ->setComment('IP address');
 
-        $table->addColumn('createdAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->addColumn('updatedAt', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('updated_at', Types::DATETIME_IMMUTABLE)
             ->setNotnull(false)
             ->setComment('Updated at');
 
         $table->setPrimaryKey(['id'])
             ->setComment('User auto logins')
-            ->addIndex(['userId'], 'K_UserAutoLogin_UserId')
-            ->addForeignKeyConstraint('users', ['userId'], ['id'], name: 'FK_UserAutoLogin_UserId');
+            ->addIndex(['user_id'], 'K__User_auto_login__User_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_auto_login__User_id');
     }
 
     public function down(Schema $schema) : void

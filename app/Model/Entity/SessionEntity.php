@@ -21,10 +21,10 @@ class SessionEntity
     #[Column(type: Types::TEXT, nullable: false)]
     public string $data;
 
-    #[Column(name: 'createdAt', type: Types::DATETIME_IMMUTABLE, nullable: false)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: false)]
     public ?DateTimeImmutable $createdAt;
 
-    #[Column(name: 'updatedAt', type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

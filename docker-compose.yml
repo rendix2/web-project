@@ -50,3 +50,11 @@ services:
     depends_on:
       - web-project-mysql
       - web-project-postgres
+
+  web-project-redis:
+    image: redis:latest
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./.docker/redis/data:/data

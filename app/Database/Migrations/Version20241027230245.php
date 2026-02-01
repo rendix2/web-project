@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -18,7 +21,7 @@ final class Version20241027230245 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('role');
+        $table = $schema->createTable('public.role');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -38,12 +41,18 @@ final class Version20241027230245 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create());
+
+        $table
             ->setComment('Roles');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('role');
+        $schema->dropTable('public.role');
     }
 }

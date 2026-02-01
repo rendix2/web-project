@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -18,7 +21,7 @@ final class Version20241105005240 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('mail');
+        $table = $schema->createTable('public.mail');
 
         $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
@@ -42,15 +45,19 @@ final class Version20241105005240 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('Mail history')
-            ->addIndex(['email_to'], 'K_Mail_EmailTo')
-            ->addForeignKeyConstraint('user_email', ['email_to'], ['email'], name: 'FK_Mail_EmailTo');
+            ->addIndex(['email_to'], 'K__Mail__Email_to')
+            ->addForeignKeyConstraint('user_email', ['email_to'], ['email'], name: 'FK__Mail__Email_to');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('mail');
+        $schema->dropTable('public.mail');
     }
 
 }

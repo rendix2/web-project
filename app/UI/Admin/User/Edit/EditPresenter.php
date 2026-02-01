@@ -182,7 +182,7 @@ class EditPresenter extends Presenter
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $this->getParameter('id'),
+                    'uuid' => $this->getParameter('uuid'),
                 ]
             );
 
@@ -251,7 +251,7 @@ class EditPresenter extends Presenter
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $this->getParameter('id'),
+                    'uuid' => $this->getParameter('uuid'),
                 ]
             );
 

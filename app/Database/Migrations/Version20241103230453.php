@@ -3,6 +3,9 @@
 namespace App\Database\Migrations;
 
 use App\Database\Types\IpAddressType;
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -14,12 +17,12 @@ final class Version20241103230453 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create userAutoLogin table';
+        return 'create user_auto_login table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('user_auto_login');
+        $table = $schema->createTable('public.user_auto_login');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -42,7 +45,11 @@ final class Version20241103230453 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User auto logins')
             ->addIndex(['user_id'], 'K__User_auto_login__User_id')
             ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_auto_login__User_id');
@@ -50,7 +57,7 @@ final class Version20241103230453 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userAutoLogin');
+        $schema->dropTable('public.user_auto_login');
     }
 
 }

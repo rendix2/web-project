@@ -21,7 +21,7 @@ class UserPasswordEntity
     #[Column(type: Types::INTEGER)]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
+    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'passwords')]
     #[JoinColumn(nullable: false)]
     public UserEntity $user;
 

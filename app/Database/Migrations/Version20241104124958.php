@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -13,12 +16,12 @@ final class Version20241104124958 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create userEmail history table';
+        return 'create user_email history table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('user_email');
+        $table = $schema->createTable('public.user_email');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -38,16 +41,20 @@ final class Version20241104124958 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setComment('User email history')
-            ->setPrimaryKey(['id'])
-            ->addIndex(['user_id'], 'K__UserEmail__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__UserEmail__User_id')
-            ->addUniqueIndex(['email'], 'UK_UserEmail_Email');
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
+            ->setComment('User email history')
+            ->addIndex(['user_id'], 'K__User_email__User_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_email__User_id')
+            ->addUniqueIndex(['email'], 'UK_User_email_Email');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userEmail');
+        $schema->dropTable('public.user_email');
     }
 
 }

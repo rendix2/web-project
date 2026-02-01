@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -11,14 +14,10 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20241023000710 extends AbstractMigration
 {
-    public function getDescription() : string
-    {
-        return 'create userPassword table';
-    }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('user_password');
+        $table = $schema->createTable('public.user_password');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -38,15 +37,19 @@ final class Version20241023000710 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User password history')
-            ->addIndex(['user_id'], 'K_UserPassword_UserId')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK_UserPassword_UserId');
+            ->addIndex(['user_id'], 'K__User_password__User_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_password__User_id');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userPassword');
+        $schema->dropTable('public.user_password');
     }
 
 }

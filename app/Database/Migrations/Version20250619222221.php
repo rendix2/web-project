@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -18,7 +21,7 @@ final class Version20250619222221 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $table = $schema->createTable('session');
+        $table = $schema->createTable('public.session');
 
         $table->addColumn('id', Types::STRING)
             ->setComment('ID')
@@ -36,13 +39,17 @@ final class Version20250619222221 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated At');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('Sessions');
     }
 
     public function down(Schema $schema): void
     {
-        $schema->dropTable('session');
+        $schema->dropTable('public.session');
     }
 
 }

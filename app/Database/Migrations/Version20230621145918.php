@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -20,7 +23,7 @@ final class Version20230621145918 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('users');
+        $table = $schema->createTable('public.users');
 
         $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
@@ -59,7 +62,14 @@ final class Version20230621145918 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create());
+
+        $table
             ->setComment('Users')
             ->addUniqueIndex(['email'], 'UK_User_Email')
             ->addUniqueIndex(['uuid'], 'UK_User_UUID')
@@ -68,7 +78,7 @@ final class Version20230621145918 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('users');
+        $schema->dropTable('public.users');
     }
 
 }

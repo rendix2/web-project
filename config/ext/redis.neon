@@ -1,0 +1,17 @@
+extensions:
+    redis: Contributte\Redis\DI\RedisExtension
+
+redis:
+    debug: %debugMode%
+    clientFactory: Predis\Client
+    connection:
+        default:
+            uri: tcp://web-project-redis
+            sessions: false
+            storage: true
+            options: ['parameters': ['database': 0]]
+        session:
+            uri: tcp://web-project-redis
+            sessions: true
+            storage: false
+            options: ['parameters': ['database': 1]]

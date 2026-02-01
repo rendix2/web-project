@@ -3,6 +3,9 @@
 namespace App\Database\Migrations;
 
 use App\Database\Types\IpAddressType;
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -19,7 +22,7 @@ final class Version20250624214039 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $table = $schema->createTable('user_login_attempt');
+        $table = $schema->createTable('public.user_login_attempt');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -35,13 +38,17 @@ final class Version20250624214039 extends AbstractMigration
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User login attempts');
     }
 
     public function down(Schema $schema): void
     {
-        $schema->dropTable('userLoginAttempt');
+        $schema->dropTable('public.user_login_attempt');
     }
 
 }

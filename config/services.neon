@@ -15,3 +15,4 @@ includes:
     - %configDir%/ext/translation.neon
     - %configDir%/ext/menu.neon
     - %configDir%/ext/mailing.neon
+    - %configDir%/ext/redis.neon

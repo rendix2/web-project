@@ -22,7 +22,7 @@ class UserEmailEntity
     #[Column(type: Types::INTEGER)]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
+    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'emails')]
     #[JoinColumn(unique: true, nullable: false)]
     public UserEntity $user;
 

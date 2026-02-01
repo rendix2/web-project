@@ -13,7 +13,7 @@ application:
 session:
     debugger: true
     expiration: 14 days
-    autoStart: true
+    autoStart: smart
     #handler: @SessionHandler
 
 latte:

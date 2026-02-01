@@ -2,6 +2,9 @@
 
 namespace App\Database\Migrations;
 
+use Doctrine\DBAL\Schema\Name\Identifier;
+use Doctrine\DBAL\Schema\Name\UnqualifiedName;
+use Doctrine\DBAL\Schema\PrimaryKeyConstraintEditor;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;
@@ -13,12 +16,12 @@ final class Version20241102092516 extends AbstractMigration
 {
     public function getDescription() : string
     {
-        return 'create userActivation table';
+        return 'create user_activation table';
     }
 
     public function up(Schema $schema) : void
     {
-        $table = $schema->createTable('user_activation');
+        $table = $schema->createTable('public.user_activation');
 
         $table->addColumn('id', Types::INTEGER)
             ->setAutoincrement(true)
@@ -41,7 +44,11 @@ final class Version20241102092516 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-        $table->setPrimaryKey(['id'])
+        $primaryKey = new PrimaryKeyConstraintEditor();
+        $primaryKey->setIsClustered(false);
+        $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
+
+        $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User activation keys')
             ->addUniqueIndex(['user_id'], 'UK__user_activation__user_id')
             ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__user_activation__user_id');
@@ -49,7 +56,7 @@ final class Version20241102092516 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
-        $schema->dropTable('userActivation');
+        $schema->dropTable('public.user_activation');
     }
 
 }

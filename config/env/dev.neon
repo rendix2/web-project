@@ -12,6 +12,7 @@ parameters:
             database: "web-project"
             dsn: "pgsql:host=web-project-postgres;dbname=web-project"
             charset: utf8
+            server: 17
 
 services:
 	# Dump mails in folder

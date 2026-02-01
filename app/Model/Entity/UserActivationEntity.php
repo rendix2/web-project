@@ -22,7 +22,7 @@ class UserActivationEntity
     #[Column(type: Types::INTEGER)]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
+    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'activationKeys')]
     #[JoinColumn(unique: true, nullable: false)]
     public UserEntity $user;
 

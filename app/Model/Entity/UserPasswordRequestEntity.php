@@ -21,7 +21,7 @@ class UserPasswordRequestEntity
     #[Column(type: Types::INTEGER)]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
+    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'passwordRequests')]
     #[JoinColumn(unique: true, nullable: false)]
     public UserEntity $user;
 

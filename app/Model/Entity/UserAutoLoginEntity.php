@@ -23,7 +23,7 @@ class UserAutoLoginEntity
     #[Column(type: Types::INTEGER)]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
+    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'autoLogins')]
     #[JoinColumn(unique: false, nullable: false)]
     public UserEntity $user;
 

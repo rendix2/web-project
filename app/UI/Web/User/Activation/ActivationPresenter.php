@@ -44,7 +44,7 @@ class ActivationPresenter extends Presenter
         }
 
         if ((new DateTimeImmutable()) > $userActivationEntity->validUntil) {
-            $this->error('invalid act key');
+            $this->error('Invalid activation key');
         }
 
         $userActivationEntity->user->isActive = true;

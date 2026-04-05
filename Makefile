@@ -4,6 +4,7 @@ git:
 	git config --global --add safe.directory /var/www/html
 
 php: composer.json composer.lock
+	php bin/console nette:cache:purge
 	composer validate
 	composer install
 
@@ -14,6 +15,7 @@ js: package.json package-lock.json
 db:
 	php bin/console database:create
 	php bin/console orm:schema-tool:drop --force --full-database
+	php bin/console nette:cache:purge
 	php bin/console migrations:migrate --no-interaction
 	php bin/console doctrine:fixtures:load --no-interaction
 

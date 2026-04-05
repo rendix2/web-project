@@ -53,6 +53,7 @@ class CreateDatabaseCommand extends Command
                 }
 
             $output->writeln('Database "' . $database . '" created (if it did not exist).');
+            $pdo = null;
 
             return 0;
         } catch (PDOException $e) {

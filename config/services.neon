@@ -6,7 +6,6 @@ search:
 
 services:
     RouterFactory: App\Core\RouterFactory::createRouter
-    SessionHandler: App\Model\SessionHandler
 
 includes:
     - %configDir%/ext/console.neon

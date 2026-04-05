@@ -42,7 +42,6 @@ class RoleEntity
         name: 'user_role',
         joinColumns: [
             new JoinColumn('role_id', 'id'),
-
         ],
         inverseJoinColumns: [
             new JoinColumn('user_id', 'id'),

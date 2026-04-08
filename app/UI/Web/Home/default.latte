@@ -1,153 +1,204 @@
 {block content}
-    <div id="banner">
-        <h1 n:block=title>Congratulations!</h1>
+<div class="container py-5">
+    <!-- Hero Header -->
+    <div id="banner" class="text-white p-5 mb-5 rounded-4 shadow position-relative overflow-hidden">
+        <div class="row align-items-center position-relative" style="z-index: 2;">
+            <div class="col-md-8">
+                <h1 n:block=title class="display-4 fw-bold mb-0">Congratulations!</h1>
+                <p class="lead opacity-75 mt-2">
+                    You have successfully created your <a href="https://nette.org" target="_blank" class="text-white border-bottom border-white border-opacity-50 text-decoration-none">Nette</a> Web project.
+                </p>
+                <div class="d-flex gap-3 mt-4 flex-wrap">
+                    <a href="https://doc.nette.org/quickstart" target="_blank" class="btn btn-sm btn-light rounded-pill px-3">Quick Start</a>
+                    <a href="https://doc.nette.org" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3">Documentation</a>
+                    <a href="https://forum.nette.org" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3">Forum</a>
+                    <a href="https://blog.nette.org" target="_blank" class="btn btn-sm btn-outline-light rounded-pill px-3">Blog</a>
+                </div>
+            </div>
+            <div class="col-md-4 text-end d-none d-md-block text-center">
+                <img src="data:image/png;base64,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" alt="Nette Bot" class="img-fluid floating-animation" style="max-height: 150px;">
+            </div>
+        </div>
+        <div class="nette-logo-bg"></div>
     </div>
 
-    <div id="content">
-        <h2>You have successfully created your <a href="https://nette.org" target="_blank">Nette</a> Web project.</h2>
+    <div class="row g-4 text-start">
+        <!-- Column 1: Core & System -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h3 class="h6 fw-bold text-primary text-uppercase"><i class="fas fa-microchip me-2"></i>Backend Core</h3>
+                </div>
+                <div class="card-body px-4 pt-0">
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-3">
+                            <a href="https://nette.org" target="_blank" class="text-dark fw-bold text-decoration-none">Nette Framework</a><br>
+                            <span class="text-muted">The core of your web application.</span>
+                        </li>
+                        <li class="mb-3">
+                            <a href="https://contributte.org/packages/contributte/console.html" target="_blank" class="text-dark fw-bold text-decoration-none">Symfony Console</a><br>
+                            <span class="text-muted">Powerful CLI tools via Contributte.</span>
+                        </li>
+                        <li>
+                            <a href="https://contributte.org/packages/contributte/menu-control.html" target="_blank" class="text-dark fw-bold text-decoration-none">Menu Control</a><br>
+                            <span class="text-muted">Elegant navigation management.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        <p>
-            <img src="data:image/png;base64,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"
-                 alt="">
-            If you are exploring Nette for the first time, you should read the
-            <a href="https://doc.nette.org/quickstart" target="_blank">Quick Start</a>, <a href="https://doc.nette.org"
-                                                                                           target="_blank">documentation</a>,
-            <a href="https://blog.nette.org" target="_blank">blog</a> and <a href="https://forum.nette.org"
-                                                                             target="_blank">forum</a>.
-        </p>
-        <p>
+        <!-- Column 2: Data & Persistence -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h3 class="h6 fw-bold text-success text-uppercase"><i class="fas fa-database me-2"></i>Persistence</h3>
+                </div>
+                <div class="card-body px-4 pt-0">
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-3">
+                            <a href="https://contributte.org/nettrine/" target="_blank" class="text-dark fw-bold text-decoration-none">Nettrine (Doctrine)</a><br>
+                            <span class="text-muted">Modern object-relational mapping.</span>
+                        </li>
+                        <li class="mb-3">
+                            <a href="https://contributte.org/packages/contributte/doctrine-migrations.html" target="_blank" class="text-dark fw-bold text-decoration-none">Migrations</a><br>
+                            <span class="text-muted">Safe database version control.</span>
+                        </li>
+                        <li>
+                            <a href="https://contributte.org/packages/contributte/doctrine-fixtures.html" target="_blank" class="text-dark fw-bold text-decoration-none">Fixtures</a><br>
+                            <span class="text-muted">Seed your database with testing data.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-        <ul>
-            <li>
-                <a href="https://docker.io" target="_blank">Docker</a>,
-            </li>
-            <li>
-                <a href="https://npmjs.com" target="_blank">npm</a>
-            </li>
-            <li>
-                <a href="https://fontawesome.com/" target="_blank">Font awesome</a>
-            </li>
-            <li>
-                <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank">Bootstrap
-                    5.3</a>
-            </li>
-            <li>
-                <a href="https://contributte.org/" target="_blank"> Contributte packages</a>
-                <ul>
-                    <li>
-                        <a href="https://contributte.org/nettrine/" target="_blank">Nettrine</a>
-                    </li>
+        <!-- Column 3: Frontend Stack -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4 border-top border-primary border-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h3 class="h6 fw-bold text-primary text-uppercase"><i class="fas fa-rocket me-2"></i>Frontend</h3>
+                </div>
+                <div class="card-body px-4 pt-0">
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-3">
+                            <a href="https://getbootstrap.com/docs/5.3/getting-started/introduction/" target="_blank" class="text-dark fw-bold text-decoration-none">Bootstrap 5.3</a><br>
+                            <span class="text-muted">Responsive and modern UI components.</span>
+                        </li>
+                        <li class="mb-3">
+                            <a href="https://fontawesome.com/" target="_blank" class="text-dark fw-bold text-decoration-none">Font Awesome</a><br>
+                            <span class="text-muted">Comprehensive icon library.</span>
+                        </li>
+                        <li class="mb-3">
+                            <a href="https://contributte.org/packages/contributte/webpack.html" target="_blank" class="text-dark fw-bold text-decoration-none">Asset Management</a><br>
+                            <span class="text-muted">Webpack or Vite integration.</span>
+                        </li>
+                        <li>
+                            <a href="https://npmjs.com" target="_blank" class="text-dark fw-bold text-decoration-none">NPM Ecosystem</a><br>
+                            <span class="text-muted">Package management for JS/CSS.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/doctrine-fixtures.html" target="_blank">Fixtures</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/doctrine-migrations.html" target="_blank">Migrations</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/menu-control.html" target="_blank">Menu
-                            control</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/console.html" target="_blank">Console</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/webpack.html" target="_blank">Webpack</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/datagrid/" target="_blank">Datagrid</a>
-                    </li>
-                    <li>
-                        <a href="https://contributte.org/packages/contributte/forms-bootstrap.html" target="_blank">Bootstrap
-                            forms</a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-        </p>
-
-        <h2>We hope you enjoy Nette!</h2>
-    </div>
-
-    <div class="card mt-1">
-        <div class="card-body">
-            <a href="{link :Web:User:Login:default}">Přihlášení</a>
-            <a href="{link :Web:User:Registration:default}">Registrace</a>
-
+        <!-- Column 4: UI Components -->
+        <div class="col-lg-3 col-md-6">
+            <div class="card h-100 border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h3 class="h6 fw-bold text-danger text-uppercase"><i class="fas fa-layer-group me-2"></i>Components</h3>
+                </div>
+                <div class="card-body px-4 pt-0">
+                    <ul class="list-unstyled small mb-0">
+                        <li class="mb-3">
+                            <a href="https://contributte.org/packages/contributte/datagrid/" target="_blank" class="text-dark fw-bold text-decoration-none">Ublaboo Datagrid</a><br>
+                            <span class="text-muted">Powerful tables with filtering and AJAX.</span>
+                        </li>
+                        <li class="mb-3">
+                            <a href="https://contributte.org/packages/contributte/forms-bootstrap.html" target="_blank" class="text-dark fw-bold text-decoration-none">Bootstrap Forms</a><br>
+                            <span class="text-muted">Automated Nette forms rendering.</span>
+                        </li>
+                        <li>
+                            <a href="https://docker.io" target="_blank" class="text-dark fw-bold text-decoration-none">Docker Support</a><br>
+                            <span class="text-muted">Containerized development environment.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
-    <style>
-        html {
-            font: normal 18px/1.3 Georgia, "New York CE", utopia, serif;
-            color: #666;
-            -webkit-text-stroke: 1px rgba(0, 0, 0, 0);
-            overflow-y: scroll;
-        }
+    <!-- Extra Utilities Bar -->
+    <div class="mt-4 p-3 bg-white rounded-4 shadow-sm border-0 d-flex flex-wrap align-items-center justify-content-center gap-4">
+        <span class="text-muted small fw-bold text-uppercase">Framework Resources:</span>
+        <a href="https://contributte.org/" target="_blank" class="text-decoration-none d-flex align-items-center gap-2 small"><i class="fas fa-box text-primary"></i> Contributte Packages</a>
+        <a href="https://nette.org" target="_blank" class="text-decoration-none d-flex align-items-center gap-2 small"><i class="fas fa-globe text-primary"></i> Nette.org</a>
+    </div>
 
-        body {
-            background: #3484d2;
-            color: #333;
-            margin: 2em auto;
-            padding: 0 .5em;
-            max-width: 600px;
-            min-width: 320px;
-        }
+    <!-- Main Navigation Actions -->
+    <div class="mt-5 text-center">
+        <div class="d-inline-flex gap-3 bg-dark p-2 rounded-pill shadow">
+            <a href="{link :Web:User:Login:default}" class="btn btn-primary px-5 rounded-pill fw-bold">Login</a>
+            <a href="{link :Web:User:Registration:default}" class="btn btn-outline-light px-5 rounded-pill fw-bold">Sign up</a>
+        </div>
+        <div class="mt-4">
+            <p class="text-muted small">
+                We hope you enjoy Nette!
+            </p>
+        </div>
+    </div>
+</div>
 
-        a {
-            color: darkblue;
-            padding: 3px 1px;
-        }
+<style>
+    body {
+        background-color: #f8fafc;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: #1e293b;
+    }
 
-        a:hover, a:active, a:focus {
-            background-color: #006aeb;
-            text-decoration: none;
-            color: white;
-        }
+    #banner {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        border: none;
+    }
 
-        #banner {
-            border-radius: 12px 12px 0 0;
-            background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAB5CAMAAADPursXAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAGBQTFRFD1CRDkqFDTlmDkF1D06NDT1tDTNZDk2KEFWaDTZgDkiCDTtpDT5wDkZ/DTBVEFacEFOWD1KUDTRcDTFWDkV9DkR7DkN4DkByDTVeDC9TDThjDTxrDkeADkuIDTRbDC9SbsUaggAAAEdJREFUeNqkwYURgAAQA7DH3d3335LSKyxAYpf9vWCpnYbf01qcOdFVXc14w4BznNTjkQfsscAdU3b4wIh9fDVYc4zV8xZgAAYaCMI6vPgLAAAAAElFTkSuQmCC);
-            border: 1px solid #eff4f7;
-        }
+    .nette-logo-bg {
+        position: absolute;
+        right: -50px;
+        top: -50px;
+        width: 300px;
+        height: 300px;
+        background: url(https://files.nette.org/images/logo-nette@2.png) no-repeat center;
+        background-size: contain;
+        opacity: 0.05;
+        transform: rotate(-10deg);
+    }
 
-        h1 {
-            font: inherit;
-            color: white;
-            font-size: 50px;
-            line-height: 121px;
-            margin: 0;
-            padding-left: 4%;
-            background: url(https://files.nette.org/images/logo-nette@2.png) no-repeat 95%;
-            background-size: 130px auto;
-            text-shadow: 1px 1px 0 rgba(0, 0, 0, .9);
-        }
+    .card {
+        transition: all 0.2s ease-in-out;
+    }
 
-        @media (max-width: 600px) {
-            h1 {
-                background: none;
-                font-size: 40px;
-            }
-        }
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05) !important;
+    }
 
-        #content {
-            background: lightgray;
-            border: 1px solid #eff4f7;
-            border-radius: 0 0 12px 12px;
-            padding: 10px 4%;
-            overflow: hidden;
-        }
+    .card-body a:hover {
+        color: #3484d2 !important;
+        text-decoration: underline !important;
+    }
 
-        h2 {
-            font: inherit;
-            padding: 1.2em 0;
-            margin: 0;
-        }
+    .floating-animation {
+        animation: float 5s ease-in-out infinite;
+    }
 
-        img {
-            border: none;
-            float: right;
-            margin: 0 0 1em 3em;
-        }
-    </style>
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .btn-primary {
+        background-color: #3484d2;
+        border-color: #3484d2;
+    }
+</style>
 {/block}

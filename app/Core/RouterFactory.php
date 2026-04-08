@@ -16,7 +16,7 @@ final class RouterFactory
         $router = new RouteList;
 
         $router->addRoute('<presenter>/<action>/<uuid>', [
-                'presenter' => 'Web:Dashboard',
+                'presenter' => 'Web:Home',
                 'action' => 'edit',
                 'uuid' => [
                     Route::Pattern => '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
@@ -25,7 +25,7 @@ final class RouterFactory
         );
 
         $router->addRoute('<presenter>/<action>/<id>', [
-                'presenter' => 'Web:Dashboard',
+                'presenter' => 'Web:Home',
                 'action' => 'edit',
                 'id' => [
                     Route::Pattern => '\d+',
@@ -33,7 +33,7 @@ final class RouterFactory
             ]
         );
 
-        $router->addRoute('<presenter>/<action>', 'Web:Dashboard:default');
+        $router->addRoute('<presenter>/<action>', 'Web:Home:default');
 
         return $router;
     }

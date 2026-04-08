@@ -15,7 +15,7 @@ Thank you for your generosity!
 Requirements
 ------------
 
-This Web Project is compatible with Nette 3.2 and requires PHP 8.1.
+This Web Project is compatible with Nette 3.2 and requires PHP 8.3.
 
 
 Installation
@@ -28,6 +28,17 @@ follow [these instructions](https://doc.nette.org/composer). Then, run:
 	cd path/to/install
 
 Ensure the `temp/` and `log/` directories are writable.
+
+Asset Building with Vite
+------------------------
+
+This project supports Vite for asset building, which is recommended but optional. To activate Vite:
+
+1. Uncomment the `type: vite` line in the `common.neon` configuration file under the assets mapping section.
+2. Then set up and build the assets:
+
+   	npm install
+   	npm run build
 
 
 Web Server Setup

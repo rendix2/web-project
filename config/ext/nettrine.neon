@@ -4,15 +4,13 @@ extensions:
     nettrine.fixtures: Nettrine\Fixtures\DI\FixturesExtension
     nettrine.extensions.beberlei: Nettrine\Extensions\Beberlei\DI\BeberleiBehaviorExtension
 
-    nettrine.cache: Nettrine\Cache\DI\CacheExtension(%debugMode%)
+    #nettrine.cache: Nettrine\Cache\DI\CacheExtension(%debugMode%)
 
     # Dbal
     nettrine.dbal: Nettrine\DBAL\DI\DbalExtension
 
     #Orm
     nettrine.orm: Nettrine\ORM\DI\OrmExtension
-
-    formMapper: FreezyBee\DoctrineFormMapper\DI\FormMapperExtension
 
 services:
     - Doctrine\ORM\Configuration

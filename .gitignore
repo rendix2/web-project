@@ -9,12 +9,15 @@ node_modules
 
 # assets
 www/assets
+www/dist
 
 # composer
 vendor
 
 # docker
 .docker/mysql
+.docker/postgres
+.docker/redis
 
 # temp
 temp

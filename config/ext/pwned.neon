@@ -1,0 +1,4 @@
+services:
+    - Jgxvx\Cilician\Service\HaveIBeenPwnedApiClient(http: @GuzzleHttp\Client, apiKey: '')
+    - Jgxvx\Cilician\Service\PwnedPasswordsApiClient
+    - Jgxvx\Cilician\Service\Cilician

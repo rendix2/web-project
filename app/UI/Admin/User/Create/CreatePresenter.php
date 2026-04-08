@@ -3,6 +3,9 @@
 namespace App\UI\Admin\User\Create;
 
 use App\Core\AutoLoginAuthenticator;
+use App\Forms\EmailFormControlFactory;
+use App\Forms\PasswordFormControlFactory;
+use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -23,11 +26,14 @@ class CreatePresenter extends Presenter
 {
 
     public function __construct(
-        private readonly Translator             $translator,
-        private readonly EntityManagerDecorator $em,
-        private readonly Passwords              $passwords,
-        private readonly MenuComponentFactory   $menuFactory,
-        private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
+        private readonly Translator                 $translator,
+        private readonly EntityManagerDecorator     $em,
+        private readonly Passwords                  $passwords,
+        private readonly MenuComponentFactory       $menuFactory,
+        private readonly AutoLoginAuthenticator     $autoLoginAuthenticator,
+        private readonly PasswordFormControlFactory $passwordFormControlFactory,
+        private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly UsernameFormControlFactory $usernameFormControlFactory,
     )
     {
     }
@@ -79,26 +85,20 @@ class CreatePresenter extends Presenter
             ->setRequired('admin-user-edit.form.surname.required')
             ->setMaxLength(512);
 
-        $form->addText('username', 'admin-user-edit.form.username.label')
-            ->setRequired('admin-user-edit.form.username.required')
-            ->setMaxLength(512);
+        $form->addComponent(
+            $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label')),
+            'username'
+        );
 
-        $form->addEmail('email', 'admin-user-edit.form.email.label')
-            ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(512);
+        $form->addComponent(
+            $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label')),
+            'email'
+        );
 
-        $form->addPassword('password', 'admin-user-edit.form.password.label')
-            ->setRequired('admin-user-edit.form.password.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
-            ->addCondition(Form::MinLength, 8)
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-            //->addRule(Form::Pattern, 'registration.form.password.ruleNotStartNumber', '^[^0-9].*')
-            //->addRule(Form::Pattern, 'registration.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-            //->addRule(Form::Pattern, 'registration.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-            //->addRule(Form::Pattern, 'registration.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
-            ->endCondition();
+        $form->addComponent(
+            $this->passwordFormControlFactory->create($this->translator->translate('admin-user-edit.form.password.label')),
+            'password'
+        );
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
@@ -112,55 +112,9 @@ class CreatePresenter extends Presenter
 
         $form->addSubmit('send', 'admin-user-create.form.submit.label');
 
-        $form->onValidate[] = [$this, 'createFormOnValidate'];
         $form->onSuccess[] = [$this, 'createFormSuccess'];
 
         return $form;
-    }
-
-    public function createFormOnValidate(Form $form) : void
-    {
-        $usernameExists = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'username' => $form->getHttpData()['username']
-                ]
-            );
-
-        if ($usernameExists) {
-            $form->addError(
-                $this->translator->translate('admin-user-edit.form.username.exists', ['username' => $form->getHttpData()['username']])
-            );
-        }
-
-        $emailExists = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'email' => $form->getHttpData()['email']
-                ]
-            );
-
-        if ($emailExists) {
-            $form->addError(
-                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-            );
-        }
-
-        $historyEmailExists = $this->em
-            ->getRepository(UserEmailEntity::class)
-            ->findOneBy(
-                [
-                    'email' => $form->getHttpData()['email']
-                ]
-            );
-
-        if ($historyEmailExists) {
-            $form->addError(
-                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-            );
-        }
     }
 
     public function createFormSuccess(Form $form) : void

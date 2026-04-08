@@ -8,6 +8,7 @@
   "form.email.label": "Email",
   "form.email.required": "Email is required",
   "form.email.exists": "Email already exists",
+  "form.email.invalidFormat": "Invalid format of email",
 
   "form.password.label": "Password",
   "form.password.required": "Password is required",

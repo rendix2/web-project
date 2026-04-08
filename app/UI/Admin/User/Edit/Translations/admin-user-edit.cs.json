@@ -8,6 +8,7 @@
   "form.email.label": "Email",
   "form.email.required": "Email je povinný",
   "form.email.exists": "Email %email% už existuje",
+  "form.email.invalidFormat": "Nesprávný formát emailu",
 
   "form.password.label": "Heslo",
   "form.password.required": "Heslo je povinné",

@@ -23,10 +23,10 @@ class UserEmailEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'emails')]
-    #[JoinColumn(unique: true, nullable: false)]
+    #[JoinColumn(nullable: false)]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 512, unique: true)]
+    #[Column(type: Types::STRING, length: 512)]
     public string $email;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]

@@ -48,8 +48,8 @@ final class Version20241104124958 extends AbstractMigration
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User email history')
             ->addIndex(['user_id'], 'K__User_email__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_email__User_id')
-            ->addUniqueIndex(['email'], 'UK_User_email_Email');
+            ->addIndex(['email'], 'IDX_User_email_Email')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_email__User_id');
     }
 
     public function down(Schema $schema) : void

@@ -2,8 +2,12 @@
 
 namespace App\UI\Web\User\ChangeEmail;
 
+use App\Forms\EmailFormControlFactory;
+use App\Forms\PasswordFormControlFactory;
+use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
+use App\Model\Repository\UserRepository;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use DateTimeImmutable;
@@ -23,9 +27,12 @@ class ChangeEmailPresenter extends Presenter
 {
 
     public function __construct(
-        private readonly EntityManagerDecorator $em,
-        private readonly Translator             $translator,
-        private readonly Passwords              $passwords,
+        private readonly EntityManagerDecorator     $em,
+        private readonly Translator                 $translator,
+        private readonly Passwords                  $passwords,
+        private readonly PasswordFormControlFactory $passwordFormControlFactory,
+        private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly UsernameFormControlFactory $usernameFormControlFactory,
     ) {
     }
 
@@ -41,23 +48,14 @@ class ChangeEmailPresenter extends Presenter
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
 
-        $form->addPassword('currentPassword', 'web-user-changePassword.form.currentPassword.label')
-            ->setRequired('admin-user-edit.form.password.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
+        $form->addComponent(
+            $this->passwordFormControlFactory->create($this->translator->translate('web-user-changePassword.form.currentPassword.label')), 'currentPassword',
+        );
 
-            ->addCondition(Form::MinLength, 8)
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-            //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
-            ->endCondition();
+        $emailControl = $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label'));
+        $emailControl->setExcludeUserId($this->getUser()->getId());
 
-        $form->addEmail('email', 'admin-user-edit.form.email.label')
-            ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(512);
+        $form->addComponent($emailControl, 'email');
 
         $form->addSubmit('changePassword', 'web-user-changeEmail.form.submit.name');
 
@@ -67,17 +65,21 @@ class ChangeEmailPresenter extends Presenter
         return $form;
     }
 
-    protected function changeEmailFormOnValidate(Form $form) : void
+    public function changeEmailFormOnValidate(Form $form) : void
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'id' => $this->getUser()->getIdentity()->getId()
-                ]
-            );
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->em
+            ->getRepository(UserEntity::class);
 
-        if (!$userEntity) {
+        /**
+         * @var ?UserEntity $userEntity
+         */
+        $userEntity = $userRepository
+            ->findOneById((string) $this->getUser()->getId());
+
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -91,34 +93,6 @@ class ChangeEmailPresenter extends Presenter
             }
         } else {
             $form->addError($this->translator->translate('web-user-changePassword.form.currentPassword.notMatch'));
-        }
-
-        $emailExists = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'email' => $form->getHttpData()['email']
-                ]
-            );
-
-        if ($emailExists) {
-            $form->addError(
-                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-            );
-        }
-
-        $historyEmailExists = $this->em
-            ->getRepository(UserEmailEntity::class)
-            ->findOneBy(
-                [
-                    'email' => $form->getHttpData()['email']
-                ]
-            );
-
-        if ($historyEmailExists) {
-            $form->addError(
-                $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-            );
         }
     }
 

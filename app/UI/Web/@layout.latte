@@ -28,5 +28,21 @@
         <div class="container-fluid">
             {include content}
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('[data-toggle="password"]').forEach(function(el) {
+                    el.addEventListener('click', function() {
+                        var targetId = this.getAttribute('data-target');
+                        var target = document.getElementById(targetId);
+                        if (target.getAttribute('type') === 'password') {
+                            target.setAttribute('type', 'text');
+                        } else {
+                            target.setAttribute('type', 'password');
+                        }
+                    });
+                });
+            });
+        </script>
     </body>
 </html>

@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\ForgetPassword\Change;
 
+use App\Forms\PasswordFormControlFactory;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -10,6 +11,7 @@ use Contributte\Mailing\IMailBuilderFactory;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Localization\Translator;
 use Nette\Mail\SmtpException;
 use App\Database\EntityManagerDecorator;
 
@@ -18,9 +20,10 @@ class ChangePresenter extends Presenter
 {
 
     public function __construct(
-        private readonly EntityManagerDecorator $em,
-        private readonly \Nette\Localization\Translator             $translator,
-        private readonly IMailBuilderFactory    $mailBuilderFactory,
+        private readonly EntityManagerDecorator     $em,
+        private readonly Translator                 $translator,
+        private readonly IMailBuilderFactory        $mailBuilderFactory,
+        private readonly PasswordFormControlFactory $passwordFactory,
     )
     {
     }
@@ -37,19 +40,10 @@ class ChangePresenter extends Presenter
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
 
-        $form->addPassword('password', 'web-user-changePassword.form.newPassword.label')
-            ->setRequired('admin-user-edit.form.password.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
-
-            ->addCondition(Form::MinLength, 8)
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartNumber', '^[^0-9].*')
-                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-                //->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
-            ->endCondition();
+        $form->addComponent(
+            $this->passwordFactory->create($this->translator->translate('web-user-changePassword.form.newPassword.label')),
+            'password'
+        );
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()

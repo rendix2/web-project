@@ -2,6 +2,9 @@
 
 namespace App\UI\Admin\User\List;
 
+use App\Forms\EmailFormControlFactory;
+use App\Forms\UsernameFormControlFactory;
+use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
@@ -18,8 +21,10 @@ class DataGridFactory
     private Datagrid $grid;
 
     public function __construct(
-        private readonly EntityManagerDecorator $em,
-        private readonly Translator             $translator,
+        private readonly EntityManagerDecorator     $em,
+        private readonly Translator                 $translator,
+        private readonly UsernameFormControlFactory $usernameFormControlFactory,
+        private readonly EmailFormControlFactory    $emailFormControlFactory,
     )
     {
         $this->grid = new Datagrid();
@@ -172,6 +177,9 @@ class DataGridFactory
             ->setTitle('admin-user-list.edit.inline.title');
 
         $setDefaultsCallback = function(Container $container, UserEntity $userEntity) : void {
+            $container->getComponent('username')->setExcludeUserId($userEntity->id);
+            $container->getComponent('email')->setExcludeUserId($userEntity->id);
+
             $container->setDefaults(
                 [
                     'fullName' => $userEntity->name . ' ' . $userEntity->surname,
@@ -183,55 +191,6 @@ class DataGridFactory
         };
 
         $onSubmitEdit = function(string $uuid, ArrayHash $values) : void {
-            $userEntity = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'uuid' => $uuid,
-                    ]
-                );
-
-            if ($userEntity->username !== $values->username) {
-                $usernameExists = $this->em
-                    ->getRepository(UserEntity::class)
-                    ->findOneBy(
-                        [
-                            'username' => $values->username
-                        ]
-                    );
-
-                if ($usernameExists) {
-                    $this->grid->presenter->flashMessage(
-                        $this->translator->translate('admin-user-edit.form.username.exists', ['username' => $values->username]),
-                        'danger'
-                    );
-
-                    $this->grid->presenter->redrawControl('flashes');
-
-                    return;
-                }
-            }
-
-            if ($userEntity->email !== $values->email) {
-                $emailExists = $this->em
-                    ->getRepository(UserEntity::class)
-                    ->findOneBy(
-                        [
-                            'email' => $values['email']
-                        ]
-                    );
-
-                if ($emailExists) {
-                    $this->grid->presenter->flashMessage(
-                        $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $values->email]),
-                        'danger'
-                    );
-                    $this->grid->presenter->redrawControl('flashes');
-
-                    return;
-                }
-            }
-
             if (!substr_count($values->fullName, ' ')) {
                 $this->grid->presenter->flashMessage(
                     $this->translator->translate('admin-user-list.form.fullName.noSpace'),
@@ -241,8 +200,6 @@ class DataGridFactory
 
                 return;
             }
-
-            [$name, $surname] = explode(' ', $values->fullName);
 
             $userEntity = $this->em
                 ->getRepository(UserEntity::class)
@@ -255,6 +212,16 @@ class DataGridFactory
             if (!$userEntity) {
                 $this->grid->presenter->error('user not found');
             }
+
+            if ($userEntity->email !== $values->email) {
+                $userEmailEntity = new UserEmailEntity();
+                $userEmailEntity->email = $values->email;
+                $userEmailEntity->user = $userEntity;
+
+                $userEntity->addUserEmailEntity($userEmailEntity);
+            }
+
+            [$name, $surname] = explode(' ', $values->fullName, 2);
 
             $userEntity->name = $name;
             $userEntity->surname = $surname;
@@ -272,23 +239,40 @@ class DataGridFactory
                     'success'
                 );
                 $this->grid->presenter->redrawControl('flashes');
+                bdump('OK');
             } catch (DbalException $exception) {
                 $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
                 $this->grid->presenter->redrawControl('flashes');
+                bdump('FAIL');
             }
         };
 
         $inlineEdit->onControlAdd[] = function(Container $container) : void {
+            $uuid = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit')['_id'] ?? null;
+            $userId = null;
+
+            // 2. Pokud máme UUID, dohledáme BigInt ID uživatele
+            if ($uuid) {
+                $user = $this->em->getRepository(UserEntity::class)->findOneBy(['uuid' => $uuid]);
+                if ($user) {
+                    $userId = $user->id; // Tohle je ten BigInt (string)
+                }
+            }
+
             $container->addText('fullName')
                 ->setRequired();
 
-            $container->addText('username')
-                ->setRequired('admin-user-edit.form.username.required')
-                ->setMaxLength(512);
+            $username = $this->usernameFormControlFactory->create('Username');
+            if ($userId) {
+                $username->setExcludeUserId($userId);
+            }
+            $container->addComponent($username, 'username');
 
-            $container->addEmail('email')
-                ->setRequired('admin-user-edit.form.email.required')
-                ->setMaxLength(512);
+            $email = $this->emailFormControlFactory->create('Email');
+            if ($userId) {
+                $email->setExcludeUserId($userId);
+            }
+            $container->addComponent($email, 'email');
 
             $container->addSelect('isActive', items: [0 => 'no', 1 => 'yes'])
                 ->setPrompt('select');

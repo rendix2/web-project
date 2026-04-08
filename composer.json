@@ -38,6 +38,7 @@
     "contributte/redis": "^0.6.2",
     "contributte/translation": "^2.0",
     "freezy-bee/doctrine-form-mapper": "^1.7",
+    "jgxvx/cilician": "^6.1",
     "latte/latte": "^3.0",
     "nette/application": "^3.2",
     "nette/assets": "^1.0",

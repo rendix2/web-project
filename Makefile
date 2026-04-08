@@ -4,7 +4,7 @@ git:
 	git config --global --add safe.directory /var/www/html
 
 php: composer.json composer.lock
-	php bin/console nette:cache:purge
+	#php bin/console nette:cache:purge
 	composer validate
 	composer install
 

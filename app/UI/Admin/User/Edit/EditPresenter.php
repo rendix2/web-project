@@ -3,6 +3,9 @@
 namespace App\UI\Admin\User\Edit;
 
 use App\Core\AutoLoginAuthenticator;
+use App\Forms\EmailFormControlFactory;
+use App\Forms\PasswordFormControlFactory;
+use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -25,13 +28,16 @@ class EditPresenter extends Presenter
 {
 
     public function __construct(
-        private readonly Translator             $translator,
-        private readonly EntityManagerDecorator $em,
-        private readonly Passwords              $passwords,
-        private readonly MenuComponentFactory   $menuFactory,
-        private readonly RolesDataGridFactory   $rolesDataGridFactory,
-        private readonly EmailsDataGridFactory  $emailsDataGridFactory,
-        private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
+        private readonly Translator                 $translator,
+        private readonly EntityManagerDecorator     $em,
+        private readonly Passwords                  $passwords,
+        private readonly MenuComponentFactory       $menuFactory,
+        private readonly RolesDataGridFactory       $rolesDataGridFactory,
+        private readonly EmailsDataGridFactory      $emailsDataGridFactory,
+        private readonly AutoLoginAuthenticator     $autoLoginAuthenticator,
+        private readonly UsernameFormControlFactory $usernameFormControlFactory,
+        private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly PasswordFormControlFactory $passwordFormControlFactory,
     )
     {
     }
@@ -118,6 +124,18 @@ class EditPresenter extends Presenter
 
     public function createComponentEditForm() : BootstrapForm
     {
+        $userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'uuid' => $this->getParameter('uuid'),
+                ]
+            );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
         $form = new BootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
@@ -133,30 +151,21 @@ class EditPresenter extends Presenter
             ->setRequired('admin-user-edit.form.surname.required')
             ->setMaxLength(512);
 
-        $form->addText('username', 'admin-user-edit.form.username.label')
-            ->setRequired('admin-user-edit.form.username.required')
-            ->setMaxLength(512);
 
-        $form->addEmail('email', 'admin-user-edit.form.email.label')
-            ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(512);
+        $usernameControl = $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label'));
+        $usernameControl->setExcludeUserId($userEntity->id);
+        $form->addComponent($usernameControl, 'username');
+
+
+        $emailControl = $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label'));
+        $emailControl->setExcludeUserId($userEntity->id);
+        $form->addComponent($emailControl, 'email');
 
         $form->addGroup('web-user-changePassword.form.header');
 
-        $form->addPassword('password', 'admin-user-edit.form.password.label')
-            ->addCondition(Form::Filled)
-                ->setRequired('admin-user-edit.form.password.required')
-                ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => 8]), 8)
-                ->addCondition(Form::MinLength, 8)
-                    ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-                    //->addRule(Form::Pattern, 'registration.form.password.ruleNotStartNumber', '^[^0-9].*')
-                    //->addRule(Form::Pattern, 'registration.form.password.ruleNotFinishNumber', '.*[^0-9]$')
-                    ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-                    ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
-                    //->addRule(Form::Pattern, 'registration.form.password.ruleNotStartUpperChar', '^[^A-Z].*')
-                    //->addRule(Form::Pattern, 'registration.form.password.ruleNotFinishUpperChar', '.*[^A-Z]$')
-                ->endCondition()
-            ->endCondition();
+        $passwordControl = $this->passwordFormControlFactory->create($this->translator->translate('admin-user-edit.form.password.label'));
+        $passwordControl->setRequired(false);
+        $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
@@ -188,52 +197,6 @@ class EditPresenter extends Presenter
 
         if (!$userEntity) {
             $this->error('user not found');
-        }
-
-        if ($userEntity->username !== $form->getHttpData()['username']) {
-            $usernameExists = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'username' => $form->getHttpData()['username']
-                    ]
-                );
-
-            if ($usernameExists) {
-                $form->addError(
-                    $this->translator->translate('admin-user-edit.form.username.exists', ['username' => $form->getHttpData()['username']])
-                );
-            }
-        }
-
-        if ($userEntity->email !== $form->getHttpData()['email']) {
-            $emailExists = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'email' => $form->getHttpData()['email']
-                    ]
-                );
-
-            if ($emailExists) {
-                $form->addError(
-                    $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-                );
-            }
-
-            $historyEmailExists = $this->em
-                ->getRepository(UserEmailEntity::class)
-                ->findOneBy(
-                    [
-                        'email' => $form->getHttpData()['email']
-                    ]
-                );
-
-            if ($historyEmailExists) {
-                $form->addError(
-                    $this->translator->translate('admin-user-edit.form.email.exists', ['email' => $form->getHttpData()['email']])
-                );
-            }
         }
 
         foreach ($userEntity->passwords as $usedPassword) {

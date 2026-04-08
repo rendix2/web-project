@@ -15,6 +15,7 @@ services:
     depends_on:
       - web-project-mysql
       - web-project-postgres
+      - web-project-redis
     tty: true
 
   web-project-mysql:

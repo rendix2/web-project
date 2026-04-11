@@ -39,7 +39,12 @@
   "role.header": "Role",
   "email.header": "Emails",
 
-  "emailGrid.createdAt": "Vytvořeno",
+  "emailGrid.createdAt": "Created",
+
+  "passwordHistory.header": "Password history",
+
+  "passwordHistoryGrid.id": "ID",
+  "passwordHistoryGrid.createdAt": "Created",
 
   "roleGrid.addRole": "Add Role",
   "roleGrid.removeRole": "Remove Role",

@@ -60,35 +60,38 @@ class UserEntity
     public ?DateTimeImmutable $updatedAt;
 
     /**
-     * @var UserPasswordEntity[] $passwords
+     * @var Collection<int, UserPasswordEntity> $passwords
      */
     #[OneToMany(targetEntity: UserPasswordEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwords;
 
     /**
-     * @var UserPasswordRequestEntity $passwordRequests
+     * @var Collection<int, UserPasswordRequestEntity> $passwordRequests
      */
     #[OneToMany(targetEntity: UserPasswordRequestEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwordRequests;
 
     /**
-     * @var UserActivationEntity[] $activationKeys
+     * @var Collection<int, UserActivationEntity> $activationKeys
      */
     #[OneToMany(targetEntity: UserActivationEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $activationKeys;
 
     /**
-     * @var UserAutoLoginEntity[] $activationKeys
+     * @var Collection<int, UserAutoLoginEntity> $activationKeys
      */
-    #[OneToMany(targetEntity: UserAutoLoginEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
+    #[OneToMany(targetEntity: UserAutoLoginEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public Collection $autoLogins;
 
     /**
-     * @var UserEmailEntity[] $emails
+     * @var Collection<int, UserEmailEntity> $emails
      */
     #[OneToMany(targetEntity: UserEmailEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $emails;
 
+    /**
+     * @var Collection<int, RoleEntity> $roles
+     */
     #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]
     public Collection $roles;
 

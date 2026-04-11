@@ -2,7 +2,9 @@
     <div class="card">
         <div class="card-header">{_web-user-forgetPassword-set.form.header}</div>
         <div class="card-body">
-            {control setForm}
+            {snippet changePasswordFormWrapper}
+                {control changePasswordForm}
+            {/snippet}
         </div>
     </div>
 {/block}

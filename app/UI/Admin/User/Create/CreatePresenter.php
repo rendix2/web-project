@@ -9,20 +9,18 @@ use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
+use App\UI\Admin\AdminBasePresenter;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Presenter;
-use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use Nette\Security\AuthenticationException;
 use Nette\Security\Passwords;
 use App\Database\EntityManagerDecorator;
 
-class CreatePresenter extends Presenter
+class CreatePresenter extends AdminBasePresenter
 {
 
     public function __construct(
@@ -30,37 +28,11 @@ class CreatePresenter extends Presenter
         private readonly EntityManagerDecorator     $em,
         private readonly Passwords                  $passwords,
         private readonly MenuComponentFactory       $menuFactory,
-        private readonly AutoLoginAuthenticator     $autoLoginAuthenticator,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
     )
     {
-    }
-
-    public function startup() : void
-    {
-        parent::startup();
-
-        if (!$this->getUser()->isLoggedIn()) {
-            $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
-
-            $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
-
-            if ($autoLoginCookie === null) {
-                $this->error('Not logged in', IResponse::S401_Unauthorized);
-            } else {
-                try {
-                    $this->getUser()->login($autoLoginCookie, null);
-                } catch (AuthenticationException $exception) {
-                    $this->error('Not logged in', IResponse::S401_Unauthorized);
-                }
-            }
-        }
-
-        if (!$this->getUser()->isInRole('Admin')) {
-            $this->error('Forbidden', IResponse::S403_Forbidden);
-        }
     }
 
     protected function createComponentMenu() : MenuComponent
@@ -122,16 +94,18 @@ class CreatePresenter extends Presenter
         $values = $form->getValues();
         $userEntity = new UserEntity();
 
+        $passwordHash = $this->passwords->hash($values->password);
+
         $userEntity->name = $values->name;
         $userEntity->surname = $values->surname;
         $userEntity->username = $values->username;
         $userEntity->email = $values->email;
-        $userEntity->password = $this->passwords->hash($values->password);
+        $userEntity->password = $passwordHash;
         $userEntity->isActive = (bool) $values->isActive;
 
         $userPasswordEntity = new UserPasswordEntity();
         $userPasswordEntity->user = $userEntity;
-        $userPasswordEntity->password = $this->passwords->hash($values->password);
+        $userPasswordEntity->password = $passwordHash;
 
         $userEntity->addUserPasswordEntity($userPasswordEntity);
 

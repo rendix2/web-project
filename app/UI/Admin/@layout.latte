@@ -16,15 +16,25 @@
         {snippet flashes}
         <div class="container-fluid">
             {foreach $flashes as $flash}
-            <div class="alert alert-{$flash->type} alert-dismissible fade show mt-1" role="alert">
-                {if $flash->type === 'success'}
-		            <i class="fas fa-check"></i>
-		        {elseif $flash->type === 'danger'}
-		            <i class="fas fa-times"></i>
-		        {/if}
+                <div class="alert alert-{$flash->type} alert-dismissible fade show shadow-sm border-0 border-start border-4 border-{$flash->type} d-flex align-items-center py-3 mb-3" role="alert">
+                    <div class="alert-icon-aside me-3 h4 mb-0 opacity-75">
+                        {if $flash->type === 'success'}
+                            <i class="fas fa-check-circle"></i>
+                        {elseif $flash->type === 'danger'}
+                            <i class="fas fa-exclamation-triangle"></i>
+                        {elseif $flash->type === 'info'}
+                            <i class="fas fa-info-circle"></i>
+                        {elseif $flash->type === 'warning'}
+                            <i class="fas fa-exclamation-circle"></i>
+                        {/if}
+                    </div>
 
-                {$flash->message}
-            </div>
+                    <div>
+                        {$flash->message}
+                    </div>
+
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
             {/foreach}
         </div>
         {/snippet}

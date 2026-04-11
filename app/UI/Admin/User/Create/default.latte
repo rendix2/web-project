@@ -1,12 +1,24 @@
 {block title}{_admin-user-create.title}{/block}
 
 {block content}
-    <div class="card col-3">
-        <div class="card-header">
-            {_admin-user-create.header}
-        </div>
-        <div class="card-body">
-            {control createForm}
+<div class="container-fluid py-4">
+    <!-- Hlavní karta s formulářem - Roztažená na celou šířku nebo velkou část -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <h5 class="mb-0 py-1">
+                        <i class="fas fa-user-plus me-2"></i>
+                        {_admin-user-create.header}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {snippet createFormWrapper}
+                        {control createForm}
+                    {/snippet}
+                </div>
+            </div>
         </div>
     </div>
+</div>
 {/block}

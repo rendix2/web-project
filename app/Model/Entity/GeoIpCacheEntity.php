@@ -2,34 +2,37 @@
 
 namespace App\Model\Entity;
 
+use App\Database\Types\IpAddressType;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
-use Doctrine\ORM\Mapping\JoinColumn;
-use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\Table;
 
+/**
+ * class GeoIpCacheEntity
+ *
+ * @package App\Model\Entity
+ */
 #[Entity()]
-#[Table(name: 'user_password_request')]
-class UserPasswordRequestEntity
+#[Table(name: 'geo_ip_cache')]
+class GeoIpCacheEntity
 {
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::INTEGER)]
-    public int $id;
+    #[Column(type: Types::BIGINT)]
+    public string $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'passwordRequests')]
-    #[JoinColumn(unique: true, nullable: false)]
-    public UserEntity $user;
+    #[Column(type: IpAddressType::NAME, nullable: false)]
+    public string $ipAddress;
 
-    #[Column(type: Types::STRING, length: 1024)]
-    public string $forgetKey;
+    #[Column(type: Types::STRING, length: 2)]
+    public string $countryCode;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
-    public DateTimeImmutable $validUntil;
+    #[Column(type: Types::STRING, length: 255)]
+    public string $city;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
@@ -39,7 +42,6 @@ class UserPasswordRequestEntity
 
     public function __construct()
     {
-        $this->validUntil = new DateTimeImmutable('+1 day');
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }

@@ -3,7 +3,9 @@
         <div class="card col-3">
             <div class="card-header">{_web-user-changePassword.form.header}</div>
             <div class="card-body">
-                {control changePasswordForm}
+                {snippet changePasswordFormWrapper}
+                    {control changePasswordForm}
+                {/snippet}
             </div>
         </div>
     </div>

@@ -30,8 +30,14 @@ class UserAutoLoginEntity
     #[Column(type: Types::STRING, length: 1024)]
     public string $token;
 
-    #[Column(type: IpAddressType::NAME, length: 16)]
+    #[Column(type: IpAddressType::NAME, nullable: false)]
     public string $ipAddress;
+
+    #[Column(length: 512, nullable: true)]
+    public ?string $userAgent;
+
+    #[Column(length: 2, nullable: true)]
+    public ?string $countryCode;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
@@ -41,6 +47,9 @@ class UserAutoLoginEntity
 
     public function __construct()
     {
+        $this->userAgent = null;
+        $this->countryCode = null;
+
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }

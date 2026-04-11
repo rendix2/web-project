@@ -35,6 +35,12 @@ final class Version20250624214039 extends AbstractMigration
         $table->addColumn('ip_address', IpAddressType::NAME)
             ->setComment('IP Address');
 
+        $table->addColumn('user_agent', Types::STRING)
+            ->setComment('User agent');
+
+        $table->addColumn('country_code', Types::STRING)
+            ->setComment('Country code');
+
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 

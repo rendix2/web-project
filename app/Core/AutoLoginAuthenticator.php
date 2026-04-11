@@ -20,13 +20,13 @@ class AutoLoginAuthenticator implements Authenticator
     {
     }
 
-    function authenticate(string $user, string $password = null) : IIdentity
+    function authenticate(string $username, string $password = null) : IIdentity
     {
         $userAutoLoginEntity = $this->em
             ->getRepository(UserAutoLoginEntity::class)
             ->findOneBy(
                 [
-                    'token' => $user
+                    'token' => $username
                 ]
             );
 

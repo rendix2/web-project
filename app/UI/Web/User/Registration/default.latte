@@ -1,8 +1,12 @@
 {block content}
-    <div class="card col-3 mt-1">
-        <div class="card-header">{_web-user-registration.form.header}</div>
-        <div class="card-body">
+<div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 450px; width: 100%;">
+        <div class="card-header bg-primary text-white text-center py-3 rounded-top-4">
+            <h4 class="mb-0 fw-bold">{_web-user-registration.form.header}</h4>
+        </div>
+        <div class="card-body p-4">
             {control registrationForm}
         </div>
     </div>
+</div>
 {/block}

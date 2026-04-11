@@ -2,69 +2,41 @@
 
 namespace App\UI\Admin\User\Edit;
 
-use App\Core\AutoLoginAuthenticator;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\PasswordFormControlFactory;
 use App\Forms\UsernameFormControlFactory;
-use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
-use App\Model\Entity\UserPasswordEntity;
+use App\Model\Facade\UserFacade;
+use App\UI\Admin\AdminBasePresenter;
 use Contributte\Datagrid\Datagrid;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
-use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use Nette\Security\AuthenticationException;
-use Nette\Security\Passwords;
 use App\Database\EntityManagerDecorator;
+use stdClass;
 
-class EditPresenter extends Presenter
+class EditPresenter extends AdminBasePresenter
 {
+    private UserEntity $userEntity;
 
     public function __construct(
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
-        private readonly Passwords                  $passwords,
         private readonly MenuComponentFactory       $menuFactory,
-        private readonly RolesDataGridFactory       $rolesDataGridFactory,
-        private readonly EmailsDataGridFactory      $emailsDataGridFactory,
-        private readonly AutoLoginAuthenticator     $autoLoginAuthenticator,
+        private readonly RoleDataGrid               $roleDataGrid,
+        private readonly EmailDataGrid              $emailDataGrid,
+        private readonly PasswordHistoryGrid        $passwordHistoryGrid,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
+        private readonly UserFacade                 $userFacade,
     )
     {
-    }
-
-    public function startup() : void
-    {
-        parent::startup();
-
-        if (!$this->getUser()->isLoggedIn()) {
-            $this->getUser()->setAuthenticator($this->autoLoginAuthenticator);
-
-            $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
-
-            if ($autoLoginCookie === null) {
-                $this->error('Not logged in', IResponse::S401_Unauthorized);
-            } else {
-                try {
-                    $this->getUser()->login($autoLoginCookie, null);
-                } catch (AuthenticationException $exception) {
-                    $this->error('Not logged in', IResponse::S401_Unauthorized);
-                }
-            }
-        }
-
-        if (!$this->getUser()->isInRole('Admin')) {
-            $this->error('Forbidden', IResponse::S403_Forbidden);
-        }
     }
 
     public function actionDefault(string $uuid) : void
@@ -81,6 +53,8 @@ class EditPresenter extends Presenter
             $this->error('User not found', IResponse::S404_NotFound);
         }
 
+        $this->userEntity = $userEntity;
+
         $this['editForm']->setDefaults(
             [
                 'name' => $userEntity->name,
@@ -94,26 +68,27 @@ class EditPresenter extends Presenter
 
     public function renderDefault(string $uuid) : void
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'uuid' => $uuid,
-                ]
-            );
-
-        $this->template->userEntity = $userEntity;
+        $this->template->userEntity = $this->userEntity;
     }
 
     protected function createComponentRolesGrid() : DataGrid
     {
-        return $this->rolesDataGridFactory->create();
+        return $this->roleDataGrid
+            ->setUserEntity($this->userEntity)
+            ->create();
     }
 
     protected function createComponentEmailsGrid() : Datagrid
     {
-        return $this->emailsDataGridFactory
-            ->setUser($this->getUser())
+        return $this->emailDataGrid
+            ->setUserEntity($this->userEntity)
+            ->create();
+    }
+
+    protected function createComponentPasswordHistoryGrid() : Datagrid
+    {
+        return $this->passwordHistoryGrid
+            ->setUserEntity($this->userEntity)
             ->create();
     }
 
@@ -124,18 +99,6 @@ class EditPresenter extends Presenter
 
     public function createComponentEditForm() : BootstrapForm
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'uuid' => $this->getParameter('uuid'),
-                ]
-            );
-
-        if (!$userEntity) {
-            $this->error('user not found');
-        }
-
         $form = new BootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
@@ -151,20 +114,22 @@ class EditPresenter extends Presenter
             ->setRequired('admin-user-edit.form.surname.required')
             ->setMaxLength(512);
 
-
         $usernameControl = $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label'));
-        $usernameControl->setExcludeUserId($userEntity->id);
+        $usernameControl->setExcludeUserId($this->userEntity->id);
+
         $form->addComponent($usernameControl, 'username');
 
-
         $emailControl = $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label'));
-        $emailControl->setExcludeUserId($userEntity->id);
+        $emailControl->setExcludeUserId($this->userEntity->id);
+
         $form->addComponent($emailControl, 'email');
 
         $form->addGroup('web-user-changePassword.form.header');
 
         $passwordControl = $this->passwordFormControlFactory->create($this->translator->translate('admin-user-edit.form.password.label'));
         $passwordControl->setRequired(false);
+        $passwordControl->setHistoryUser($this->userEntity);
+
         $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
@@ -187,29 +152,26 @@ class EditPresenter extends Presenter
 
     public function editFormOnValidate(Form $form) : void
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'uuid' => $this->getParameter('uuid'),
-                ]
-            );
-
-        if (!$userEntity) {
-            $this->error('user not found');
-        }
-
-        foreach ($userEntity->passwords as $usedPassword) {
+        /*
+        foreach ($this->userEntity->passwords as $usedPassword) {
             if ($this->passwords->verify($form->getHttpData()['password'], $usedPassword->password)) {
                 $form->addError(
                     $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
                 );
+                $this->redrawControl('editFormWrapper');
+                $this->redrawControl('editForm');
+                $this->redrawControl('flashes');
+                break;
             }
         }
+        */
     }
 
     public function editFormSuccess(Form $form) : void
     {
+        $values = $form->getValues();
+
+        /*
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
@@ -248,22 +210,45 @@ class EditPresenter extends Presenter
 
             $userEntity->addUserPasswordEntity($userPasswordEntity);
         }
+        */
 
         try {
+            /*
             $this->em->persist($userEntity);
             $this->em->flush();
+            */
 
-            $this->flashMessage(
-                $this->translator->translate('admin-user-edit.form.submit.success', ['username' => $values->username]),
-                'success'
-            );
+            $this->userFacade->update($this->getParameter('uuid'), $values);
+
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('admin-user-edit.form.submit.success', ['username' => $values->username]);
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
-            $this->redrawControl('passwordHistory');
+            $this->redrawControl('editFormWrapper');
+            $this->redrawControl('editForm');
             $this['emailsGrid']->reload();
+            $this['passwordHistoryGrid']->reload();
+            $this['rolesGrid']->reload();
             //$this->redirect('this');
         } catch (DbalException $exception) {
-           $this->flashMessage($exception->getMessage(), 'danger');
-           $this->redrawControl('flashes');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $exception->getMessage();
+
+            $this->flashMessage($flash);
+            $this->redrawControl('flashes');
+        } catch (\Throwable $exception) {
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $exception->getMessage();
+
+            $this->flashMessage($flash);
+            $this->redrawControl('flashes');
         }
     }
 

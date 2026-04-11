@@ -43,6 +43,11 @@
 
   "emailGrid.createdAt": "Vytvořeno",
 
+  "passwordHistory.header": "Historie hesel",
+
+  "passwordHistoryGrid.id": "ID",
+  "passwordHistoryGrid.createdAt": "Vytvořeno",
+
   "roleGrid.addRole": "Přidat roli",
   "roleGrid.removeRole": "Odebrat roli",
   "roleGrid.role.id": "ID",

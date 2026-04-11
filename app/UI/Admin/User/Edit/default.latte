@@ -1,52 +1,72 @@
 {block title}{_admin-user-edit.title} {$userEntity->name} {$userEntity->surname}{/block}
 
 {block content}
-<div class="row row-cols-1 row-cols-md-3 g-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-header">
-                {$userEntity->name} {$userEntity->surname}
-            </div>
-            <div class="card-body">
-                {control editForm}
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="col">
-        <div class="card">
-            <div class="card-header">{_admin-user-edit.role.header}</div>
-            <div class="card-body">
-                {control rolesGrid}
+<div class="container-fluid py-4">
+    <!-- Hlavní karta s formulářem - Roztažená na celou šířku nebo velkou část -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <h5 class="mb-0 py-1">
+                        <i class="fas fa-user-edit me-2"></i>
+                        {$userEntity->name} {$userEntity->surname}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {snippet editFormWrapper}
+                        {control editForm}
+                    {/snippet}
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col">
-        <div class="card">
-            <div class="card-header">{_admin-user-edit.email.header}</div>
-            <div class="card-body">
-                {control emailsGrid}
-            </div>
-        </div>
-    </div>
 
-    {snippet passwordHistory}
-    <div class="col">
-        <div class="card">
-            <div class="card-header">{_web-user-changePassword.password-history.header}</div>
-            <div class="card-body">
-                <ul class="list-group">
-                    {foreach $userEntity->passwords as $password}
-                        <li class="list-group-item {if $iterator->isLast()}active{/if}"
-                            {if $iterator->isLast()}aria-current="true"{/if}>{$password->createdAt|localDate:yMd}</li>
-                    {/foreach}
-                </ul>
+
+    <div class="row g-4">
+        <!-- Role -->
+        <div class="col-12 col-xl-4">
+            <div class="card h-100 shadow-lg border-0">
+                <div class="card-header bg-light border-bottom-0">
+                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
+                        {_admin-user-edit.role.header}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {control rolesGrid}
+                </div>
+            </div>
+        </div>
+
+        <!-- E-maily -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card h-100 shadow-lg border-0">
+                <div class="card-header bg-light border-bottom-0">
+                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
+                        {_admin-user-edit.email.header}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {control emailsGrid}
+                </div>
+            </div>
+        </div>
+
+        <!-- Historie hesel -->
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card h-100 shadow-lg border-0">
+                <div class="card-header bg-light border-bottom-0">
+                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
+                        {_admin-user-edit.passwordHistory.header}
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        {control passwordHistoryGrid}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    {/snippet}
 </div>
 {/block}

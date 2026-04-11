@@ -6,9 +6,11 @@ use App\Core\AutoLoginAuthenticator;
 use App\Core\UsernameAndPasswordAuthenticator;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
+use App\Service\GeoIpService;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Doctrine\DBAL\Exception as DbalException;
+use donatj\UserAgent\UserAgentParser;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
@@ -20,10 +22,10 @@ class LoginPresenter extends Presenter
 {
 
     public function __construct(
-        private readonly Translator $translator,
-        private readonly EntityManagerDecorator $em,
+        private readonly Translator                       $translator,
+        private readonly EntityManagerDecorator           $em,
         private readonly UsernameAndPasswordAuthenticator $usernameAndPasswordAuthenticator,
-        private readonly UserLoginAttemptCheckService $userLoginAttemptCheckService,
+        private readonly GeoIpService                     $geoIpService,
     )
     {
     }
@@ -74,21 +76,9 @@ class LoginPresenter extends Presenter
         $ip = $this->getHttpRequest()->getRemoteAddress();
 
         try {
-            if ($this->userLoginAttemptCheckService->isIpBlocked($ip)) {
-                $this->flashMessage('Z této IP adresy je příliš mnoho pokusů. Zkuste to později.', 'danger');
-                return;
-            }
-
-            if ($this->userLoginAttemptCheckService->isUserNameBlocked($username)) {
-                $this->flashMessage('Tento účet je dočasně zablokován. Zkuste to prosím později.', 'danger');
-                return;
-            }
-
             $this->getUser()->setAuthenticator($this->usernameAndPasswordAuthenticator);
             $this->getUser()->login($username, $password);
             $this->getUser()->setExpiration('2 hours');
-
-            $this->userLoginAttemptCheckService->clearAttempts($username, $ip);
 
             if ($stayLoggedIn) {
                 $autoLoginToken = Random::generate(128);
@@ -108,10 +98,17 @@ class LoginPresenter extends Presenter
                     throw new AuthenticationException('Uživatel nebyl nalezen po přihlášení.');
                 }
 
+                $geoIpArray = $this->geoIpService->getInfo($ip);
+
+                $parser = new UserAgentParser();
+                $ua = $parser->parse();
+
                 $userAutoLoginEntity = new UserAutoLoginEntity();
                 $userAutoLoginEntity->user = $userEntity;
                 $userAutoLoginEntity->token = $autoLoginToken;
                 $userAutoLoginEntity->ipAddress = $ip;
+                $userAutoLoginEntity->countryCode = $geoIpArray['country'];
+                $userAutoLoginEntity->userAgent = $ua->browser();
 
                 try {
                     $this->em->persist($userAutoLoginEntity);
@@ -128,7 +125,6 @@ class LoginPresenter extends Presenter
             );
             $this->redirect(':Web:Home:default');
         } catch (AuthenticationException $exception) {
-            $this->userLoginAttemptCheckService->logAttempt($username, $ip);
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
         }

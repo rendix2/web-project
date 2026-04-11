@@ -3,6 +3,7 @@
 namespace App\UI\Web\User\View;
 
 use App\Model\Entity\UserEntity;
+use App\Model\Repository\UserRepository;
 use Nette\Application\UI\Presenter;
 use App\Database\EntityManagerDecorator;
 
@@ -20,15 +21,18 @@ class ViewPresenter extends Presenter
     {
     }
 
-    public function renderDefault(string $id) : void
+    public function renderDefault(string $uuid) : void
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'id' => $id,
-                ]
-            );
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->em
+            ->getRepository(UserEntity::class);
+
+        /**
+         * @var UserEntity $userEntity
+         */
+        $userEntity = $userRepository->findOneByUuid($uuid);
 
         if (!$userEntity) {
             $this->error('User not found');

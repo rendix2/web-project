@@ -4,7 +4,9 @@ namespace App\UI\Web\User\Login;
 
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserLoginAttemptEntity;
+use App\Service\GeoIpService;
 use DateTimeImmutable;
+use donatj\UserAgent\UserAgentParser;
 use InvalidArgumentException;
 
 class UserLoginAttemptCheckService
@@ -16,6 +18,7 @@ class UserLoginAttemptCheckService
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
+        private readonly GeoIpService           $geoIpService,
     ) {
         $this->maxAttempts = 5;
         $this->lockTimeSeconds = 900;
@@ -27,9 +30,16 @@ class UserLoginAttemptCheckService
             throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
         }
 
+        $geoIpArray = $this->geoIpService->getInfo($ipAddress);
+
+        $parser = new UserAgentParser();
+        $ua = $parser->parse();
+
         $userLoginAttemptEntity = new UserLoginAttemptEntity();
         $userLoginAttemptEntity->username = $username;
         $userLoginAttemptEntity->ipAddress = $ipAddress;
+        $userLoginAttemptEntity->userAgent = $ua->browser();
+        $userLoginAttemptEntity->countryCode = $geoIpArray['country'];
 
         $this->em->persist($userLoginAttemptEntity);
         $this->em->flush();
@@ -88,8 +98,10 @@ class UserLoginAttemptCheckService
         $this->em
             ->createQueryBuilder()
             ->delete(UserLoginAttemptEntity::class, 'a')
+
             ->where('a.username = :username')
             ->setParameter('username', $username)
+
             ->getQuery()
             ->execute();
 
@@ -100,8 +112,10 @@ class UserLoginAttemptCheckService
         $this->em
             ->createQueryBuilder()
             ->delete(UserLoginAttemptEntity::class, 'a')
+
             ->where('a.ipAddress = :ipAddress')
             ->setParameter('ipAddress', $ipAddress)
+
             ->getQuery()
             ->execute();
     }

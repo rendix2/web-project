@@ -3,6 +3,8 @@ search:
 		classes:
 			- *Factory
 			- *Facade
+			- *Grid
+			- *Service
 
 services:
     RouterFactory: App\Core\RouterFactory::createRouter

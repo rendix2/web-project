@@ -3,6 +3,7 @@
 namespace App\UI\Web\User\ChangePassword;
 
 use App\Forms\PasswordFormControlFactory;
+use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -98,6 +99,10 @@ class ChangePasswordPresenter extends Presenter
                     $form->addError(
                         $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
                     );
+                    $this->redrawControl('changePasswordFormWrapper');
+                    $this->redrawControl('changePasswordForm');
+                    $this->redrawControl('flashes');
+                    break;
                 }
             }
         } else {
@@ -119,6 +124,14 @@ class ChangePasswordPresenter extends Presenter
             $this->error('user not found');
         }
 
+        $autologinKeys = $this->em
+            ->getRepository(UserAutoLoginEntity::class)
+            ->findBy(
+                [
+                    'user' => $userEntity,
+                ]
+            );
+
         $userEntity->password = $this->passwords->hash($form->getValues()->password);
         $userEntity->updatedAt = new DateTimeImmutable();
 
@@ -129,6 +142,10 @@ class ChangePasswordPresenter extends Presenter
         $userEntity->addUserPasswordEntity($userPasswordEntity);
 
         try {
+            foreach ($autologinKeys as $autologinKey) {
+                $this->em->remove($autologinKey);
+            }
+
             $this->em->persist($userEntity);
             $this->em->flush();
 
@@ -137,6 +154,8 @@ class ChangePasswordPresenter extends Presenter
                 'success'
             );
             $this->redrawControl('flashes');
+            $this->redrawControl('changePasswordFormWrapper');
+            $this->redrawControl('changePasswordForm');
         } catch (DbalException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');

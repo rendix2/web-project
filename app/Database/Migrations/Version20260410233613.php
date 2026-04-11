@@ -13,36 +13,31 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20241103230453 extends AbstractMigration
+final class Version20260410233613 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
-        return 'create user_auto_login table';
+        return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
-        $table = $schema->createTable('public.user_auto_login');
+        $table = $schema->createTable('public.geo_ip_cache');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
-        $table->addColumn('user_id', Types::BIGINT)
-            ->setComment('User ID');
-
-        $table->addColumn('token', Types::STRING)
-            ->setComment('Token; saved in cookie')
-            ->setLength(1024);
-
         $table->addColumn('ip_address', IpAddressType::NAME)
-            ->setComment('IP address');
-
-        $table->addColumn('user_agent', Types::STRING)
-            ->setComment('User agent');
+            ->setComment('IP Address');
 
         $table->addColumn('country_code', Types::STRING)
+            ->setLength(2)
             ->setComment('Country code');
+
+        $table->addColumn('city', Types::STRING)
+            ->setLength(255)
+            ->setComment('City');
 
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
@@ -56,14 +51,11 @@ final class Version20241103230453 extends AbstractMigration
         $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
 
         $table->addPrimaryKeyConstraint($primaryKey->create())
-            ->setComment('User auto logins')
-            ->addIndex(['user_id'], 'K__User_auto_login__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_auto_login__User_id');
+            ->setComment('Geo IP Cache');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
-        $schema->dropTable('public.user_auto_login');
+        $schema->dropTable('public.geo_ip_cache');
     }
-
 }

@@ -6,6 +6,7 @@ use App\Forms\EmailFormControlFactory;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
+use App\Model\Facade\UserFacade;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
 use DateTimeImmutable;
@@ -16,7 +17,7 @@ use Nette\Localization\Translator;
 use Nette\Utils\ArrayHash;
 use App\Database\EntityManagerDecorator;
 
-class DataGridFactory
+class UserDataGrid
 {
     private Datagrid $grid;
 
@@ -25,6 +26,7 @@ class DataGridFactory
         private readonly Translator                 $translator,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly UserFacade                 $userFacade,
     )
     {
         $this->grid = new Datagrid();
@@ -168,6 +170,12 @@ class DataGridFactory
             ->setTitle('admin-user-list.delete.title')
             ->setIcon('trash')
             ->onClick[] = $onClick;
+
+        $allowDelete = function(UserEntity $userEntity) : bool {
+            return $userEntity->id !== (string)$this->grid->getPresenter()->getUser()->id;
+        };
+
+        $this->grid->allowRowsAction('delete', $allowDelete);
     }
 
     private function createInlineEdit() : void
@@ -239,6 +247,7 @@ class DataGridFactory
                     'success'
                 );
                 $this->grid->presenter->redrawControl('flashes');
+                $this->grid->reload();
                 bdump('OK');
             } catch (DbalException $exception) {
                 $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
@@ -251,32 +260,41 @@ class DataGridFactory
             $uuid = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit')['_id'] ?? null;
             $userId = null;
 
-            // 2. Pokud máme UUID, dohledáme BigInt ID uživatele
             if ($uuid) {
-                $user = $this->em->getRepository(UserEntity::class)->findOneBy(['uuid' => $uuid]);
+                $user = $this->em
+                    ->getRepository(UserEntity::class)
+                    ->findOneBy(
+                        [
+                            'uuid' => $uuid
+                        ]
+                    );
+
                 if ($user) {
-                    $userId = $user->id; // Tohle je ten BigInt (string)
+                    $userId = $user->id;
                 }
+            }
+
+            $username = $this->usernameFormControlFactory->create('Username');
+            $email = $this->emailFormControlFactory->create('Email');
+
+            if ($userId) {
+                $username->setExcludeUserId($userId);
+            }
+
+            if ($userId) {
+                $email->setExcludeUserId($userId);
             }
 
             $container->addText('fullName')
                 ->setRequired();
 
-            $username = $this->usernameFormControlFactory->create('Username');
-            if ($userId) {
-                $username->setExcludeUserId($userId);
-            }
             $container->addComponent($username, 'username');
-
-            $email = $this->emailFormControlFactory->create('Email');
-            if ($userId) {
-                $email->setExcludeUserId($userId);
-            }
             $container->addComponent($email, 'email');
 
             $container->addSelect('isActive', items: [0 => 'no', 1 => 'yes'])
                 ->setPrompt('select');
         };
+
         $inlineEdit->onSetDefaults[] = $setDefaultsCallback;
         $inlineEdit->onSubmit[] = $onSubmitEdit;
     }

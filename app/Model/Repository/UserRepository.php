@@ -33,4 +33,14 @@ class UserRepository extends EntityRepository
             );
     }
 
+    public function findOneByEmail(string $email)
+    {
+        return $this
+            ->findOneBy(
+                [
+                    'email' => $email,
+                ]
+            );
+    }
+
 }

@@ -5,6 +5,7 @@ namespace App\UI\Web\User\ForgetPassword\Request;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordRequestEntity;
+use App\Model\Repository\UserRepository;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Mailing\IMailBuilderFactory;
@@ -15,6 +16,7 @@ use Nette\Localization\Translator;
 use Nette\Mail\SmtpException;
 use Nette\Utils\Random;
 use App\Database\EntityManagerDecorator;
+use Throwable;
 
 class RequestPresenter extends Presenter
 {
@@ -53,27 +55,35 @@ class RequestPresenter extends Presenter
     {
         $values = $form->getValues();
 
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
+        /**
+         * @var UserRepository $userRepository
+         */
+        $userRepository = $this->em
+            ->getRepository(UserEntity::class);
+
+        /**
+         * @var ?UserEntity $userEntity
+         */
+        $userEntity = $userRepository
+            ->findOneByEmail($values->email);
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
+        $oldRequests = $this->em
+            ->getRepository(UserPasswordRequestEntity::class)
+            ->findBy(
                 [
-                    'email' => $values->email,
+                    'user' => $userEntity
                 ]
             );
 
-        if (!$userEntity) {
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.success'));
-            $this->redrawControl('flashes');
-
-            return;
+        foreach ($oldRequests as $oldRequest) {
+            $this->em->remove($oldRequest);
         }
 
-        if ($userEntity->passwordRequests->count()) {
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.success'));
-            $this->redrawControl('flashes');
-
-            return;
-        }
+        $this->em->flush();
 
         $userPasswordRequestEntity = new UserPasswordRequestEntity();
         $userPasswordRequestEntity->user = $userEntity;
@@ -105,6 +115,12 @@ class RequestPresenter extends Presenter
         } catch (SmtpException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
+        } catch (DbalException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
+        } catch (Throwable $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
         }
 
         $mailEntity = new MailEntity();
@@ -116,6 +132,11 @@ class RequestPresenter extends Presenter
             $this->em->persist($mailEntity);
             $this->em->flush();
         } catch (DbalException $exception) {
+            bdump($exception);
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
+        } catch (Throwable $exception) {
+            bdump($exception);
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');
         }

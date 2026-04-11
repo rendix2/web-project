@@ -14,6 +14,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use App\Database\EntityManagerDecorator;
@@ -32,12 +33,15 @@ class ChangeEmailPresenter extends Presenter
         private readonly Passwords                  $passwords,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
-        private readonly UsernameFormControlFactory $usernameFormControlFactory,
     ) {
     }
 
     public function actionDefault() : void
     {
+        if (!$this->getUser()->isLoggedIn()) {
+            $this->error('Pro změnu e-mailu musíte být přihlášeni.', IResponse::S403_Forbidden);
+        }
+
     }
 
     public function createComponentChangeEmailForm() : BootstrapForm
@@ -57,7 +61,7 @@ class ChangeEmailPresenter extends Presenter
 
         $form->addComponent($emailControl, 'email');
 
-        $form->addSubmit('changePassword', 'web-user-changeEmail.form.submit.name');
+        $form->addSubmit('send', 'web-user-changeEmail.form.submit.name');
 
         $form->onValidate[] = [$this, 'changeEmailFormOnValidate'];
         $form->onSuccess[] = [$this, 'changeEmailFormSuccess'];
@@ -83,15 +87,7 @@ class ChangeEmailPresenter extends Presenter
             $this->error('user not found');
         }
 
-        if ($this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
-            foreach ($userEntity->passwords as $userPassword) {
-                if ($this->passwords->verify($form->getHttpData()['password'], $userPassword->password)) {
-                    $form->addError(
-                        $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
-                    );
-                }
-            }
-        } else {
+        if (!$this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
             $form->addError($this->translator->translate('web-user-changePassword.form.currentPassword.notMatch'));
         }
     }
@@ -124,6 +120,13 @@ class ChangeEmailPresenter extends Presenter
         try {
             $this->em->persist($userEntity);
             $this->em->flush();
+
+            $this->flashMessage(
+                $this->translator->translate('web-user-changeEmail.form.submit.success'),
+                'success'
+            );
+            $this->redrawControl('flashes');
+            $this->redirect('this');
         } catch (DbalException $exception) {
             $this->flashMessage($exception->getMessage(), 'danger');
             $this->redrawControl('flashes');

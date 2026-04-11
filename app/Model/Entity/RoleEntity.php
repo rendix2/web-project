@@ -37,6 +37,9 @@ class RoleEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     public ?DateTimeImmutable $updatedAt;
 
+    /**
+     * @var Collection<int, UserEntity> $users
+     */
     #[ManyToMany(targetEntity: UserEntity::class, inversedBy: 'roles', cascade: ['persist', 'remove'])]
     #[JoinTable(
         name: 'user_role',

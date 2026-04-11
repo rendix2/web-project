@@ -27,11 +27,20 @@ class UserLoginAttemptEntity
     #[Column(type: IpAddressType::NAME, nullable: false)]
     public string $ipAddress;
 
+    #[Column(length: 512, nullable: true)]
+    public ?string $userAgent;
+
+    #[Column(length: 2, nullable: true)]
+    public ?string $countryCode;
+
     #[Column(type: Types::DATETIME_IMMUTABLE)]
     public DateTimeImmutable $createdAt;
 
     public function __construct()
     {
+        $this->userAgent = null;
+        $this->countryCode = null;
+
         $this->createdAt = new DateTimeImmutable();
     }
 

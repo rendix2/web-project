@@ -11,9 +11,11 @@ use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 
-class RolesDataGridFactory
+class RoleDataGrid
 {
     private Datagrid $grid;
+
+    private UserEntity $userEntity;
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
@@ -21,6 +23,13 @@ class RolesDataGridFactory
     )
     {
         $this->grid = new Datagrid();
+    }
+
+    public function setUserEntity(UserEntity $userEntity) : RoleDataGrid
+    {
+        $this->userEntity = $userEntity;
+
+        return $this;
     }
 
     public function create() : Datagrid
@@ -78,18 +87,6 @@ class RolesDataGridFactory
     private function createActions() : void
     {
         $addRole = function(string $roleId) {
-            $userEntity = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'id' => $this->grid->presenter->getUser()->getId(),
-                    ]
-                );
-
-            if (!$userEntity) {
-                $this->grid->presenter->error('user not found');
-            }
-
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -102,11 +99,11 @@ class RolesDataGridFactory
                 $this->grid->error('role not found');
             }
 
-            $userEntity->addRoleEntity($roleEntity);
-            $userEntity->updatedAt = new DateTimeImmutable();
+            $this->userEntity->addRoleEntity($roleEntity);
+            $this->userEntity->updatedAt = new DateTimeImmutable();
 
             try {
-                $this->em->persist($userEntity);
+                $this->em->persist($this->userEntity);
                 $this->em->flush();
 
                 $this->grid->presenter->flashMessage('role added', 'success');
@@ -126,35 +123,11 @@ class RolesDataGridFactory
         $this->grid->allowRowsAction(
             'addRole',
             function(RoleEntity $roleEntity) : bool {
-                $userEntity = $this->em
-                    ->getRepository(UserEntity::class)
-                    ->findOneBy(
-                        [
-                            'id' => $this->grid->presenter->getUser()->getId(),
-                        ]
-                    );
-
-                if (!$userEntity) {
-                    $this->grid->presenter->error('user not found');
-                }
-
-                return !$userEntity->roles->contains($roleEntity);
+                return !$this->userEntity->roles->contains($roleEntity);
             }
         );
 
         $removeRole = function(string $roleId) {
-            $userEntity = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'id' => $this->grid->presenter->getUser()->getId(),
-                    ]
-                );
-
-            if (!$userEntity) {
-                $this->grid->presenter->error('user not found');
-            }
-
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -167,11 +140,11 @@ class RolesDataGridFactory
                 $this->grid->error('role not found');
             }
 
-            $userEntity->removeRoleEntity($roleEntity);
-            $userEntity->updatedAt = new DateTimeImmutable();
+            $this->userEntity->removeRoleEntity($roleEntity);
+            $this->userEntity->updatedAt = new DateTimeImmutable();
 
             try {
-                $this->em->persist($userEntity);
+                $this->em->persist($this->userEntity);
                 $this->em->flush();
 
                 $this->grid->presenter->flashMessage('role removed', 'success');
@@ -192,19 +165,7 @@ class RolesDataGridFactory
         $this->grid->allowRowsAction(
             'deleteRole',
             function(RoleEntity $roleEntity) : bool {
-                $userEntity = $this->em
-                    ->getRepository(UserEntity::class)
-                    ->findOneBy(
-                        [
-                            'id' => $this->grid->presenter->getUser()->getId(),
-                        ]
-                    );
-
-                if (!$userEntity) {
-                    $this->grid->presenter->error('user not found');
-                }
-
-                return $userEntity->roles->contains($roleEntity);
+                return $this->userEntity->roles->contains($roleEntity);
             }
         );
     }

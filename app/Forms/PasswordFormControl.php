@@ -2,10 +2,12 @@
 
 namespace App\Forms;
 
+use App\Model\Entity\UserEntity;
 use Jgxvx\Cilician\Service\Cilician;
 use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
 use Contributte\FormsBootstrap\Inputs\TextInput;
+use Nette\Security\Passwords;
 use Nette\Utils\Html;
 
 /**
@@ -19,10 +21,13 @@ class PasswordFormControl extends TextInput
 
     private bool $showPasswordEnabled = true;
 
+    private ?UserEntity $historyUser = null;
+
     public function __construct(
         string                      $label,
         private readonly Translator $translator,
         private readonly Cilician   $cilician,
+        private readonly Passwords  $passwords,
     )
     {
         parent::__construct($label);
@@ -33,7 +38,7 @@ class PasswordFormControl extends TextInput
             ->setRequired('admin-user-edit.form.password.required')
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => self::MIN_LENGTH]), self::MIN_LENGTH)
             ->addRule(
-                function ($control): bool {
+                function (TextInput $control): bool {
                     $password = $control->getValue();
 
                     try {
@@ -47,6 +52,28 @@ class PasswordFormControl extends TextInput
                 },
                 'admin-user-edit.form.password.pwnedError'
             )
+            ->addRule(
+                function (TextInput $control): bool {
+                    if ($this->historyUser === null || $control->getValue() === '') {
+                        return true;
+                    }
+
+                    foreach ($this->historyUser->passwords as $usedPassword) {
+                        if ($this->passwords->verify($control->getValue(), $usedPassword->password)) {
+                            //$this->parent->parent->redrawControl('editFormWrapper');
+                            //$this->parent->parent->redrawControl('editForm');
+                            //$this->parent->parent->redrawControl('flashes');
+                            $this->parent->parent->redrawControl();
+
+                            //$control->addError($this->translator->translate('admin-user-edit.form.password.alreadyUsed'));
+                            return false;
+                        }
+                    }
+
+                    return true;
+                },
+                'admin-user-edit.form.password.alreadyUsed'
+            )
             ->addCondition(Form::MinLength, self::MIN_LENGTH)
                 ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
                 ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
@@ -57,6 +84,12 @@ class PasswordFormControl extends TextInput
     public function setShowPasswordEnabled(bool $showPasswordEnabled): void
     {
         $this->showPasswordEnabled = $showPasswordEnabled;
+    }
+
+    public function setHistoryUser(UserEntity $user): self
+    {
+        $this->historyUser = $user;
+        return $this;
     }
 
     public function getControl(): Html

@@ -10,6 +10,7 @@
   "form.submit.name": "Login",
   "form.submit.success": "Successfully logged in",
 
+  "no_account_yet": "No account yet?",
   "registration": "Registration",
   "login": "Login"
 }

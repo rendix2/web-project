@@ -1,8 +1,36 @@
 {block content}
-    <div class="card">
-        <div class="card-header">{_web-user-edit.form.header}</div>
-        <div class="card-body">
-            {control editForm}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-6">
+            <div class="card shadow border-0 rounded-3">
+                <!-- Header s jemným pozadím a ikonou -->
+                <div class="card-header bg-light border-bottom p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                            <i class="fas fa-user-edit"></i> <!-- Pokud máš FontAwesome, jinak klidně bez <i> -->
+                        </div>
+                        <div>
+                            <h4 class="mb-0 fw-bold text-dark">{_web-user-edit.form.header}</h4>
+                            <small class="text-muted">Upravte své osobní údaje a nastavení účtu</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+                    <!-- Samotný Nette formulář -->
+                    <div class="edit-form-container">
+                        {control editForm}
+                    </div>
+                </div>
+
+                <!-- Footer s odkazem zpět (volitelné) -->
+                <div class="card-footer bg-transparent border-0 text-center pb-4">
+                    <a href="javascript:history.back()" class="btn btn-link text-decoration-none text-muted small">
+                        <i class="fas fa-arrow-left me-1"></i> Zpět bez uložení
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
+</div>
 {/block}

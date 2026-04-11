@@ -3,18 +3,20 @@
 namespace App\UI\Web\User\ForgetPassword\Change;
 
 use App\Forms\PasswordFormControlFactory;
-use App\Model\Entity\MailEntity;
+use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
+use App\Model\Entity\UserPasswordEntity;
+use App\Model\Entity\UserPasswordRequestEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Contributte\Mailing\IMailBuilderFactory;
+use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use Nette\Mail\SmtpException;
 use App\Database\EntityManagerDecorator;
-
+use Nette\Security\Passwords;
 
 class ChangePresenter extends Presenter
 {
@@ -22,17 +24,65 @@ class ChangePresenter extends Presenter
     public function __construct(
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
-        private readonly IMailBuilderFactory        $mailBuilderFactory,
         private readonly PasswordFormControlFactory $passwordFactory,
+        private readonly Passwords                  $passwords,
     )
     {
+        parent::__construct();
+    }
+
+    public function actionDefault(string $userId, string $forgetKey): void
+    {
+        /**
+         * @var UserEntity $userEntity
+         */
+        $userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'id' => $this->getParameter('userId'),
+                ]
+            );
+
+        /**
+         * @var UserPasswordRequestEntity $request
+         */
+        $request = $this->em
+            ->getRepository(UserPasswordRequestEntity::class)
+            ->findOneBy(
+                [
+                    'forgetKey' => $forgetKey,
+                    'user' => $userId,
+                ]
+            );
+
+        if (!$request) {
+            $this->error('Tento odkaz pro obnovu hesla je neplatný.', IResponse::S404_NotFound);
+        }
+
+        if ((new DateTimeImmutable()) > $request->validUntil) {
+            $oldRequests = $this->em
+                ->getRepository(UserPasswordRequestEntity::class)
+                ->findBy(
+                    [
+                        'user' => $userEntity
+                    ]
+                );
+
+            foreach ($oldRequests as $oldRequest) {
+                $this->em->remove($oldRequest);
+            }
+
+            $this->em->flush();
+            $this->error('Tento odkaz pro obnovu hesla je expirovaný.', IResponse::S403_Forbidden);
+        }
     }
 
     public function renderDefault(string $userId, string $forgetKey) : void
     {
     }
 
-    public function createComponentSetForm() : BootstrapForm
+    public function createComponentChangePasswordForm() : BootstrapForm
     {
         $form = new BootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
@@ -54,14 +104,42 @@ class ChangePresenter extends Presenter
                 ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
             ->endCondition();
 
-        $form->addSubmit('request', 'web-user-forgetPassword-request.form.submit.label');
+        $form->addSubmit('send', 'web-user-forgetPassword-request.form.submit.label');
 
-        $form->onSuccess[] = [$this, 'setFormSuccess'];
+        $form->onValidate[] = [$this, 'changePasswordFormOnValidate'];
+        $form->onSuccess[] = [$this, 'changePasswordFormSuccess'];
 
         return $form;
     }
 
-    public function setFormSuccess(Form $form) : void
+    public function changePasswordFormOnValidate(Form $form) : void
+    {
+        $userEntity = $this->em
+            ->getRepository(UserEntity::class)
+            ->findOneBy(
+                [
+                    'id' => $this->getParameter('userId')
+                ]
+            );
+
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
+
+        foreach ($userEntity->passwords as $userPassword) {
+            if ($this->passwords->verify($form->getHttpData()['password'], $userPassword->password)) {
+                $form->addError(
+                    $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
+                );
+                $this->redrawControl('editFormWrapper');
+                $this->redrawControl('editForm');
+                $this->redrawControl('flashes');
+                break;
+            }
+        }
+    }
+
+    public function changePasswordFormSuccess(Form $form) : void
     {
         $values = $form->getValues();
 
@@ -69,36 +147,77 @@ class ChangePresenter extends Presenter
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'email' => $values->email,
+                    'id' => $this->getParameter('userId'),
                 ]
             );
 
-        if ($userEntity) {
-            $mail = $this->mailBuilderFactory->create();
+        if (!$userEntity) {
+            $this->error('user not found');
+        }
 
-            $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
-            $mail->setSubject($this->translator->translate('web-user-forgetPassword-request-subject'));
-            $mail->setTemplateFile(__DIR__ . '/Mailing/request.' . $this->translator->getLocale() . '.latte');
+        $request = $this->em
+            ->getRepository(UserPasswordRequestEntity::class)
+            ->findOneBy(
+                [
+                    'user' => $userEntity
+                ]
+            );
 
-            try {
-                $mail->send();
-            } catch (SmtpException $exception) {
-                $this->flashMessage($exception->getMessage());
-                $this->redrawControl('flashes');
+        if (!$request) {
+            $this->error('request not found');
+        }
+
+        $oldRequests = $this->em
+            ->getRepository(UserPasswordRequestEntity::class)
+            ->findBy(
+                [
+                    'user' => $userEntity
+                ]
+            );
+
+        $autologinKeys = $this->em
+            ->getRepository(UserAutoLoginEntity::class)
+            ->findBy(
+                [
+                    'user' => $userEntity,
+                ]
+            );
+
+        $hashedPassword = $this->passwords->hash($values->password);
+
+        $userEntity->password = $hashedPassword;
+        $userEntity->updatedAt = new DateTimeImmutable();
+
+        $userPasswordEntity = new UserPasswordEntity();
+        $userPasswordEntity->user = $userEntity;
+        $userPasswordEntity->password = $hashedPassword;
+
+        $userEntity->addUserPasswordEntity($userPasswordEntity);
+
+        try {
+            foreach ($autologinKeys as $autologinKey) {
+                $this->em->remove($autologinKey);
             }
 
-            $mailEntity = new MailEntity();
-            $mailEntity->emailTo = $userEntity->email;
-            $mailEntity->body = $mail->getMessage()->getHtmlBody();
-            $mailEntity->subject = $this->translator->translate('web-user-forgetPassword-request-subject');
-
-            try {
-                $this->em->persist($mailEntity);
-                $this->em->flush();
-            } catch (DbalException $exception) {
-                $this->flashMessage($exception->getMessage(), 'danger');
-                $this->redrawControl('flashes');
+            foreach ($oldRequests as $oldRequest) {
+                $this->em->remove($oldRequest);
             }
+
+            $this->em->persist($userEntity);
+            $this->em->flush();
+
+            $this->flashMessage(
+                $this->translator->translate('web-user-changePassword.form.submit.success'),
+                'success'
+            );
+            $this->redrawControl('flashes');
+            $this->redrawControl('editFormWrapper');
+            $this->redrawControl('editForm');
+
+            $this->redirect(':Web:User:Login:default');
+        } catch (DbalException $exception) {
+            $this->flashMessage($exception->getMessage(), 'danger');
+            $this->redrawControl('flashes');
         }
     }
 

@@ -4,18 +4,19 @@ namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
+use App\Model\Entity\UserPasswordEntity;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
-use Nette\Security\User;
 use App\Database\EntityManagerDecorator;
+use Nette\Utils\Html;
 
-class EmailsDataGridFactory
+class EmailDataGrid
 {
 
     private Datagrid $grid;
 
-    private User $user;
+    private UserEntity $userEntity;
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
@@ -25,39 +26,29 @@ class EmailsDataGridFactory
         $this->grid = new Datagrid();
     }
 
-    public function setUser(User $user) : EmailsDataGridFactory
+    public function setUserEntity(UserEntity $userEntity) : EmailDataGrid
     {
-        $this->user = $user;
+        $this->userEntity = $userEntity;
 
         return $this;
     }
 
     public function create() : Datagrid
     {
-        $this->createColumns();
-
-        return $this->grid;
+        return $this->createColumns();
     }
 
     private function createDataSource() : QueryBuilder
     {
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'id' => $this->user->getId(),
-                ]
-            );
-
         return $this->em
             ->getRepository(UserEmailEntity::class)
             ->createQueryBuilder('_email')
 
             ->where('_email.user = :user')
-            ->setParameter('user', $userEntity);
+            ->setParameter('user', $this->userEntity);
     }
 
-    private function createColumns() : void
+    private function createColumns() : Datagrid
     {
         $this->grid->setDataSource($this->createDataSource());
         $this->grid->setDefaultPerPage(10);
@@ -87,8 +78,13 @@ class EmailsDataGridFactory
                     return $userEmailEntity->createdAt->format('d.m.Y');
                 }
             );
+
+        $this->grid->setRowCallback(function(UserEmailEntity $item, Html $tr) {
+            if ($item === $this->userEntity->emails->last()) {
+                $tr->addClass('table-primary');
+            }
+        });
+
+        return $this->grid;
     }
-
-
-
 }

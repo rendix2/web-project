@@ -16,7 +16,7 @@ class ActivationPresenter extends Presenter
     {
     }
 
-    public function actionDefault(string $key, string $userId) : void
+    public function actionDefault(string $userId, string $key) : void
     {
         $user = $this->em
             ->getRepository(UserEntity::class)

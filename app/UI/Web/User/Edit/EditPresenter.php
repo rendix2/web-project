@@ -25,6 +25,7 @@ class EditPresenter extends Presenter
         private readonly EntityManagerDecorator $em,
         private readonly Translator             $translator,
     ) {
+        parent::__construct();
     }
 
     public function actionDefault() : void
@@ -41,7 +42,7 @@ class EditPresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -69,7 +70,7 @@ class EditPresenter extends Presenter
             ->setRequired('admin-user-edit.form.surname.required')
             ->setMaxLength(512);
 
-        $form->addSubmit('change', 'web-user-edit.form.submit.label');
+        $form->addSubmit('send', 'web-user-edit.form.submit.label');
 
         $form->onSuccess[] = [$this, 'editFormSuccess'];
 
@@ -78,7 +79,7 @@ class EditPresenter extends Presenter
 
     public function editFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(EditUserProfileValues::class);
 
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
@@ -88,7 +89,7 @@ class EditPresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 

@@ -27,7 +27,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
 
     public function authenticate(string $username, string $password) : IIdentity
     {
-        $ip = $this->request->getRemoteAddress();
+        $ip = $this->request->getRemoteAddress() ?? '0.0.0.0';
 
         if ($this->userLoginAttemptCheckService->isIpBlocked($ip)) {
             throw new AuthenticationException('Z této IP adresy je příliš mnoho pokusů. Zkuste to prosím později.');
@@ -48,7 +48,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
             throw new AuthenticationException('User not found.');

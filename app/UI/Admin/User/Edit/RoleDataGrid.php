@@ -87,6 +87,9 @@ class RoleDataGrid
     private function createActions() : void
     {
         $addRole = function(string $roleId) {
+            /**
+             * @var ?RoleEntity $roleEntity
+             */
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -95,7 +98,7 @@ class RoleDataGrid
                     ]
                 );
 
-            if (!$roleEntity) {
+            if ($roleEntity === null) {
                 $this->grid->error('role not found');
             }
 
@@ -127,7 +130,10 @@ class RoleDataGrid
             }
         );
 
-        $removeRole = function(string $roleId) {
+        $closure = function (string $roleId) {
+            /**
+             * @var ?RoleEntity $roleEntity
+             */
             $roleEntity = $this->em
                 ->getRepository(RoleEntity::class)
                 ->findOneBy(
@@ -136,7 +142,7 @@ class RoleDataGrid
                     ]
                 );
 
-            if (!$roleEntity) {
+            if ($roleEntity === null) {
                 $this->grid->error('role not found');
             }
 
@@ -155,6 +161,7 @@ class RoleDataGrid
                 $this->grid->presenter->redrawControl('flashes');
             }
         };
+        $removeRole = $closure;
 
         $this->grid
             ->addActionCallback('deleteRole', 'admin-user-edit.roleGrid.removeRole')

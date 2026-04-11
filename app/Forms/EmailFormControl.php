@@ -38,7 +38,7 @@ class EmailFormControl extends TextInput
                 function (BaseControl $control): bool {
                     $email = (string) $control->getValue();
 
-                    if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                         return true;
                     }
 

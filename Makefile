@@ -64,3 +64,6 @@ update:
 	npm update
 	npm run build
 
+phpstan: dirs-build git php
+	php vendor/bin/phpstan analyse -vvv
+

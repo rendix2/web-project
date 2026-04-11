@@ -67,6 +67,12 @@
     "dg/composer-frontline": "^0.2.0",
     "nette/tester": "^2.5",
     "ninjify/coding-standard": "^0.12.1",
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan": "^2.1",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpstan/phpstan-doctrine": "^2.0",
+    "phpstan/phpstan-nette": "^2.0",
+    "phpstan/phpstan-strict-rules": "^2.0",
     "roave/security-advisories": "dev-latest",
     "symfony/thanks": "^1"
   },
@@ -83,9 +89,10 @@
   "prefer-stable": true,
   "config": {
     "allow-plugins": {
-      "symfony/thanks": true,
       "dealerdirect/phpcodesniffer-composer-installer": true,
-      "dg/composer-frontline": true
+      "dg/composer-frontline": true,
+      "phpstan/extension-installer": true,
+      "symfony/thanks": true
     },
     "optimize-autoloader": true,
     "sort-packages": true,

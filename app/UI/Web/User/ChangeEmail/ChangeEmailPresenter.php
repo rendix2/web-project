@@ -34,6 +34,7 @@ class ChangeEmailPresenter extends Presenter
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
     ) {
+        parent::__construct();
     }
 
     public function actionDefault() : void
@@ -53,10 +54,10 @@ class ChangeEmailPresenter extends Presenter
         $form->addProtection('Please try again.');
 
         $form->addComponent(
-            $this->passwordFormControlFactory->create($this->translator->translate('web-user-changePassword.form.currentPassword.label')), 'currentPassword',
+            $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')), 'currentPassword',
         );
 
-        $emailControl = $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label'));
+        $emailControl = $this->emailFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.email.label'));
         $emailControl->setExcludeUserId($this->getUser()->getId());
 
         $form->addComponent($emailControl, 'email');
@@ -71,6 +72,8 @@ class ChangeEmailPresenter extends Presenter
 
     public function changeEmailFormOnValidate(Form $form) : void
     {
+        $values = $form->getUntrustedValues(ChangeEmailValues::class);
+
         /**
          * @var UserRepository $userRepository
          */
@@ -87,14 +90,14 @@ class ChangeEmailPresenter extends Presenter
             $this->error('user not found');
         }
 
-        if (!$this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
+        if (!$this->passwords->verify($values->currentPassword, $userEntity->password)) {
             $form->addError($this->translator->translate('web-user-changePassword.form.currentPassword.notMatch'));
         }
     }
 
     public function changeEmailFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(ChangeEmailValues::class);
 
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
@@ -104,7 +107,7 @@ class ChangeEmailPresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 

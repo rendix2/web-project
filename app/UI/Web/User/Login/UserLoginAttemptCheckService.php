@@ -26,7 +26,7 @@ class UserLoginAttemptCheckService
 
     public function logAttempt(string $username, string $ipAddress): void
     {
-        if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+        if (filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
             throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
         }
 
@@ -49,7 +49,7 @@ class UserLoginAttemptCheckService
     {
         $since = new DateTimeImmutable("-{$this->lockTimeSeconds} seconds");
 
-        if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+        if (filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
             throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
         }
 
@@ -105,7 +105,7 @@ class UserLoginAttemptCheckService
             ->getQuery()
             ->execute();
 
-        if (!filter_var($ipAddress, FILTER_VALIDATE_IP)) {
+        if (filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
             throw new InvalidArgumentException("Neplatná IP adresa při mazání: $ipAddress");
         }
 

@@ -18,6 +18,7 @@ use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
 use Nette\Utils\Random;
+use Symfony\Contracts\Translation\LocaleAwareInterface;
 
 /**
  * class UserFacade
@@ -101,8 +102,8 @@ class UserFacade
             $userEntity = $userRepository
                 ->findOneByUuid($uuid);
 
-            if (!$userEntity) {
-                throw new \Exception('User not found');
+            if ($userEntity === null) {
+                throw new Exception('User not found');
             }
 
             if (isset($values->fullName) && str_contains($values->fullName, ' ')) {
@@ -227,7 +228,7 @@ class UserFacade
 
     public function createPasswordRequest(string $email): void
     {
-        $user = $this->em
+        $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
@@ -235,57 +236,57 @@ class UserFacade
                 ]
             );
 
-        if (!$user) {
+        if ($userEntity === null) {
             throw new Exception('User not found');
         }
 
         $request = new UserPasswordRequestEntity();
-        $request->user = $user;
+        $request->user = $userEntity;
         $request->forgetKey = Random::generate(256);
 
-        $user->addUserPasswordRequestEntity($request);
+        $userEntity->addUserPasswordRequestEntity($request);
         $this->em->persist($request);
         $this->em->flush();
 
-        $this->sendPasswordResetMail($user);
+        $this->sendPasswordResetMail($userEntity);
     }
 
     private function getUser(string $id): UserEntity
     {
-        $user = $this->em->getRepository(UserEntity::class)->find($id);
+        $userEntity = $this->em->getRepository(UserEntity::class)->find($id);
 
-        if (!$user) {
+        if ($userEntity === null) {
             throw new Exception('User not found');
         }
 
-        return $user;
+        return $userEntity;
     }
 
-    private function addPasswordHistory(UserEntity $user, string $hashedPassword): void
+    private function addPasswordHistory(UserEntity $userEntity, string $hashedPassword): void
     {
         $history = new UserPasswordEntity();
-        $history->user = $user;
+        $history->user = $userEntity;
         $history->password = $hashedPassword;
-        $user->addUserPasswordEntity($history);
+        $userEntity->addUserPasswordEntity($history);
         $this->em->persist($history);
     }
 
-    private function addEmailHistory(UserEntity $user, string $email): void
+    private function addEmailHistory(UserEntity $userEntity, string $email): void
     {
         $history = new UserEmailEntity();
-        $history->user = $user;
+        $history->user = $userEntity;
         $history->email = $email;
-        $user->addUserEmailEntity($history);
+        $userEntity->addUserEmailEntity($history);
         $this->em->persist($history);
     }
 
-    private function invalidateAutologinTokens(UserEntity $user): void
+    private function invalidateAutologinTokens(UserEntity $userEntity): void
     {
         $tokens = $this->em
             ->getRepository(UserAutoLoginEntity::class)
             ->findBy(
                 [
-                    'user' => $user
+                    'user' => $userEntity
                 ]
             );
 
@@ -302,7 +303,13 @@ class UserFacade
 
         $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
         $mail->setSubject($subject);
-        $mail->setTemplateFile(__DIR__ . '/../../UI/Web/User/Registration/Mailing/registration.' . $this->translator->getLocale() . '.latte');
+
+        if ($this->translator instanceof LocaleAwareInterface) {
+            $mail->setTemplateFile(__DIR__ . '/../../UI/Web/User/Registration/Mailing/registration.' . $this->translator->getLocale() . '.latte');
+        } else {
+            throw new Exception('Unknown translator without locale');
+        }
+
         $mail->setParameters(
             [
                 'name' => $userEntity->name,

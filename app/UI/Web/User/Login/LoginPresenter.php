@@ -28,6 +28,7 @@ class LoginPresenter extends Presenter
         private readonly GeoIpService                     $geoIpService,
     )
     {
+        parent::__construct();
     }
 
     public function renderDefault() : void
@@ -70,9 +71,11 @@ class LoginPresenter extends Presenter
 
     public function loginFormSuccess(Form $form) : void
     {
-        $username = $form->getValues()['username'];
-        $password = $form->getHttpData()['password'];
-        $stayLoggedIn = $form->getValues()['stayLoggedIn'];
+        $values = $form->getValues(LoginValues::class);
+
+        $username = $values->username;
+        $password = $values->password;
+        $stayLoggedIn = $values->stayLoggedIn;
         $ip = $this->getHttpRequest()->getRemoteAddress();
 
         try {
@@ -94,11 +97,18 @@ class LoginPresenter extends Presenter
                         ]
                     );
 
-                if (!$userEntity) {
+                if ($userEntity === null) {
                     throw new AuthenticationException('Uživatel nebyl nalezen po přihlášení.');
                 }
 
-                $geoIpArray = $this->geoIpService->getInfo($ip);
+                if ($ip === null) {
+                    $geoIpCountry = 'Unknown';
+                    $ip = 'Unknown';
+                } else {
+                    $geoIpArray = $this->geoIpService->getInfo($ip);
+
+                    $geoIpCountry = $geoIpArray['country'];
+                }
 
                 $parser = new UserAgentParser();
                 $ua = $parser->parse();
@@ -107,7 +117,7 @@ class LoginPresenter extends Presenter
                 $userAutoLoginEntity->user = $userEntity;
                 $userAutoLoginEntity->token = $autoLoginToken;
                 $userAutoLoginEntity->ipAddress = $ip;
-                $userAutoLoginEntity->countryCode = $geoIpArray['country'];
+                $userAutoLoginEntity->countryCode = $geoIpCountry;
                 $userAutoLoginEntity->userAgent = $ua->browser();
 
                 try {

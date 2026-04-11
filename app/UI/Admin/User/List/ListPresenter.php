@@ -18,6 +18,7 @@ class ListPresenter extends AdminBasePresenter
         private readonly MenuComponentFactory $menuFactory,
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault() : void

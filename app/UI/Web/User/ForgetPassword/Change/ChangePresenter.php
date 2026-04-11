@@ -34,7 +34,7 @@ class ChangePresenter extends Presenter
     public function actionDefault(string $userId, string $forgetKey): void
     {
         /**
-         * @var UserEntity $userEntity
+         * @var ?UserEntity $userEntity
          */
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
@@ -45,7 +45,7 @@ class ChangePresenter extends Presenter
             );
 
         /**
-         * @var UserPasswordRequestEntity $request
+         * @var ?UserPasswordRequestEntity $request
          */
         $request = $this->em
             ->getRepository(UserPasswordRequestEntity::class)
@@ -56,7 +56,7 @@ class ChangePresenter extends Presenter
                 ]
             );
 
-        if (!$request) {
+        if ($request === null) {
             $this->error('Tento odkaz pro obnovu hesla je neplatný.', IResponse::S404_NotFound);
         }
 
@@ -90,18 +90,16 @@ class ChangePresenter extends Presenter
         $form->setTranslator($this->translator);
         $form->addProtection('Please try again.');
 
-        $form->addComponent(
-            $this->passwordFactory->create($this->translator->translate('web-user-changePassword.form.newPassword.label')),
-            'password'
-        );
+        $passwordControl = $this->passwordFactory->create((string) $this->translator->translate('web-user-changePassword.form.newPassword.label'));
+        $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
             ->setRequired('admin-user-edit.form.password2.required')
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
-            ->addConditionOn($form['password'], Form::Filled, true)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+            ->addConditionOn($passwordControl, Form::Filled, true)
+            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addSubmit('send', 'web-user-forgetPassword-request.form.submit.label');
@@ -114,6 +112,9 @@ class ChangePresenter extends Presenter
 
     public function changePasswordFormOnValidate(Form $form) : void
     {
+        /**
+         * @var ?UserEntity $userEntity
+         */
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
@@ -122,12 +123,14 @@ class ChangePresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
+        $values = $form->getUntrustedValues(ChangePasswordValues::class);
+
         foreach ($userEntity->passwords as $userPassword) {
-            if ($this->passwords->verify($form->getHttpData()['password'], $userPassword->password)) {
+            if ($this->passwords->verify($values->password, $userPassword->password)) {
                 $form->addError(
                     $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
                 );
@@ -141,7 +144,7 @@ class ChangePresenter extends Presenter
 
     public function changePasswordFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(ChangePasswordValues::class);
 
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
@@ -151,7 +154,7 @@ class ChangePresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -163,7 +166,7 @@ class ChangePresenter extends Presenter
                 ]
             );
 
-        if (!$request) {
+        if ($request === null) {
             $this->error('request not found');
         }
 

@@ -5,6 +5,7 @@ namespace App\Forms;
 use App\Model\Entity\UserEntity;
 use Jgxvx\Cilician\Service\Cilician;
 use Nette\Application\UI\Form;
+use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Contributte\FormsBootstrap\Inputs\TextInput;
 use Nette\Security\Passwords;
@@ -36,10 +37,14 @@ class PasswordFormControl extends TextInput
 
         $this
             ->setRequired('admin-user-edit.form.password.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => self::MIN_LENGTH]), self::MIN_LENGTH)
+            ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => self::MIN_LENGTH]), self::MIN_LENGTH)
             ->addRule(
                 function (TextInput $control): bool {
                     $password = $control->getValue();
+
+                    if (!is_string($password) || $password === '') {
+                        return true;
+                    }
 
                     try {
                         $result = $this->cilician->checkPassword($password);
@@ -54,18 +59,19 @@ class PasswordFormControl extends TextInput
             )
             ->addRule(
                 function (TextInput $control): bool {
-                    if ($this->historyUser === null || $control->getValue() === '') {
+                    $password = $control->getValue();
+
+                    if ($this->historyUser === null || !is_string($password) || $password === '') {
                         return true;
                     }
 
                     foreach ($this->historyUser->passwords as $usedPassword) {
-                        if ($this->passwords->verify($control->getValue(), $usedPassword->password)) {
-                            //$this->parent->parent->redrawControl('editFormWrapper');
-                            //$this->parent->parent->redrawControl('editForm');
-                            //$this->parent->parent->redrawControl('flashes');
-                            $this->parent->parent->redrawControl();
+                        if ($this->passwords->verify($password, $usedPassword->password)) {
+                            $presenter = $this->lookup(Presenter::class, false);
 
-                            //$control->addError($this->translator->translate('admin-user-edit.form.password.alreadyUsed'));
+                            if ($presenter instanceof Presenter) {
+                                $presenter->redrawControl();
+                            }
                             return false;
                         }
                     }

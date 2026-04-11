@@ -25,6 +25,7 @@ class RegistrationPresenter extends Presenter
         private readonly UserFacade                 $userFacade,
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault() : void
@@ -57,17 +58,16 @@ class RegistrationPresenter extends Presenter
             'email'
         );
 
-        $form->addComponent(
-            $this->passwordFormControlFactory->create($this->translator->translate('web-user-login.form.password.label')), 'password',
-        );
+        $passwordControl = $this->passwordFormControlFactory->create($this->translator->translate('web-user-login.form.password.label'));
+        $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
             ->setRequired('admin-user-edit.form.password2.required')
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
-            ->addConditionOn($form['password'], Form::Filled, true)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+            ->addConditionOn($passwordControl, Form::Filled, true)
+                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addSubmit('send', 'web-user-registration.form.submit.label');

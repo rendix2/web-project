@@ -33,6 +33,7 @@ class CreatePresenter extends AdminBasePresenter
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
     )
     {
+        parent::__construct();
     }
 
     protected function createComponentMenu() : MenuComponent
@@ -58,26 +59,24 @@ class CreatePresenter extends AdminBasePresenter
             ->setMaxLength(512);
 
         $form->addComponent(
-            $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label')),
+            $this->usernameFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.username.label')),
             'username'
         );
 
         $form->addComponent(
-            $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label')),
+            $this->emailFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.email.label')),
             'email'
         );
 
-        $form->addComponent(
-            $this->passwordFormControlFactory->create($this->translator->translate('admin-user-edit.form.password.label')),
-            'password'
-        );
+        $passwordControl = $this->passwordFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.password.label'));
+        $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
-            ->addConditionOn($form['password'], Form::Filled, true)
-            ->setRequired('admin-user-edit.form.password2.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
-            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+            ->addConditionOn($passwordControl, Form::Filled, true)
+                ->setRequired('admin-user-edit.form.password2.required')
+                ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
+                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
@@ -91,7 +90,7 @@ class CreatePresenter extends AdminBasePresenter
 
     public function createFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(CreateUserValues::class);
         $userEntity = new UserEntity();
 
         $passwordHash = $this->passwords->hash($values->password);
@@ -101,7 +100,7 @@ class CreatePresenter extends AdminBasePresenter
         $userEntity->username = $values->username;
         $userEntity->email = $values->email;
         $userEntity->password = $passwordHash;
-        $userEntity->isActive = (bool) $values->isActive;
+        $userEntity->isActive = $values->isActive;
 
         $userPasswordEntity = new UserPasswordEntity();
         $userPasswordEntity->user = $userEntity;

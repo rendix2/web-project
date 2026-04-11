@@ -18,6 +18,7 @@ class LogoutPresenter extends Presenter
         private readonly EntityManagerDecorator $em,
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault() : void
@@ -35,7 +36,7 @@ class LogoutPresenter extends Presenter
                     ]
                 );
 
-            if (!$userEntity) {
+            if ($userEntity === null) {
                 $this->error('user not found');
             }
 
@@ -48,7 +49,7 @@ class LogoutPresenter extends Presenter
                     ]
                 );
 
-            if ($userAutoLoginEntity) {
+            if ($userAutoLoginEntity !== null) {
                 try {
                     $this->em->remove($userAutoLoginEntity);
                     $this->em->flush();

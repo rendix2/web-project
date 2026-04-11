@@ -8,6 +8,7 @@ use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\DataFixtures\OrderedFixtureInterface;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Persistence\ObjectManager;
 use Nette\DI\Container;
 use Nette\Security\Passwords;
@@ -44,6 +45,10 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
                     'name' => 'Admin',
                 ]
             );
+
+        if ($adminRoleEntity === null) {
+            throw new EntityNotFoundException();
+        }
 
         $userEntity->addRoleEntity($adminRoleEntity);
         $userEntity->addUserPasswordEntity($userPasswordEntity);

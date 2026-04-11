@@ -9,11 +9,12 @@ use Doctrine\ORM\EntityRepository;
  * class UserRepository
  *
  * @package App\Model\Repository
+ * @extends EntityRepository<UserEntity>
  */
 class UserRepository extends EntityRepository
 {
 
-    public function findOneById(string $id)
+    public function findOneById(string $id) : ?UserEntity
     {
         return $this
             ->findOneBy(
@@ -23,7 +24,7 @@ class UserRepository extends EntityRepository
             );
     }
 
-    public function findOneByUuid(string $uuid)
+    public function findOneByUuid(string $uuid) : ?UserEntity
     {
         return $this
             ->findOneBy(
@@ -33,7 +34,7 @@ class UserRepository extends EntityRepository
             );
     }
 
-    public function findOneByEmail(string $email)
+    public function findOneByEmail(string $email) : ?UserEntity
     {
         return $this
             ->findOneBy(

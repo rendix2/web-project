@@ -14,11 +14,12 @@ class ActivationPresenter extends Presenter
         private readonly EntityManagerDecorator $em,
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault(string $userId, string $key) : void
     {
-        $user = $this->em
+        $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
@@ -26,7 +27,7 @@ class ActivationPresenter extends Presenter
                 ]
             );
 
-        if (!$user) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -35,11 +36,11 @@ class ActivationPresenter extends Presenter
             ->findOneBy(
                 [
                     'activationKey' => $key,
-                    'user' => $user,
+                    'user' => $userEntity,
                 ]
             );
 
-        if (!$userActivationEntity) {
+        if ($userActivationEntity === null) {
             $this->error('User not found');
         }
 

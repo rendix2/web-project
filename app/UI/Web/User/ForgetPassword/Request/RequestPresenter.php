@@ -10,12 +10,14 @@ use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Mailing\IMailBuilderFactory;
 use Doctrine\DBAL\Exception as DbalException;
+use Exception;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Mail\SmtpException;
 use Nette\Utils\Random;
 use App\Database\EntityManagerDecorator;
+use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Throwable;
 
 class RequestPresenter extends Presenter
@@ -26,6 +28,7 @@ class RequestPresenter extends Presenter
         private readonly IMailBuilderFactory    $mailBuilderFactory,
     )
     {
+        parent::__construct();
     }
 
     public function renderDefault() : void
@@ -53,7 +56,7 @@ class RequestPresenter extends Presenter
 
     public function requestFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(CreatePasswordRequestValues::class);
 
         /**
          * @var UserRepository $userRepository
@@ -67,7 +70,7 @@ class RequestPresenter extends Presenter
         $userEntity = $userRepository
             ->findOneByEmail($values->email);
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -103,7 +106,14 @@ class RequestPresenter extends Presenter
 
         $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
         $mail->setSubject($this->translator->translate('web-user-forgetPassword-request.subject'));
-        $mail->setTemplateFile(__DIR__ . '/Mailing/request.' . $this->translator->getLocale() . '.latte');
+
+        if ($this->translator instanceof LocaleAwareInterface) {
+            $mail->setTemplateFile(__DIR__ . '/Mailing/request.' . $this->translator->getLocale() . '.latte');
+        } else {
+            throw new Exception('Unknown translator without locale');
+        }
+
+
         $mail->setParameters(
             [
                 'userEntity' => $userEntity,

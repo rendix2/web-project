@@ -22,7 +22,7 @@ final class IpAddressType extends Type
             return null;
         }
 
-        if (!is_string($value) || !filter_var($value, FILTER_VALIDATE_IP)) {
+        if (!is_string($value) || filter_var($value, FILTER_VALIDATE_IP) === false) {
             throw new UnexpectedValueException('Invalid IP address returned from database.');
         }
 
@@ -35,7 +35,7 @@ final class IpAddressType extends Type
             return null;
         }
 
-        if (!filter_var($value, FILTER_VALIDATE_IP)) {
+        if (filter_var($value, FILTER_VALIDATE_IP) === false) {
             throw new InvalidArgumentException("Invalid IP Address: $value");
         }
 

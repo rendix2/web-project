@@ -37,6 +37,7 @@ class EditPresenter extends AdminBasePresenter
         private readonly UserFacade                 $userFacade,
     )
     {
+        parent::__construct();
     }
 
     public function actionDefault(string $uuid) : void
@@ -71,7 +72,7 @@ class EditPresenter extends AdminBasePresenter
         $this->template->userEntity = $this->userEntity;
     }
 
-    protected function createComponentRolesGrid() : DataGrid
+    protected function createComponentRolesGrid() : Datagrid
     {
         return $this->roleDataGrid
             ->setUserEntity($this->userEntity)
@@ -114,19 +115,19 @@ class EditPresenter extends AdminBasePresenter
             ->setRequired('admin-user-edit.form.surname.required')
             ->setMaxLength(512);
 
-        $usernameControl = $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label'));
+        $usernameControl = $this->usernameFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.username.label'));
         $usernameControl->setExcludeUserId($this->userEntity->id);
 
         $form->addComponent($usernameControl, 'username');
 
-        $emailControl = $this->emailFormControlFactory->create($this->translator->translate('admin-user-edit.form.email.label'));
+        $emailControl = $this->emailFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.email.label'));
         $emailControl->setExcludeUserId($this->userEntity->id);
 
         $form->addComponent($emailControl, 'email');
 
         $form->addGroup('web-user-changePassword.form.header');
 
-        $passwordControl = $this->passwordFormControlFactory->create($this->translator->translate('admin-user-edit.form.password.label'));
+        $passwordControl = $this->passwordFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.password.label'));
         $passwordControl->setRequired(false);
         $passwordControl->setHistoryUser($this->userEntity);
 
@@ -134,10 +135,10 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
-            ->addConditionOn($form['password'], Form::Filled, true)
+            ->addConditionOn($passwordControl, Form::Filled, true)
                 ->setRequired('admin-user-edit.form.password2.required')
-                ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+                ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
+                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
@@ -180,7 +181,7 @@ class EditPresenter extends AdminBasePresenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 

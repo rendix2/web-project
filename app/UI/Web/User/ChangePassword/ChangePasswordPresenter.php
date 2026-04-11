@@ -22,9 +22,10 @@ class ChangePasswordPresenter extends Presenter
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
         private readonly Passwords                  $passwords,
-        private readonly PasswordFormControlFactory $passwordFactory,
+        private readonly PasswordFormControlFactory $passwordFormControlFactory,
     )
     {
+        parent::__construct();
     }
 
     public function renderDefault() : void
@@ -53,25 +54,23 @@ class ChangePasswordPresenter extends Presenter
         $form->addProtection('Please try again.');
 
         $form->addComponent(
-            $this->passwordFactory->create($this->translator->translate('web-user-changePassword.form.currentPassword.label')),
+            $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')),
             'currentPassword'
         );
 
-        $form->addComponent(
-            $this->passwordFactory->create($this->translator->translate('web-user-changePassword.form.newPassword.label')),
-            'password'
-        );
+        $passwordControl = $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.newPassword.label'));
+        $form->addComponent($passwordControl, 'password');
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
             ->setRequired('admin-user-edit.form.password2.required')
-            ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
+            ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
-            ->addConditionOn($form['password'], Form::Filled, true)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $form['password'])
+            ->addConditionOn($passwordControl, Form::Filled, true)
+                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
-        $form->addSubmit('changePassword', 'web-user-changePassword.form.submit.name');
+        $form->addSubmit('send', 'web-user-changePassword.form.submit.name');
 
         $form->onValidate[] = [$this, 'changePasswordFormOnValidate'];
         $form->onSuccess[] = [$this, 'changePasswordFormSuccess'];
@@ -81,6 +80,8 @@ class ChangePasswordPresenter extends Presenter
 
     public function changePasswordFormOnValidate(Form $form) : void
     {
+        $values = $form->getUntrustedValues(ChangePasswordValues::class);
+
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
@@ -89,13 +90,13 @@ class ChangePasswordPresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
-        if ($this->passwords->verify($form->getHttpData()['currentPassword'], $userEntity->password)) {
+        if ($this->passwords->verify($values->currentPassword, $userEntity->password)) {
             foreach ($userEntity->passwords as $userPassword) {
-                if ($this->passwords->verify($form->getHttpData()['password'], $userPassword->password)) {
+                if ($this->passwords->verify($values->password, $userPassword->password)) {
                     $form->addError(
                         $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
                     );
@@ -112,6 +113,8 @@ class ChangePasswordPresenter extends Presenter
 
     public function changePasswordFormSuccess(Form $form) : void
     {
+        $values = $form->getValues(ChangePasswordValues::class);
+
         $userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
@@ -120,7 +123,7 @@ class ChangePasswordPresenter extends Presenter
                 ]
             );
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('user not found');
         }
 
@@ -132,12 +135,14 @@ class ChangePasswordPresenter extends Presenter
                 ]
             );
 
-        $userEntity->password = $this->passwords->hash($form->getValues()->password);
+        $password = $this->passwords->hash($values->password);
+
+        $userEntity->password = $password;
         $userEntity->updatedAt = new DateTimeImmutable();
 
         $userPasswordEntity = new UserPasswordEntity();
         $userPasswordEntity->user = $userEntity;
-        $userPasswordEntity->password = $this->passwords->hash($form->getValues()->password);
+        $userPasswordEntity->password = $password;
 
         $userEntity->addUserPasswordEntity($userPasswordEntity);
 

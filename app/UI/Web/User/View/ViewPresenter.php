@@ -19,6 +19,7 @@ class ViewPresenter extends Presenter
         private readonly EntityManagerDecorator $em,
     )
     {
+        parent::__construct();
     }
 
     public function renderDefault(string $uuid) : void
@@ -30,11 +31,11 @@ class ViewPresenter extends Presenter
             ->getRepository(UserEntity::class);
 
         /**
-         * @var UserEntity $userEntity
+         * @var ?UserEntity $userEntity
          */
         $userEntity = $userRepository->findOneByUuid($uuid);
 
-        if (!$userEntity) {
+        if ($userEntity === null) {
             $this->error('User not found');
         }
 

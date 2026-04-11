@@ -20,7 +20,7 @@ class AutoLoginAuthenticator implements Authenticator
     {
     }
 
-    function authenticate(string $username, string $password = null) : IIdentity
+    function authenticate(string $username, string $password) : IIdentity
     {
         $userAutoLoginEntity = $this->em
             ->getRepository(UserAutoLoginEntity::class)
@@ -30,7 +30,7 @@ class AutoLoginAuthenticator implements Authenticator
                 ]
             );
 
-        if (!$userAutoLoginEntity) {
+        if ($userAutoLoginEntity === null) {
             throw new AuthenticationException('NO autologin found');
         }
 

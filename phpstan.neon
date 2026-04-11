@@ -1,0 +1,27 @@
+parameters:
+    level: 10
+    stubFiles:
+        #- %rootDir%/../../../app/PHPStan/Stubs/nette-forms.php
+    doctrine:
+        objectManagerLoader: %rootDir%/../../../app/PHPStan/object-manager.php
+        reportDynamicQueryBuilders: true
+        reportUnknownTypes: true
+        ormRepositoryClass: Doctrine\ORM\EntityRepository
+    strictRules:
+        allRules: true
+    methodsThrowingExceptions:
+        Nette\Application\UI\Presenter:
+            redirectUrl: Nette\Application\AbortException
+            sendJson: Nette\Application\AbortException
+            sendResponse: Nette\Application\AbortException
+            terminate: Nette\Application\AbortException
+            forward: Nette\Application\AbortException
+            restoreRequest: Nette\Application\AbortException
+
+        Nette\Application\UI\Component:
+            redirect: Nette\Application\AbortException
+            redirectPermanent: Nette\Application\AbortException
+            error: Nette\Application\BadRequestException
+
+    paths:
+        - app

@@ -32,6 +32,10 @@ class GeoIpService
         ]);
     }
 
+    /**
+     * @param string $ip
+     * @return string[]
+     */
     public function getInfo(string $ip): array
     {
         if ($this->isLocalIp($ip)) {

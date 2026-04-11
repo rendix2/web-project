@@ -78,7 +78,7 @@ class UserEntity
     public Collection $activationKeys;
 
     /**
-     * @var Collection<int, UserAutoLoginEntity> $activationKeys
+     * @var Collection<int, UserAutoLoginEntity> $autoLogins
      */
     #[OneToMany(targetEntity: UserAutoLoginEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public Collection $autoLogins;

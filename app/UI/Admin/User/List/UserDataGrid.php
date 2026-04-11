@@ -14,7 +14,6 @@ use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
-use Nette\Utils\ArrayHash;
 use App\Database\EntityManagerDecorator;
 
 class UserDataGrid
@@ -26,7 +25,6 @@ class UserDataGrid
         private readonly Translator                 $translator,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
-        private readonly UserFacade                 $userFacade,
     )
     {
         $this->grid = new Datagrid();
@@ -121,7 +119,7 @@ class UserDataGrid
                     1 => $this->translator->translate('messages.yes'),
                 ]
             )
-            ->setPrompt($this->translator->translate('messages.select'));
+            ->setPrompt((string) $this->translator->translate('messages.select'));
     }
 
     private function createActions() : void
@@ -132,6 +130,9 @@ class UserDataGrid
             ->setIcon('edit');
 
         $onClick = function(string $uuid) : void {
+            /**
+             * @var ?UserEntity $userEntity
+             */
             $userEntity = $this->em
                 ->getRepository(UserEntity::class)
                 ->findOneBy(
@@ -139,6 +140,10 @@ class UserDataGrid
                         'uuid' => $uuid,
                     ]
                 );
+
+            if ($userEntity === null) {
+                $this->grid->presenter->error('user not found');
+            }
 
             try {
                 $this->em->remove($userEntity);
@@ -181,7 +186,7 @@ class UserDataGrid
     private function createInlineEdit() : void
     {
         $inlineEdit = $this->grid->addInlineEdit()
-            ->setText($this->translator->translate('admin-user-list.edit.inline.name'))
+            ->setText((string) $this->translator->translate('admin-user-list.edit.inline.name'))
             ->setTitle('admin-user-list.edit.inline.title');
 
         $setDefaultsCallback = function(Container $container, UserEntity $userEntity) : void {
@@ -198,8 +203,8 @@ class UserDataGrid
             );
         };
 
-        $onSubmitEdit = function(string $uuid, ArrayHash $values) : void {
-            if (!substr_count($values->fullName, ' ')) {
+        $onSubmitEdit = function(string $uuid, UserInlineEditValues $values) : void {
+            if (substr_count($values->fullName, ' ') === 0) {
                 $this->grid->presenter->flashMessage(
                     $this->translator->translate('admin-user-list.form.fullName.noSpace'),
                     'danger'
@@ -209,6 +214,9 @@ class UserDataGrid
                 return;
             }
 
+            /**
+             * @var ?UserEntity $userEntity
+             */
             $userEntity = $this->em
                 ->getRepository(UserEntity::class)
                 ->findOneBy(
@@ -217,7 +225,7 @@ class UserDataGrid
                     ]
                 );
 
-            if (!$userEntity) {
+            if ($userEntity === null) {
                 $this->grid->presenter->error('user not found');
             }
 
@@ -235,7 +243,7 @@ class UserDataGrid
             $userEntity->surname = $surname;
             $userEntity->username = $values->username;
             $userEntity->email = $values->email;
-            $userEntity->isActive = (bool) $values->isActive;
+            $userEntity->isActive = $values->isActive;
             $userEntity->updatedAt = new DateTimeImmutable();
 
             try {
@@ -260,7 +268,7 @@ class UserDataGrid
             $uuid = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit')['_id'] ?? null;
             $userId = null;
 
-            if ($uuid) {
+            if ($uuid !== null) {
                 $user = $this->em
                     ->getRepository(UserEntity::class)
                     ->findOneBy(
@@ -269,7 +277,7 @@ class UserDataGrid
                         ]
                     );
 
-                if ($user) {
+                if ($user !== null) {
                     $userId = $user->id;
                 }
             }
@@ -277,11 +285,11 @@ class UserDataGrid
             $username = $this->usernameFormControlFactory->create('Username');
             $email = $this->emailFormControlFactory->create('Email');
 
-            if ($userId) {
+            if ($userId !== null) {
                 $username->setExcludeUserId($userId);
             }
 
-            if ($userId) {
+            if ($userId !== null) {
                 $email->setExcludeUserId($userId);
             }
 

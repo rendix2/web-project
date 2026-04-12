@@ -1,20 +1,23 @@
 <?php declare(strict_types=1);
 
-namespace App\UI\Admin\User\List;
+namespace App\UI\Admin\Role\List;
 
-use App\Core\AutoLoginAuthenticator;
 use App\UI\Admin\AdminBasePresenter;
+use App\UI\Admin\User\List\UserDataGrid;
 use Contributte\Datagrid\Datagrid;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use Nette\Application\UI\Presenter;
-use Nette\Http\IResponse;
-use Nette\Security\AuthenticationException;
 
+/**
+ * class ListPresenter
+ *
+ * @package App\UI\Admin\Role\List
+ */
 class ListPresenter extends AdminBasePresenter
 {
+
     public function __construct(
-        private readonly UserDataGrid         $userDataGrid,
+        private readonly RoleDataGrid         $roleDataGrid,
         private readonly MenuComponentFactory $menuFactory,
     )
     {
@@ -32,7 +35,7 @@ class ListPresenter extends AdminBasePresenter
 
     protected function createComponentGrid() : Datagrid
     {
-        return $this->userDataGrid->create();
+        return $this->roleDataGrid->create();
     }
 
 }

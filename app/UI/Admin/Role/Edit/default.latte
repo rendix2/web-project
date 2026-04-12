@@ -1,0 +1,24 @@
+{block title}{_admin-role-edit.title} {$roleEntity->name}{/block}
+
+{block content}
+<div class="container-fluid py-4">
+    <!-- Hlavní karta s formulářem - Roztažená na celou šířku nebo velkou část -->
+    <div class="row mb-4">
+        <div class="col-6">
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-primary text-white d-flex align-items-center">
+                    <h5 class="mb-0 py-1">
+                        <i class="fas fa-user-edit me-2"></i>
+                        {$roleEntity->name}
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    {snippet editFormWrapper}
+                        {control editForm}
+                    {/snippet}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{/block}

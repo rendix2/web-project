@@ -1,0 +1,7 @@
+{
+  "header": "Role creation",
+  "title": "Role creation",
+
+  "form.submit.label": "Create Role",
+  "form.submit.success": "Role %name% successfully created"
+}

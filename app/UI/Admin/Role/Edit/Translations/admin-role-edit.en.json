@@ -1,0 +1,7 @@
+{
+  "title": "Role edit",
+
+  "form.name.label": "Role",
+  "form.name.required": "Role is required",
+  "form.name.exists": "Role already exists"
+}

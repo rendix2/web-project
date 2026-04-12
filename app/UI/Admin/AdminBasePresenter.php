@@ -31,7 +31,7 @@ abstract class AdminBasePresenter extends Presenter
                 $this->error('Not logged in', IResponse::S401_Unauthorized);
             } else {
                 try {
-                    $this->getUser()->login($autoLoginCookie, null);
+                    $this->getUser()->login($autoLoginCookie, '');
                 } catch (AuthenticationException $exception) {
                     $this->error('Not logged in', IResponse::S401_Unauthorized);
                 }

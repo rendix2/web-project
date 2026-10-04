@@ -21,11 +21,13 @@ final class ErrorPresenter extends Presenter
             ? $file
             : __DIR__ . '/4xx.latte';
 
-        if ($this->template instanceof DefaultTemplate) {
-            $this->template->setFile($file);
+        $template = $this->getTemplate();
+
+        if ($template instanceof DefaultTemplate) {
+            $template->setFile($file);
         }
 
-        $this->template->httpCode = $code;
+        $template->httpCode = $code;
     }
 
 }

@@ -60,7 +60,6 @@ class EditPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
@@ -107,7 +106,8 @@ class EditPresenter extends Presenter
             );
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
             $this->redrawControl('flashes');
         }
     }

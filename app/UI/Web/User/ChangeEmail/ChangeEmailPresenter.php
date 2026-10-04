@@ -7,7 +7,6 @@ use App\Forms\PasswordFormControlFactory;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
-use App\Model\Repository\UserRepository;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use DateTimeImmutable;
@@ -51,7 +50,6 @@ class ChangeEmailPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addComponent(
             $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')), 'currentPassword',
@@ -74,11 +72,7 @@ class ChangeEmailPresenter extends Presenter
     {
         $values = $form->getUntrustedValues(ChangeEmailValues::class);
 
-        /**
-         * @var UserRepository $userRepository
-         */
-        $userRepository = $this->em
-            ->getRepository(UserEntity::class);
+        $userRepository = $this->em->getRepository(UserEntity::class);
 
         /**
          * @var ?UserEntity $userEntity
@@ -131,7 +125,8 @@ class ChangeEmailPresenter extends Presenter
             $this->redrawControl('flashes');
             $this->redirect('this');
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
             $this->redrawControl('flashes');
         }
     }

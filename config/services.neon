@@ -10,11 +10,11 @@ services:
     RouterFactory: App\Core\RouterFactory::createRouter
 
 includes:
-    - %configDir%/ext/console.neon
-    - %configDir%/ext/guzzle.neon
-    - %configDir%/ext/nettrine.neon
-    - %configDir%/ext/translation.neon
-    - %configDir%/ext/menu.neon
-    - %configDir%/ext/mailing.neon
-    - %configDir%/ext/redis.neon
-    - %configDir%/ext/pwned.neon
+    - ext/console.neon
+    - ext/guzzle.neon
+    - ext/nettrine.neon
+    - ext/translation.neon
+    - ext/menu.neon
+    - ext/mailing.neon
+    - ext/redis.neon
+    - ext/pwned.neon

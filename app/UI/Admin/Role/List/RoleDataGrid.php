@@ -3,19 +3,13 @@
 namespace App\UI\Admin\Role\List;
 
 use App\Database\EntityManagerDecorator;
-use App\Forms\EmailFormControlFactory;
-use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\RoleEntity;
-use App\Model\Entity\UserEmailEntity;
-use App\Model\Entity\UserEntity;
-use App\UI\Admin\User\List\UserInlineEditValues;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
-use Nette\Utils\ArrayHash;
 
 /**
  * class RoleGrid
@@ -76,7 +70,7 @@ class RoleDataGrid
             ->setSortable(true)
             ->setSortableCallback(
                 function(QueryBuilder $queryBuilder, array $sort) : void {
-                    $queryBuilder->orderBy('_role.name', $sort['name']);
+                    $queryBuilder->orderBy('_role.name', $sort['name'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
@@ -109,23 +103,24 @@ class RoleDataGrid
                 );
 
             if ($roleEntity === null) {
-                $this->grid->presenter->error('Role not found');
+                $this->grid->getPresenter()->error('Role not found');
             }
 
             try {
                 $this->em->remove($roleEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage(
+                $this->grid->getPresenter()->flashMessage(
                     $this->translator->translate('admin-role-list.delete.success', ['name' => $roleEntity->name]),
                     'success'
                 );
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->redrawControl('flashes');
 
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
 
@@ -134,22 +129,14 @@ class RoleDataGrid
             ->setConfirmation(
                 new CallbackConfirmation(
                     function(RoleEntity $roleEntity) : string {
-                        return 'Are you sure that you want to delete Role#' . $roleEntity->id . ' with name ' . $roleEntity->name . '?';
+                        return (string) $this->translator->translate('admin-role-list.delete.confirm', ['name' => $roleEntity->name]);
                     }
                 )
             )
-            ->setClass('btn btn-xs btn-default btn-danger btn-block ajax')
+            ->setClass('btn btn-sm btn-danger w-100 ajax')
             ->setTitle('admin-role-list.delete.title')
             ->setIcon('trash')
             ->onClick[] = $onClick;
-
-        /*
-        $allowDelete = function(RoleEntity $roleEntity) : bool {
-            return $roleEntity->id !== (string)$this->grid->getPresenter()->getUser()->id;
-        };
-
-        $this->grid->allowRowsAction('delete', $allowDelete);
-        */
     }
 
     private function createInlineEdit() : void
@@ -166,7 +153,7 @@ class RoleDataGrid
             );
         };
 
-        $onSubmitEdit = function(string $id, ArrayHash $values) : void {
+        $onSubmitEdit = function(string $id, RoleInlineEditValues $values) : void {
             /**
              * @var ?RoleEntity $roleEntity
              */
@@ -179,7 +166,7 @@ class RoleDataGrid
                 );
 
             if ($roleEntity === null) {
-                $this->grid->presenter->error('Role not found');
+                $this->grid->getPresenter()->error('Role not found');
             }
 
             $roleEntity->name = $values->name;
@@ -188,22 +175,21 @@ class RoleDataGrid
                 $this->em->persist($roleEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage(
+                $this->grid->getPresenter()->flashMessage(
                     $this->translator->translate('admin-role-list.edit.success', ['name' => $roleEntity->name]),
                     'success'
                 );
-                $this->grid->presenter->redrawControl('flashes');
-                //$this->grid->redrawItem($id);
-                ///$this->grid->reload();
-                bdump('OK');
+                $this->grid->getPresenter()->redrawControl('flashes');
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
-                bdump('FAIL');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
 
         $inlineEdit->onControlAdd[] = function(Container $container) : void {
+            $container->setMappedType(RoleInlineEditValues::class);
+
             $container->addText('name')
                 ->setRequired();
         };

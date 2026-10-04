@@ -3,5 +3,5 @@
   "title": "Vytvoření Role",
 
   "form.submit.label": "Vytvořit Role",
-  "form.submit.success": "Role %role% úspěšně vytvořena"
+  "form.submit.success": "Role %name% úspěšně vytvořena"
 }

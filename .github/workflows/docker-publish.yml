@@ -1,0 +1,55 @@
+name: Build and publish Docker image
+
+# Runs after the "CI" workflow (lint + PHPStan + front-end build) finishes on main, and only if it
+# passed - this workflow does not repeat those checks itself.
+on:
+  workflow_run:
+    workflows: [ "CI" ]
+    branches: [ "main" ]
+    types: [ completed ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}-web
+
+jobs:
+  build-and-push:
+    name: Build and push the production image
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      # IMPORTANT: this writes the real production database (and mail) credentials into
+      # config/env/prod.neon, which the next step then bakes into the image (see
+      # .docker/web/prod.Dockerfile). config/env/prod.neon.dist in this repo shows the shape the
+      # PRODUCTION_NEON secret's content should have - fill it in locally, never commit it, then
+      # paste the whole file into the secret.
+      - name: Write config/env/prod.neon from secret
+        run: echo "$PRODUCTION_NEON" > ./config/env/prod.neon
+        shell: bash
+        env:
+          PRODUCTION_NEON: ${{ secrets.PRODUCTION_NEON }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./.docker/web/prod.Dockerfile
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.event.workflow_run.head_sha }}

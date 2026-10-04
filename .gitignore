@@ -4,6 +4,11 @@
 # nette
 config/local.neon
 
+# Real production secrets: prepared locally from config/env/prod.neon.dist, pasted verbatim into
+# the GitHub secret PRODUCTION_NEON (docker-publish.yml writes it back to this exact path before
+# the image is built), never committed.
+config/env/prod.neon
+
 # npm
 node_modules
 
@@ -15,9 +20,11 @@ www/dist
 vendor
 
 # docker
-.docker/mysql
 .docker/postgres
 .docker/redis
 
 # temp
 temp
+# tests
+tests/_output
+tests/Support/_generated

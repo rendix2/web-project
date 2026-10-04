@@ -4,7 +4,6 @@ namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
-use App\Model\Entity\UserPasswordEntity;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;

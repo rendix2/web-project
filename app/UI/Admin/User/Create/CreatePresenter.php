@@ -47,7 +47,6 @@ class CreatePresenter extends AdminBasePresenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
         $form->setAjax(true);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
@@ -123,9 +122,9 @@ class CreatePresenter extends AdminBasePresenter
                 'success'
             );
             $this->redrawControl('flashes');
-            //$this->redirect('this');
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
             $this->redrawControl('flashes');
         }
     }

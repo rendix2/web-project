@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use Nette\Forms\Control;
 use App\Model\Entity\UserEntity;
 use Jgxvx\Cilician\Service\Cilician;
 use Nette\Application\UI\Form;
@@ -39,7 +40,7 @@ class PasswordFormControl extends TextInput
             ->setRequired('admin-user-edit.form.password.required')
             ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => self::MIN_LENGTH]), self::MIN_LENGTH)
             ->addRule(
-                function (TextInput $control): bool {
+                function (Control $control): bool {
                     $password = $control->getValue();
 
                     if (!is_string($password) || $password === '') {
@@ -58,7 +59,7 @@ class PasswordFormControl extends TextInput
                 'admin-user-edit.form.password.pwnedError'
             )
             ->addRule(
-                function (TextInput $control): bool {
+                function (Control $control): bool {
                     $password = $control->getValue();
 
                     if ($this->historyUser === null || !is_string($password) || $password === '') {
@@ -116,8 +117,8 @@ class PasswordFormControl extends TextInput
                 ->addClass('btn btn-outline-secondary')
                 ->type('button')
                 ->addAttributes([
-                    'data-toggle' => 'password',
-                    'data-target' => $control->id
+                    'data-password-toggle' => 'password',
+                    'data-password-target' => $control->id
                 ]);
 
             $icon = Html::el('i')->addClass('fa fa-eye');

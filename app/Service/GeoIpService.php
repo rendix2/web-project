@@ -45,9 +45,6 @@ class GeoIpService
             ];
         }
 
-        /**
-         * @var GeoIpCacheEntity $cache
-         */
         $cache = $this->em
             ->getRepository(GeoIpCacheEntity::class)
             ->findOneBy(
@@ -56,7 +53,7 @@ class GeoIpService
                 ]
             );
 
-        if ($cache && $cache->updatedAt > new DateTimeImmutable('-7 days')) {
+        if ($cache !== null && $cache->updatedAt > new DateTimeImmutable('-7 days')) {
             return [
                 'country' => $cache->countryCode,
                 'city' => $cache->city
@@ -67,16 +64,16 @@ class GeoIpService
             $response = $this->client->request('GET', $ip, [
                 'query' => ['fields' => 'status,countryCode,city']
             ]);
-            $data = Json::decode($response->getBody()->getContents());
+            $data = Json::decode($response->getBody()->getContents(), true);
 
-            if (isset($data->status) && $data->status === 'success') {
-                if (!$cache) {
+            if (is_array($data) && ($data['status'] ?? null) === 'success') {
+                if ($cache === null) {
                     $cache = new GeoIpCacheEntity();
                     $cache->ipAddress = $ip;
                 }
 
-                $cache->countryCode = $data->countryCode;
-                $cache->city = $data->city;
+                $cache->countryCode = is_string($data['countryCode'] ?? null) ? $data['countryCode'] : '??';
+                $cache->city = is_string($data['city'] ?? null) ? $data['city'] : '??';
                 $cache->updatedAt = new DateTimeImmutable();
 
                 $this->em->persist($cache);
@@ -91,7 +88,7 @@ class GeoIpService
             // Logování...
         }
 
-        if ($cache) {
+        if ($cache !== null) {
             return [
                 'country' => $cache->countryCode,
                 'city' => $cache->city

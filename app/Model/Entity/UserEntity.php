@@ -92,7 +92,11 @@ class UserEntity
     /**
      * @var Collection<int, RoleEntity> $roles
      */
-    #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist', 'remove'])]
+    // cascade: 'remove' on a ManyToMany cascades an actual ENTITY remove, not just a join-table
+    // row delete - it made deleting one User delete every RoleEntity they had assigned (which then
+    // transitively deleted every OTHER user who shared that role). Removing a role/user must only
+    // drop the user_role join row, which Doctrine already does on its own.
+    #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist'])]
     public Collection $roles;
 
     public function __construct()

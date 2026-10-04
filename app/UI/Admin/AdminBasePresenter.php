@@ -27,7 +27,7 @@ abstract class AdminBasePresenter extends Presenter
 
             $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
-            if ($autoLoginCookie === null) {
+            if (!is_string($autoLoginCookie)) {
                 $this->error('Not logged in', IResponse::S401_Unauthorized);
             } else {
                 try {

@@ -1,0 +1,23 @@
+# Suite for functional tests: real HTTP requests (PhpBrowser) against the running web container.
+
+actor: FunctionalTester
+suite_namespace: Tests\Functional
+modules:
+    enabled:
+        - Asserts
+        - PhpBrowser:
+              url: http://web-project-web
+        - Contributte\Codeception\Module\NetteDIModule:
+              tempDir: ../../temp/codeception
+              logDir: ../../log/codeception
+              appDir: ../../app
+              wwwDir: ../../www
+              configFiles:
+                  - ../../config/codeception/common.neon
+                  - ../../config/codeception/local.neon
+              newContainerForEachTest: true
+              removeDefaultExtensions: false
+              debugMode: true
+        # after NetteDIModule: they need the container created for the test (order matters for _before/_after)
+        - Tests\Support\Helper\CleanupTestData
+step_decorators: ~

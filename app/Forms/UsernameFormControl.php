@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use Nette\Forms\Control;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\Inputs\TextInput;
@@ -24,9 +25,10 @@ class UsernameFormControl extends TextInput
             ->setRequired('admin-user-edit.form.username.required')
             ->setMaxLength(512)
             ->addRule(
-                function (BaseControl $control): bool
+                function (Control $control): bool
                 {
-                    $username = (string) $control->getValue();
+                    $value = $control->getValue();
+                    $username = is_string($value) ? $value : '';
 
                     if ($username === '') {
                         return true;
@@ -36,7 +38,7 @@ class UsernameFormControl extends TextInput
                         $message = $this->translator
                             ->translate('admin-user-edit.form.username.exists', ['username' => $username]);
 
-                        $control->addError($message);
+                        $this->addError($message);
 
                         return true;
                     }

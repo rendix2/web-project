@@ -1,0 +1,25 @@
+# Suite for unit or integration tests.
+
+error_level: "E_ALL"
+
+actor: UnitTester
+suite_namespace: Tests\Unit
+modules:
+    enabled:
+        - Asserts
+        - Contributte\Codeception\Module\NetteApplicationModule:
+              followRedirects: false
+        - Contributte\Codeception\Module\NetteDIModule:
+              tempDir: ../../temp/codeception
+              logDir: ../../log/codeception
+              appDir: ../../app
+              wwwDir: ../../www
+              configFiles:
+                  - ../../config/codeception/common.neon
+                  - ../../config/codeception/local.neon
+              newContainerForEachTest: true
+              removeDefaultExtensions: false
+              debugMode: true
+        # after NetteDIModule: needs the container created for the test
+        - Tests\Support\Helper\CleanupTestData
+step_decorators: ~

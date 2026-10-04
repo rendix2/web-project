@@ -4,7 +4,7 @@ services:
       context: ./
       dockerfile: ./.docker/web/Dockerfile
     ports:
-      - "9080:80"
+      - "9180:80"
     environment:
       - SERVERNAME=web-project
       - SERVERALIAS=example2.local *.example2.local
@@ -13,22 +13,21 @@ services:
     volumes:
       - ./:/var/www/html/
     depends_on:
-      - web-project-mysql
       - web-project-postgres
       - web-project-redis
     tty: true
 
-  web-project-mysql:
-    image: mysql:8.0.40
-    ports:
-      - "4306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=web-project
-      - MYSQL_USER=web-project
-      - MYSQL_PASSWORD=password
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
     volumes:
-      - ./.docker/mysql/data:/var/lib/mysql
+      - /dev/shm:/dev/shm
+    ports:
+      - "4544:4444"
+      - "5901:5900"
+      - "7901:7900"
+    depends_on:
+      - web-project-postgres
+      - web-project-web
 
   web-project-postgres:
     image: postgres:17
@@ -37,7 +36,7 @@ services:
       POSTGRES_USER: web-project
       POSTGRES_PASSWORD: password
     ports:
-      - "5432:5432"
+      - "5532:5432"
     volumes:
       - ./.docker/postgres/data:/var/lib/postgresql/data
 
@@ -45,11 +44,10 @@ services:
     image: adminer
     restart: always
     ports:
-      - "9082:8080"
+      - "9182:8080"
     environment:
       ADMINER_DEFAULT_SERVER: web-project-postgres
     depends_on:
-      - web-project-mysql
       - web-project-postgres
 
   web-project-redis:

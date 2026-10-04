@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+
+jobs:
+  checks:
+    name: Lint, PHPStan, front-end build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          extensions: intl, gd, zip, pdo_pgsql, bcmath
+
+      - name: Composer install
+        run: composer install --prefer-dist --no-progress
+
+      - name: Latte lint
+        run: php vendor/bin/latte-lint app
+
+      - name: Neon lint
+        run: php vendor/bin/neon-lint config
+
+      - name: PHP syntax
+        run: find app -name "*.php" -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Composer validate
+        run: composer validate
+
+      - name: PHPStan
+        run: php vendor/bin/phpstan analyse --no-progress
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: NPM install
+        run: npm ci
+
+      - name: NPM build
+        run: npm run build

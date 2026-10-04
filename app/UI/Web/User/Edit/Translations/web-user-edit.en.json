@@ -1,5 +1,7 @@
 {
-  "form.header": "Editation",
+  "form.header": "Edit profile",
+  "form.subtitle": "Edit your personal details and account settings",
+  "back": "Back without saving",
 
   "form.submit.label": "Save",
   "form.submit.success": "User saved."

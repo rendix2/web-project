@@ -18,7 +18,7 @@ class UserLoginAttemptEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::INTEGER, unique: true)]
+    #[Column(type: Types::BIGINT, unique: true)]
     public int $id;
 
     #[Column(type: Types::STRING, length: 512, unique: false)]

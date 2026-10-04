@@ -34,7 +34,7 @@ class LoginPresenter extends Presenter
     public function renderDefault() : void
     {
         if ($this->getUser()->isLoggedIn()) {
-            $this->flashMessage('You are already logged in', 'danger');
+            $this->flashMessage($this->translator->translate('web-user-login.alreadyLoggedIn'), 'danger');
             $this->redrawControl('flashes');
         }
     }
@@ -45,7 +45,6 @@ class LoginPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addText('username', 'web-user-login.form.username.label')
             ->setRequired('web-user-login.form.username.required')
@@ -81,12 +80,18 @@ class LoginPresenter extends Presenter
         try {
             $this->getUser()->setAuthenticator($this->usernameAndPasswordAuthenticator);
             $this->getUser()->login($username, $password);
-            $this->getUser()->setExpiration('2 hours');
+            // Bez "zůstat přihlášen" ať sezení skutečně skončí brzy - s ním ho drží při životě
+            // hlavně autologin cookie/entita níže, tohle je jen limit té samotné session. Nette
+            // hlásí (fatální kvůli tracy.strictMode) chybu, pokud je tahle hodnota delší než
+            // session.expiration v config/common.neon (14 dní) - proto ne '30 days'.
+            $this->getUser()->setExpiration($stayLoggedIn ? '14 days' : '2 hours');
 
             if ($stayLoggedIn) {
                 $autoLoginToken = Random::generate(128);
 
-                $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, null);
+                // Cookie musí přežít zavření prohlížeče (to je smysl "zůstat přihlášen") - session
+                // cookie (expire === null) mizí spolu se session, takže by nikdy nic neobnovila.
+                $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, '30 days');
 
                 $userEntity = $this->em
                     ->getRepository(UserEntity::class)
@@ -124,7 +129,8 @@ class LoginPresenter extends Presenter
                     $this->em->persist($userAutoLoginEntity);
                     $this->em->flush();
                 } catch (DbalException $exception) {
-                    $this->flashMessage($exception->getMessage(), 'danger');
+                    bdump($exception);
+                    $this->flashMessage($this->translator->translate('web-user-login.form.submit.autoLoginError'), 'danger');
                     $this->redrawControl('flashes');
                 }
             }

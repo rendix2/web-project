@@ -1,6 +1,7 @@
 {
   "header": "Uživatelé",
   "title": "Uživatelé",
+  "list.header": "Seznam uživatelů",
 
   "id.name": "ID",
   "id.search": "Hledat podle ID",
@@ -26,6 +27,7 @@
 
   "delete.name": "Smazat",
   "delete.title": "Smazat Uživatele",
+  "delete.confirm": "Opravdu chcete smazat uživatele %username%?",
   "delete.success": "Uživatel %username% byl smazán",
 
   "add-user": "Přidat Uživatele"

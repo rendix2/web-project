@@ -2,6 +2,7 @@
 
 namespace App\Forms;
 
+use Nette\Forms\Control;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
@@ -35,15 +36,16 @@ class EmailFormControl extends TextInput
             ->setMaxLength(512)
 
             ->addRule(
-                function (BaseControl $control): bool {
-                    $email = (string) $control->getValue();
+                function (Control $control): bool {
+                    $value = $control->getValue();
+                    $email = is_string($value) ? $value : '';
 
                     if ($email === '' || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                         return true;
                     }
 
                     if ($this->checkEmailExists($email)) {
-                        $control->addError($this->translator->translate('admin-user-edit.form.email.exists', ['email' => $email]));
+                        $this->addError($this->translator->translate('admin-user-edit.form.email.exists', ['email' => $email]));
 
                         return true;
                     }

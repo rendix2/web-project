@@ -25,14 +25,16 @@ class CreateDatabaseCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
     {
-        $dbConfig = $this->container->getParameters()['database']['default'];
+        $parameters = $this->container->getParameters();
+        $databases = is_array($parameters['database'] ?? null) ? $parameters['database'] : [];
+        $dbConfig = is_array($databases['default'] ?? null) ? $databases['default'] : [];
 
-        $host = $dbConfig['host'];
-        $user = $dbConfig['username'];
-        $password = $dbConfig['password'];
-        $database = $dbConfig['database'];
-        $dsn = $dbConfig['dsn'];
-        $charset = $dbConfig['charset'];
+        $host = $this->setting($dbConfig, 'host');
+        $user = $this->setting($dbConfig, 'username');
+        $password = $this->setting($dbConfig, 'password');
+        $database = $this->setting($dbConfig, 'database');
+        $dsn = $this->setting($dbConfig, 'dsn');
+        $charset = $this->setting($dbConfig, 'charset');
 
         try {
             $pdo = new PDO($dsn, $user, $password);
@@ -45,7 +47,7 @@ class CreateDatabaseCommand extends Command
                 $stmt->execute([$database]);
                 $exists = $stmt->fetchColumn();
 
-                if (!$exists) {
+                if ($exists === false) {
                     $pdo->exec('CREATE DATABASE "' . $database . '" WITH ENCODING ' . ($charset === 'utf8mb4' ? "'UTF8'" : "'" . $charset . "'") . ';');
                     $output->writeln('Database "' . $database . '" created.');
                 } else {
@@ -61,5 +63,15 @@ class CreateDatabaseCommand extends Command
 
             return 1;
         }
+    }
+
+    /**
+     * @param array<mixed> $config
+     */
+    private function setting(array $config, string $key) : string
+    {
+        $value = $config[$key] ?? '';
+
+        return is_scalar($value) ? (string) $value : '';
     }
 }

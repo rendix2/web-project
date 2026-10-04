@@ -19,7 +19,7 @@ class UserEmailEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::INTEGER)]
+    #[Column(type: Types::BIGINT)]
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'emails')]

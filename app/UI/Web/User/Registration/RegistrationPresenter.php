@@ -9,10 +9,8 @@ use App\Model\Facade\UserFacade;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Translation\Translator;
-use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
-use Nette\Mail\SmtpException;
 use Throwable;
 
 class RegistrationPresenter extends Presenter
@@ -38,7 +36,6 @@ class RegistrationPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
@@ -79,7 +76,7 @@ class RegistrationPresenter extends Presenter
 
     public function registrationFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(RegistrationValues::class);
 
         try {
             $this->userFacade->register($values);
@@ -89,14 +86,9 @@ class RegistrationPresenter extends Presenter
                 'success'
             );
             $this->redrawControl('flashes');
-        } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
-        } catch (SmtpException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
         } catch (Throwable $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
             $this->redrawControl('flashes');
         }
     }

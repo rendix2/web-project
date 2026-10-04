@@ -1,0 +1,26 @@
+# Memory index
+
+- [Test coverage on every change](feedback_test_coverage.md) — tests after every change AND test-first (characterize on old code, then change, same test again), all 3 projects incl. alfred; Functional+Acceptance, same pattern everywhere.
+- [Use the Makefile](feedback_use_makefile.md) — `docker compose exec ft-web make cached` etc. instead of raw manual commands; avoid `make test`/`functional`/etc. mid-session (destructive DB rebuild).
+- [Strict comparison only](feedback_strict_comparison.md) — always ===/!==, never ==/!=.
+- [No nested ternaries](feedback_no_nested_ternary.md) — use `match`, if/elseif, or a helper method instead.
+- [No SmartObject magic properties](feedback_no_smartobject_magic_properties.md) — call `$presenter->getName()` directly, not `$presenter->name`.
+- [Use getTemplate()](feedback_get_template.md) — never ->template magic; web-project is the shared template, port new practices back.
+- [Bootstrap 5 only](feedback_bootstrap5_only.md) — both projects use exclusively BS5; no BS4 markup/plugins, guarded by Bootstrap5MarkupCest.
+- [Always a real Form, never raw `<form>`](feedback_always_real_form.md) — every form-like UI element needs a registered BootstrapForm class; GET-form UI\Form signal redirect + canonicalization can double-hop and break naive Selenium URL waits.
+- [Typed form value classes](feedback_form_value_objects.md) — getValues(XFormValues::class); done for Person/Wedding/Relation/Name/PersonAdd*, rest pending; gotchas.
+- [Nette module layout sharing](feedback_nette_module_layout_sharing.md) — a new module needs setLayout(path) to the shared @layout.latte in its own BasePresenter, AND that shared layout's own {link} calls must all be absolute (:Module:Presenter:action) — both silent failures, verify with curl|grep not just HTTP 200.
+- [Uniform cache convention](feedback_uniform_cache_convention.md) — cache/proxy handling identical + minimal in all 3 projects: default proxy dir in cache, FILE_NOT_EXISTS_OR_CHANGED, same `make cached`, no generate-proxies.
+- [Verify reachability before fixing](feedback_verify_reachability.md) — grep for callers of a suspected-buggy private method before patching it; it might be dead code (delete, don't patch).
+- [web-project autologin architecture](project_weblogin_autologin_architecture.md) — "stay logged in" fixed via global Application::onPresenter hook; setExpiration() must not exceed session.expiration config (fatal under strictMode) or logout must deleteCookie() too, not just the DB row.
+- [web-project Admin module review](project_admin_module_review_2026_09.md) — CRITICAL: ManyToMany cascade:'remove' between User/Role cascade-deleted unrelated accounts (fixed); plus translations gaps, raw exceptions, dead code, a broken DQL filter.
+- [web-project User module review](project_user_module_review_2026_09.md) — auth check in renderDefault() instead of actionDefault() never actually blocked the form's own submit (Nette runs signals before render); plus translation typos/gaps, raw exceptions, dead code.
+- [Migrations: setPrimaryKey() deprecated](project_migrations_primarykey_pattern.md) — replaced with PrimaryKeyConstraintEditor across all 18 family-tree migrations (web-project already used it); verified byte-identical generated SQL.
+- [strictMode makes deprecations fatal](project_strictmode_deprecations.md) — `tracy.strictMode: true` turns any PHP deprecation into a 500 app-wide; smoke-test key pages via curl after any `composer update`.
+- [unaccent + BIGINT ids + Redis sessions (2026-10-03)](project_unaccent_bigint_redis_2026_10_03.md) — all 3 projects: unaccent ext, idempotent BIGINT migration, web-project MySQL gone, alfred sessions in Redis (prod needs a Redis service first), caches lie after entity/DQL changes.
+- [Characterization tests before PHPStan](project_characterization_tests_before_phpstan.md) — tests first per area, then fix phpstan; pinned known bugs, test-infra gotchas.
+- [contributte/translation API reference](reference_contributte_translation.md) — named-param vs positional/plural substitution, `createPrefixedTranslator()`, `Wrappers\NotTranslate`/`Wrappers\Message`.
+- [Translations required for all UI text](feedback_translations_required.md) — never hardcode user-facing strings, always go through the translator with cs+en keys.
+- [Grid exerciser, PHP 8.4, bot review, dashboard stats (2026-10-04)](project_grid_exerciser_and_php84_2026_10_04.md) — GridExerciserCest in all 3 projects + DatagridPage adapter; bugs found (REGEXP bool, param-name collision, COLLATE/DATE), PHP 8.4 + nette/forms deprecation, alfred bot fixes/unfixed list, new dashboard grids.
+- [alfred Bootstrap 5 + Datagrid 7.2, version unified (2026-10-04)](project_alfred_bootstrap5_datagrid7_2026_10_04.md) — datagrid scripts from vendor in all 3 projects, BS5 everywhere, verified-by-running gotchas (smooth scroll, Tracy bar, forms-bootstrap V5 switch).
+- [Verify datagrid docs by running](feedback_verify_datagrid_docs_by_running.md) — docs are unreliable; check library code + app code + real browser result; web-project is not a trusted template.

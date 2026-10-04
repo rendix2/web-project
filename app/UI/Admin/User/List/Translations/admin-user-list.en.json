@@ -1,6 +1,7 @@
 {
   "header": "Users",
   "title": "Users",
+  "list.header": "User list",
 
   "id.name": "ID",
   "id.search": "Search by ID",
@@ -26,6 +27,7 @@
 
   "delete.name": "Delete",
   "delete.title": "Delete User",
+  "delete.confirm": "Are you sure you want to delete user %username%?",
   "delete.success": "User %username% was deleted",
 
   "add-user": "Add User"

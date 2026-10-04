@@ -1,5 +1,24 @@
 {
+  "title": "Roles",
+  "list.header": "Role list",
 
+  "id.name": "ID",
+  "id.search": "Search by ID",
 
-  "add-role": "ADd Role"
+  "name.name": "Name",
+  "name.search": "Search by role name",
+
+  "edit.name": "Detail",
+  "edit.title": "Role detail",
+  "edit.success": "Role %name% was edited",
+
+  "edit.inline.name": "Inline edit",
+  "edit.inline.title": "Inline edit role",
+
+  "delete.name": "Delete",
+  "delete.title": "Delete role",
+  "delete.confirm": "Are you sure you want to delete role %name%?",
+  "delete.success": "Role %name% was deleted",
+
+  "add-role": "Add Role"
 }

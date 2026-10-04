@@ -23,5 +23,18 @@ parameters:
             redirectPermanent: Nette\Application\AbortException
             error: Nette\Application\BadRequestException
 
+    excludePaths:
+        # generated migrations use the deprecated Schema API of the migration base class
+        - app/Database/Migrations
     paths:
         - app
+
+    ignoreErrors:
+        # BIGINT primary keys are strings on purpose (Doctrine returns bigint as string, PHP has no unsigned 64 bit int)
+        -
+            identifier: doctrine.columnType
+            message: '#type mapping mismatch: database can contain int but property expects string#'
+        # custom DBAL type (App\Database\Types\IpAddressType), PHPStan has no descriptor for it
+        -
+            identifier: doctrine.descriptorNotFound
+            message: '#Doctrine type "ip_address"#'

@@ -46,7 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 new InlinePlugin(),
                 new ItemDetailPlugin(),
                 new NetteFormsPlugin(netteForms),
-                new HappyPlugin(new Happy()),
                 new SortablePlugin(new SortableJS()),
                 new DatepickerPlugin(new VanillaDatepicker({ buttonClass: 'btn' })),
                 new SelectpickerPlugin(new TomSelect(Select)),

@@ -5,7 +5,6 @@ namespace App\UI\Web\User\ForgetPassword\Request;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordRequestEntity;
-use App\Model\Repository\UserRepository;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Mailing\IMailBuilderFactory;
@@ -14,7 +13,6 @@ use Exception;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
-use Nette\Mail\SmtpException;
 use Nette\Utils\Random;
 use App\Database\EntityManagerDecorator;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
@@ -23,9 +21,10 @@ use Throwable;
 class RequestPresenter extends Presenter
 {
     public function __construct(
-        private readonly EntityManagerDecorator $em,
-        private readonly Translator             $translator,
-        private readonly IMailBuilderFactory    $mailBuilderFactory,
+        private readonly EntityManagerDecorator                 $em,
+        private readonly Translator                             $translator,
+        private readonly IMailBuilderFactory                    $mailBuilderFactory,
+        private readonly UserPasswordRequestAttemptCheckService $attemptCheckService,
     )
     {
         parent::__construct();
@@ -41,7 +40,6 @@ class RequestPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
@@ -54,31 +52,49 @@ class RequestPresenter extends Presenter
         return $form;
     }
 
+    /**
+     * Odpověď (i časování, nakolik to jde) je ZÁMĚRNĚ stejná bez ohledu na to, jestli daný e-mail
+     * v databázi existuje - jinak by šlo formulář zneužít k enumeraci registrovaných e-mailů
+     * (zkoušet adresy a podle chybové/úspěšné odpovědi poznat, kdo má účet). Nikdy sem proto
+     * nepřidávej `$this->error(...)`/jinou odlišitelnou odpověď pro "e-mail nenalezen".
+     */
     public function requestFormSuccess(Form $form) : void
     {
         $values = $form->getValues(CreatePasswordRequestValues::class);
+        $ip = $this->getHttpRequest()->getRemoteAddress() ?? '0.0.0.0';
+        $succeeded = true;
 
-        /**
-         * @var UserRepository $userRepository
-         */
-        $userRepository = $this->em
-            ->getRepository(UserEntity::class);
+        if (!$this->attemptCheckService->isIpBlocked($ip) && !$this->attemptCheckService->isEmailBlocked($values->email)) {
+            $this->attemptCheckService->logAttempt($values->email, $ip);
 
-        /**
-         * @var ?UserEntity $userEntity
-         */
-        $userEntity = $userRepository
-            ->findOneByEmail($values->email);
+            $userEntity = $this->em
+                ->getRepository(UserEntity::class)
+                ->findOneByEmail($values->email);
 
-        if ($userEntity === null) {
-            $this->error('user not found');
+            if ($userEntity !== null) {
+                $succeeded = $this->createAndSendPasswordRequest($userEntity);
+            }
         }
 
+        // Stejná hláška vždy - ať byl e-mail nalezen, neznámý, nebo je žadatel dočasně
+        // zablokovaný kvůli příliš mnoha požadavkům (viz komentář výše) - ALE jen když
+        // nepředchází skutečná provozní chyba (ta už svou vlastní hlášku ukázala a další
+        // "úspěšná" hláška vedle ní by byla matoucí, ne bezpečnostně nutná - provozní chyba
+        // sama o sobě nic o existenci účtu neprozrazuje).
+        if ($succeeded) {
+            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.success'));
+        }
+
+        $this->redrawControl('flashes');
+    }
+
+    private function createAndSendPasswordRequest(UserEntity $userEntity) : bool
+    {
         $oldRequests = $this->em
             ->getRepository(UserPasswordRequestEntity::class)
             ->findBy(
                 [
-                    'user' => $userEntity
+                    'user' => $userEntity,
                 ]
             );
 
@@ -98,8 +114,14 @@ class RequestPresenter extends Presenter
             $this->em->persist($userEntity);
             $this->em->flush();
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            // Nikdy neposílat e-mail s odkazem na žádost, která se ve skutečnosti neuložila -
+            // odkaz by byl po kliknutí vždy "neplatný". Chyba samotná je jen provozní (neprozrazuje
+            // nic o existenci účtu), takže se dá klidně přeložená a jasně ukázat.
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.error'), 'danger');
             $this->redrawControl('flashes');
+
+            return false;
         }
 
         $mail = $this->mailBuilderFactory->create();
@@ -113,7 +135,6 @@ class RequestPresenter extends Presenter
             throw new Exception('Unknown translator without locale');
         }
 
-
         $mail->setParameters(
             [
                 'userEntity' => $userEntity,
@@ -122,37 +143,28 @@ class RequestPresenter extends Presenter
 
         try {
             $mail->send();
-        } catch (SmtpException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
-        } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
         } catch (Throwable $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.error'), 'danger');
             $this->redrawControl('flashes');
+
+            return false;
         }
 
         $mailEntity = new MailEntity();
         $mailEntity->emailTo = $userEntity->email;
         $mailEntity->body = $mail->getMessage()->getHtmlBody();
-        $mailEntity->subject = $this->translator->translate('web-user-forgetPassword-request-subject');
+        $mailEntity->subject = $this->translator->translate('web-user-forgetPassword-request.subject');
 
         try {
             $this->em->persist($mailEntity);
             $this->em->flush();
-        } catch (DbalException $exception) {
-            bdump($exception);
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
         } catch (Throwable $exception) {
+            // E-mail se v tuhle chvíli už odeslal - selhalo jen uložení do auditního logu mailů,
+            // to uživateli do flash zprávy hlásit nemá smysl (nic z jeho pohledu nezhavarovalo).
             bdump($exception);
-            $this->flashMessage($exception->getMessage(), 'danger');
-            $this->redrawControl('flashes');
         }
 
-        $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.success'));
-        $this->redrawControl('flashes');
+        return true;
     }
-
 }

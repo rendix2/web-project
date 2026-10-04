@@ -1,5 +1,7 @@
 {
   "form.header": "Editace",
+  "form.subtitle": "Upravte své osobní údaje a nastavení účtu",
+  "back": "Zpět bez uložení",
 
   "form.submit.label": "Uložit",
   "form.submit.success": "Uživatel uložen."

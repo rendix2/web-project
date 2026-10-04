@@ -7,7 +7,6 @@ parameters:
             host: "web-project-postgres"
             port: 5432
             driver: pdo_pgsql
-            type: mysql
             username: "web-project"
             password: "password"
             database: "web-project"

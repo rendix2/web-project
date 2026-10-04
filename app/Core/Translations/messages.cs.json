@@ -4,6 +4,8 @@
   "yes": "Ano",
   "no": "Ne",
 
+  "operationFailed": "Operace se nezdařila.",
+
   "Please enter a valid email address." : "Prosím vložte validní emailovou andresu",
   "This field is required.": "Tato položka je povinná."
 }

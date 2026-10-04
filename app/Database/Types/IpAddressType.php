@@ -35,11 +35,11 @@ final class IpAddressType extends Type
             return null;
         }
 
-        if (filter_var($value, FILTER_VALIDATE_IP) === false) {
-            throw new InvalidArgumentException("Invalid IP Address: $value");
+        if (!is_string($value) || filter_var($value, FILTER_VALIDATE_IP) === false) {
+            throw new InvalidArgumentException('Invalid IP Address.');
         }
 
-        return (string) $value;
+        return $value;
     }
 
     public function requiresSQLCommentHint(AbstractPlatform $platform): bool

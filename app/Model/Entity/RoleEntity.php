@@ -22,7 +22,7 @@ class RoleEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::INTEGER)]
+    #[Column(type: Types::BIGINT)]
     public int $id;
 
     #[Column(type: Types::STRING, length: 512)]
@@ -40,7 +40,10 @@ class RoleEntity
     /**
      * @var Collection<int, UserEntity> $users
      */
-    #[ManyToMany(targetEntity: UserEntity::class, inversedBy: 'roles', cascade: ['persist', 'remove'])]
+    // cascade: 'remove' on a ManyToMany cascades an actual ENTITY remove, not just a join-table
+    // row delete - it made deleting one Role delete every User who had it assigned. Removing a
+    // role/user must only drop the user_role join row, which Doctrine already does on its own.
+    #[ManyToMany(targetEntity: UserEntity::class, inversedBy: 'roles', cascade: ['persist'])]
     #[JoinTable(
         name: 'user_role',
         joinColumns: [

@@ -50,5 +50,7 @@
   "roleGrid.removeRole": "Remove Role",
   "roleGrid.role.id": "ID",
   "roleGrid.role.name": "Role",
-  "roleGrid.role.search": "Search by Role name"
+  "roleGrid.role.search": "Search by Role name",
+  "roleGrid.role.added": "Role was added",
+  "roleGrid.role.removed": "Role was removed"
 }

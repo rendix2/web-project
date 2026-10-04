@@ -9,11 +9,11 @@ use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
+use Throwable;
 
 /**
  * class EditPresenter
@@ -60,7 +60,7 @@ class EditPresenter extends AdminBasePresenter
 
     public function renderDefault(string $id) : void
     {
-        $this->template->roleEntity = $this->roleEntity;
+        $this->getTemplate()->roleEntity = $this->roleEntity;
     }
 
     protected function createComponentMenu() : MenuComponent
@@ -74,7 +74,6 @@ class EditPresenter extends AdminBasePresenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
         $form->setAjax(true);
 
         $form->addText('name', 'admin-role-edit.form.name.label')
@@ -83,14 +82,9 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addSubmit('send', 'admin-role-edit.form.submit.label');
 
-        $form->onValidate[] = [$this, 'editFormOnValidate'];
         $form->onSuccess[] = [$this, 'editFormSuccess'];
 
         return $form;
-    }
-
-    public function editFormOnValidate(Form $form) : void
-    {
     }
 
     public function editFormSuccess(Form $form) : void
@@ -124,19 +118,13 @@ class EditPresenter extends AdminBasePresenter
             $this->redrawControl('flashes');
             $this->redrawControl('editFormWrapper');
             $this->redrawControl('editForm');
-        } catch (DbalException $exception) {
-            $flash = new stdClass();
-            $flash->place = 'general';
-            $flash->type = 'danger';
-            $flash->message = $exception->getMessage();
+        } catch (Throwable $exception) {
+            bdump($exception);
 
-            $this->flashMessage($flash);
-            $this->redrawControl('flashes');
-        } catch (\Throwable $exception) {
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';
-            $flash->message = $exception->getMessage();
+            $flash->message = $this->translator->translate('messages.operationFailed');
 
             $this->flashMessage($flash);
             $this->redrawControl('flashes');

@@ -1,0 +1,7 @@
+#
+# Environment-specific config for Codeception test suites: the same connection as the dev environment
+# (the tests clean up what they create, see tests/Support/Helper/CleanupTestData.php).
+#
+
+includes:
+    - ../env/dev.neon

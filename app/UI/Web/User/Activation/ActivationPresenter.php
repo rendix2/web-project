@@ -6,12 +6,14 @@ use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserEntity;
 use DateTimeImmutable;
 use Nette\Application\UI\Presenter;
+use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 
 class ActivationPresenter extends Presenter
 {
     public function __construct(
         private readonly EntityManagerDecorator $em,
+        private readonly Translator             $translator,
     )
     {
         parent::__construct();
@@ -28,7 +30,7 @@ class ActivationPresenter extends Presenter
             );
 
         if ($userEntity === null) {
-            $this->error('user not found');
+            $this->error('User not found');
         }
 
         $userActivationEntity = $this->em
@@ -41,7 +43,7 @@ class ActivationPresenter extends Presenter
             );
 
         if ($userActivationEntity === null) {
-            $this->error('User not found');
+            $this->error('Invalid activation key');
         }
 
         if ((new DateTimeImmutable()) > $userActivationEntity->validUntil) {
@@ -51,11 +53,10 @@ class ActivationPresenter extends Presenter
         $userActivationEntity->user->isActive = true;
         $userActivationEntity->user->updatedAt = new DateTimeImmutable();
 
-        $this->em->persist($userActivationEntity);
         $this->em->remove($userActivationEntity);
         $this->em->flush();
 
-        $this->flashMessage('success', 'success');
+        $this->flashMessage($this->translator->translate('web-user-activation.success'), 'success');
         $this->redrawControl('flashes');
 
         $this->redirect(':Web:User:Login:default');

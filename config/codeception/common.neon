@@ -1,0 +1,30 @@
+#
+# Common Nette DI config used by Codeception (NetteDIModule) test suites.
+#
+# app/Bootstrap.php supplies the static parameters of the real application; here they are rebuilt from
+# the directories NetteDIModule provides (appDir, tempDir), so the tested container matches the real one.
+#
+
+extensions:
+    codeceptionHttp: Tests\Support\DI\HttpExtension
+
+# contributte/console rewires http.requestFactory to a fixed request when consoleMode is on (codecept runs under
+# the CLI SAPI), which would override codeceptionHttp above and break request/routing emulation.
+contributte.console:
+    url: null
+
+parameters:
+    rootDir: %appDir%/..
+    binDir: %rootDir%/bin
+    configDir: %rootDir%/config
+    cacheDir: %tempDir%/cache
+    nettrineCacheDir: %cacheDir%/nettrine
+    mailDir: %tempDir%/mails
+    migrationsDir: %appDir%/Database/Migrations
+    fixturesDir: %appDir%/Database/Fixtures
+    entityDir: %appDir%/Model/Entity
+    assetsDir: %wwwDir%/assets
+
+includes:
+    - ../common.neon
+    - ../services.neon

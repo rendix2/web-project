@@ -7,7 +7,6 @@ use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Presenter;
-use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 
@@ -23,8 +22,10 @@ class LogoutPresenter extends Presenter
 
     public function actionDefault() : void
     {
+        // Odhlášení už odhlášeného není chyba (typicky dvojklik na odkaz, otevřená druhá záložka,
+        // vrácení se v historii prohlížeče zpět) - stačí ho poslat na login, ne mu ukázat error page.
         if (!$this->getUser()->isLoggedIn()) {
-            $this->error('User not logged in', IResponse::S400_BadRequest);
+            $this->redirect(':Web:User:Login:default');
         }
 
         if ($this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME) !== null) {
@@ -54,11 +55,16 @@ class LogoutPresenter extends Presenter
                     $this->em->remove($userAutoLoginEntity);
                     $this->em->flush();
                 } catch (DbalException $exception) {
-                    $this->flashMessage($exception->getMessage(), 'danger');
-                    $this->redrawControl('flashes');
+                    // Smazání autologin záznamu selhalo, ale uživatel se odhlašuje ze session tak
+                    // jako tak - nemá smysl mu to blokovat, jen to nahlásit do logu.
+                    bdump($exception);
                 }
             }
         }
+
+        // Zruší i cookie v prohlížeči, ne jen záznam v DB - jinak by ji prohlížeč posílal navždy
+        // (neškodně - AutoLoginAuthenticator ji po smazání entity výše stejně odmítne - ale zbytečně).
+        $this->getHttpResponse()->deleteCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
         $this->getUser()->logout(true);
         $this->flashMessage(

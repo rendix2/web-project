@@ -16,8 +16,11 @@ RUN docker-php-ext-install -j "$(nproc)" gd
 # PDO
 RUN apt install libpq-dev -y --fix-missing
 RUN docker-php-ext-install -j "$(nproc)" pdo
-RUN docker-php-ext-install -j "$(nproc)" pdo_mysql
 RUN docker-php-ext-install -j "$(nproc)" pdo_pgsql
+
+# ZIP (needed by composer packages of the test tooling, php-webdriver)
+RUN apt install -y libzip-dev
+RUN docker-php-ext-install zip
 
 # Opcache
 RUN docker-php-ext-configure opcache --enable-opcache

@@ -1,0 +1,14 @@
+.git
+.github
+.idea
+.docker/mysql
+.docker/postgres
+.docker/redis
+node_modules
+vendor
+temp
+log
+backup
+tests
+www/assets
+www/dist

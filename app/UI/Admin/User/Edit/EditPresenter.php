@@ -13,12 +13,12 @@ use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\MenuControl\UI\MenuComponent;
 use Contributte\MenuControl\UI\MenuComponentFactory;
-use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 use stdClass;
+use Throwable;
 
 class EditPresenter extends AdminBasePresenter
 {
@@ -69,7 +69,7 @@ class EditPresenter extends AdminBasePresenter
 
     public function renderDefault(string $uuid) : void
     {
-        $this->template->userEntity = $this->userEntity;
+        $this->getTemplate()->userEntity = $this->userEntity;
     }
 
     protected function createComponentRolesGrid() : Datagrid
@@ -104,7 +104,6 @@ class EditPresenter extends AdminBasePresenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
         $form->setAjax(true);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
@@ -145,81 +144,22 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addSubmit('send', 'admin-user-edit.form.submit.label');
 
-        $form->onValidate[] = [$this, 'editFormOnValidate'];
         $form->onSuccess[] = [$this, 'editFormSuccess'];
 
         return $form;
     }
 
-    public function editFormOnValidate(Form $form) : void
-    {
-        /*
-        foreach ($this->userEntity->passwords as $usedPassword) {
-            if ($this->passwords->verify($form->getHttpData()['password'], $usedPassword->password)) {
-                $form->addError(
-                    $this->translator->translate('admin-user-edit.form.password.alreadyUsed')
-                );
-                $this->redrawControl('editFormWrapper');
-                $this->redrawControl('editForm');
-                $this->redrawControl('flashes');
-                break;
-            }
-        }
-        */
-    }
-
     public function editFormSuccess(Form $form) : void
     {
-        $values = $form->getValues();
+        $values = $form->getValues(EditUserValues::class);
+        $uuid = $this->getParameter('uuid');
 
-        /*
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'uuid' => $this->getParameter('uuid'),
-                ]
-            );
-
-        if ($userEntity === null) {
-            $this->error('user not found');
+        if (!is_string($uuid)) {
+            $this->error('User not found');
         }
-
-        $values = $form->getValues();
-
-        if ($userEntity->email !== $form->getHttpData()['email']) {
-            $userEmailEntity = new UserEmailEntity();
-            $userEmailEntity->email = $values->email;
-            $userEmailEntity->user = $userEntity;
-
-            $userEntity->addUserEmailEntity($userEmailEntity);
-        }
-
-        $userEntity->name = $values->name;
-        $userEntity->surname = $values->surname;
-        $userEntity->username = $values->username;
-        $userEntity->email = $values->email;
-        $userEntity->isActive = (bool) $values->isActive;
-        $userEntity->updatedAt = new DateTimeImmutable();
-
-        if ($values->password !== '') {
-            $userEntity->password = $this->passwords->hash($values->password);
-
-            $userPasswordEntity = new UserPasswordEntity();
-            $userPasswordEntity->user = $userEntity;
-            $userPasswordEntity->password = $this->passwords->hash($values->password);
-
-            $userEntity->addUserPasswordEntity($userPasswordEntity);
-        }
-        */
 
         try {
-            /*
-            $this->em->persist($userEntity);
-            $this->em->flush();
-            */
-
-            $this->userFacade->update($this->getParameter('uuid'), $values);
+            $this->userFacade->update($uuid, $values);
 
             $flash = new stdClass();
             $flash->place = 'general';
@@ -233,20 +173,13 @@ class EditPresenter extends AdminBasePresenter
             $this['emailsGrid']->reload();
             $this['passwordHistoryGrid']->reload();
             $this['rolesGrid']->reload();
-            //$this->redirect('this');
-        } catch (DbalException $exception) {
-            $flash = new stdClass();
-            $flash->place = 'general';
-            $flash->type = 'danger';
-            $flash->message = $exception->getMessage();
+        } catch (Throwable $exception) {
+            bdump($exception);
 
-            $this->flashMessage($flash);
-            $this->redrawControl('flashes');
-        } catch (\Throwable $exception) {
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';
-            $flash->message = $exception->getMessage();
+            $flash->message = $this->translator->translate('messages.operationFailed');
 
             $this->flashMessage($flash);
             $this->redrawControl('flashes');

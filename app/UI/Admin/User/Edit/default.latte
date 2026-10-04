@@ -7,10 +7,10 @@
         <div class="col-6">
             <div class="card shadow-lg border-0">
                 <div class="card-header bg-primary text-white d-flex align-items-center">
-                    <h5 class="mb-0 py-1">
+                    <h1 class="h5 mb-0 py-1">
                         <i class="fas fa-user-edit me-2"></i>
                         {$userEntity->name} {$userEntity->surname}
-                    </h5>
+                    </h1>
                 </div>
                 <div class="card-body p-4">
                     {snippet editFormWrapper}
@@ -28,9 +28,9 @@
         <div class="col-12 col-xl-4">
             <div class="card h-100 shadow-lg border-0">
                 <div class="card-header bg-light border-bottom-0">
-                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
-                        {_admin-user-edit.role.header}
-                    </h6>
+                    <h2 class="h6 mb-0 fw-bold text-secondary text-uppercase small">
+                        <i class="fas fa-user-shield me-2"></i>{_admin-user-edit.role.header}
+                    </h2>
                 </div>
                 <div class="card-body">
                     {control rolesGrid}
@@ -42,9 +42,9 @@
         <div class="col-12 col-md-6 col-xl-4">
             <div class="card h-100 shadow-lg border-0">
                 <div class="card-header bg-light border-bottom-0">
-                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
-                        {_admin-user-edit.email.header}
-                    </h6>
+                    <h2 class="h6 mb-0 fw-bold text-secondary text-uppercase small">
+                        <i class="fas fa-envelope me-2"></i>{_admin-user-edit.email.header}
+                    </h2>
                 </div>
                 <div class="card-body">
                     {control emailsGrid}
@@ -56,9 +56,9 @@
         <div class="col-12 col-md-6 col-xl-4">
             <div class="card h-100 shadow-lg border-0">
                 <div class="card-header bg-light border-bottom-0">
-                    <h6 class="mb-0 fw-bold text-secondary text-uppercase small">
-                        {_admin-user-edit.passwordHistory.header}
-                    </h6>
+                    <h2 class="h6 mb-0 fw-bold text-secondary text-uppercase small">
+                        <i class="fas fa-history me-2"></i>{_admin-user-edit.passwordHistory.header}
+                    </h2>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">

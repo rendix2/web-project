@@ -88,7 +88,6 @@ class ChangePresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $passwordControl = $this->passwordFactory->create((string) $this->translator->translate('web-user-changePassword.form.newPassword.label'));
         $form->addComponent($passwordControl, 'password');
@@ -219,7 +218,8 @@ class ChangePresenter extends Presenter
 
             $this->redirect(':Web:User:Login:default');
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('web-user-forgetPassword-set.form.submit.error'), 'danger');
             $this->redrawControl('flashes');
         }
     }

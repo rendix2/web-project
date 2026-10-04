@@ -2,7 +2,9 @@
 
 namespace App\UI\Admin\User\List;
 
+use App\Forms\EmailFormControl;
 use App\Forms\EmailFormControlFactory;
+use App\Forms\UsernameFormControl;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
@@ -71,8 +73,8 @@ class UserDataGrid
             ->setSortable(true)
             ->setSortableCallback(
                 function(QueryBuilder $queryBuilder, array $sort) : void {
-                    $queryBuilder->orderBy('_user.surname', $sort['fullName'])
-                        ->addOrderBy('_user.name', $sort['fullName']);
+                    $queryBuilder->orderBy('_user.surname', $sort['fullName'] === 'DESC' ? 'DESC' : 'ASC')
+                        ->addOrderBy('_user.name', $sort['fullName'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
@@ -81,10 +83,10 @@ class UserDataGrid
                     $queryBuilder->andWhere(
                         $queryBuilder->expr()
                             ->orX(
-                                $queryBuilder->expr()->eq('REGEXP(_user.name, :fullName)', true),
-                                $queryBuilder->expr()->eq('REGEXP(_user.surname, :fullName)', true),
-                                $queryBuilder->expr()->eq('REGEXP(CONCAT(_user.name, \' \', _user.surname), :fullName)', true),
-                                $queryBuilder->expr()->eq('REGEXP(CONCAT(_user.surname, \' \', _user.name), :fullName)', true),
+                                $queryBuilder->expr()->eq('REGEXP(_user.name, :fullName)', 'true'),
+                                $queryBuilder->expr()->eq('REGEXP(_user.surname, :fullName)', 'true'),
+                                $queryBuilder->expr()->eq('REGEXP(CONCAT(_user.name, \' \', _user.surname), :fullName)', 'true'),
+                                $queryBuilder->expr()->eq('REGEXP(CONCAT(_user.surname, \' \', _user.name), :fullName)', 'true'),
                             )
                     )
                         ->setParameter('fullName', $fullName);
@@ -142,23 +144,24 @@ class UserDataGrid
                 );
 
             if ($userEntity === null) {
-                $this->grid->presenter->error('user not found');
+                $this->grid->getPresenter()->error('user not found');
             }
 
             try {
                 $this->em->remove($userEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage(
+                $this->grid->getPresenter()->flashMessage(
                     $this->translator->translate('admin-user-list.delete.success', ['username' => $userEntity->username]),
                     'success'
                 );
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->redrawControl('flashes');
 
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
 
@@ -167,11 +170,11 @@ class UserDataGrid
             ->setConfirmation(
                 new CallbackConfirmation(
                     function(UserEntity $userEntity) : string {
-                        return 'Are you sure that you want to delete User#' . $userEntity->id . ' with username ' . $userEntity->username . '?';
+                        return (string) $this->translator->translate('admin-user-list.delete.confirm', ['username' => $userEntity->username]);
                     }
                 )
             )
-            ->setClass('btn btn-xs btn-default btn-danger btn-block ajax')
+            ->setClass('btn btn-sm btn-danger w-100 ajax')
             ->setTitle('admin-user-list.delete.title')
             ->setIcon('trash')
             ->onClick[] = $onClick;
@@ -190,8 +193,13 @@ class UserDataGrid
             ->setTitle('admin-user-list.edit.inline.title');
 
         $setDefaultsCallback = function(Container $container, UserEntity $userEntity) : void {
-            $container->getComponent('username')->setExcludeUserId($userEntity->id);
-            $container->getComponent('email')->setExcludeUserId($userEntity->id);
+            $usernameControl = $container->getComponent('username');
+            $emailControl = $container->getComponent('email');
+
+            if ($usernameControl instanceof UsernameFormControl && $emailControl instanceof EmailFormControl) {
+                $usernameControl->setExcludeUserId($userEntity->id);
+                $emailControl->setExcludeUserId($userEntity->id);
+            }
 
             $container->setDefaults(
                 [
@@ -205,11 +213,11 @@ class UserDataGrid
 
         $onSubmitEdit = function(string $uuid, UserInlineEditValues $values) : void {
             if (substr_count($values->fullName, ' ') === 0) {
-                $this->grid->presenter->flashMessage(
+                $this->grid->getPresenter()->flashMessage(
                     $this->translator->translate('admin-user-list.form.fullName.noSpace'),
                     'danger'
                 );
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->redrawControl('flashes');
 
                 return;
             }
@@ -226,7 +234,7 @@ class UserDataGrid
                 );
 
             if ($userEntity === null) {
-                $this->grid->presenter->error('user not found');
+                $this->grid->getPresenter()->error('user not found');
             }
 
             if ($userEntity->email !== $values->email) {
@@ -243,29 +251,31 @@ class UserDataGrid
             $userEntity->surname = $surname;
             $userEntity->username = $values->username;
             $userEntity->email = $values->email;
-            $userEntity->isActive = $values->isActive;
+            $userEntity->isActive = (bool) $values->isActive;
             $userEntity->updatedAt = new DateTimeImmutable();
 
             try {
                 $this->em->persist($userEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage(
+                $this->grid->getPresenter()->flashMessage(
                     $this->translator->translate('admin-user-list.edit.success', ['username' => $userEntity->username]),
                     'success'
                 );
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
-                bdump('OK');
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
-                bdump('FAIL');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
 
         $inlineEdit->onControlAdd[] = function(Container $container) : void {
-            $uuid = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit')['_id'] ?? null;
+            $container->setMappedType(UserInlineEditValues::class);
+
+            $inlineEditPost = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit');
+            $uuid = is_array($inlineEditPost) ? ($inlineEditPost['_id'] ?? null) : null;
             $userId = null;
 
             if ($uuid !== null) {
@@ -299,8 +309,14 @@ class UserDataGrid
             $container->addComponent($username, 'username');
             $container->addComponent($email, 'email');
 
-            $container->addSelect('isActive', items: [0 => 'no', 1 => 'yes'])
-                ->setPrompt('select');
+            $container->addSelect(
+                'isActive',
+                items: [
+                    0 => (string) $this->translator->translate('messages.no'),
+                    1 => (string) $this->translator->translate('messages.yes'),
+                ]
+            )
+                ->setPrompt((string) $this->translator->translate('messages.select'));
         };
 
         $inlineEdit->onSetDefaults[] = $setDefaultsCallback;

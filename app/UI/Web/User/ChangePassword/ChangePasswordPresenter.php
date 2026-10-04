@@ -10,11 +10,12 @@ use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
-use Doctrine\ORM\Decorator\EntityManagerDecorator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
+use App\Database\EntityManagerDecorator;
 
 class ChangePasswordPresenter extends Presenter
 {
@@ -28,15 +29,16 @@ class ChangePasswordPresenter extends Presenter
         parent::__construct();
     }
 
-    public function renderDefault() : void
+    public function actionDefault() : void
     {
         if (!$this->getUser()->isLoggedIn()) {
-            $this->flashMessage('not logged id', 'danger');
-            $this->redrawControl('flashes');
-            return;
+            $this->error('user not logged in', IResponse::S403_Forbidden);
         }
+    }
 
-        $this->template->userEntity = $this->em
+    public function renderDefault() : void
+    {
+        $this->getTemplate()->userEntity = $this->em
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
@@ -51,7 +53,6 @@ class ChangePasswordPresenter extends Presenter
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
-        $form->addProtection('Please try again.');
 
         $form->addComponent(
             $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')),
@@ -162,7 +163,8 @@ class ChangePasswordPresenter extends Presenter
             $this->redrawControl('changePasswordFormWrapper');
             $this->redrawControl('changePasswordForm');
         } catch (DbalException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            bdump($exception);
+            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
             $this->redrawControl('flashes');
         }
     }

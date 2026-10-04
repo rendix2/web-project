@@ -71,14 +71,14 @@ class RoleDataGrid
             ->setSortable(true)
             ->setSortableCallback(
                 function(QueryBuilder $queryBuilder, array $sort) : void {
-                    $queryBuilder->orderBy('_role.name', $sort['name']);
+                    $queryBuilder->orderBy('_role.name', $sort['name'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
             ->setCondition(
                 function(QueryBuilder $queryBuilder, $role) : void {
-                    $queryBuilder->andWhere('_role.name')
-                        ->setParameter('role', $role);
+                    $queryBuilder->andWhere('REGEXP(_role.name, :roleName) = true')
+                        ->setParameter('roleName', $role);
                 }
             )
             ->setPlaceholder('admin-user-edit.roleGrid.role.search');
@@ -109,12 +109,13 @@ class RoleDataGrid
                 $this->em->persist($this->userEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage('role added', 'success');
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('admin-user-edit.roleGrid.role.added'), 'success');
+                $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
 
@@ -153,19 +154,20 @@ class RoleDataGrid
                 $this->em->persist($this->userEntity);
                 $this->em->flush();
 
-                $this->grid->presenter->flashMessage('role removed', 'success');
-                $this->grid->presenter->redrawControl('flashes');
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('admin-user-edit.roleGrid.role.removed'), 'success');
+                $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                $this->grid->presenter->flashMessage($exception->getMessage(), 'danger');
-                $this->grid->presenter->redrawControl('flashes');
+                bdump($exception);
+                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
         $removeRole = $closure;
 
         $this->grid
             ->addActionCallback('deleteRole', 'admin-user-edit.roleGrid.removeRole')
-            ->setClass('btn btn-xs btn-default btn-danger')
+            ->setClass('btn btn-sm btn-danger')
             ->setIcon('trash')
             ->onClick[] = $removeRole;
 

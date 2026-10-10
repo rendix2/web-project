@@ -4,19 +4,22 @@ namespace App\UI\Web\User\ChangeEmail;
 
 use App\Forms\EmailFormControlFactory;
 use App\Forms\PasswordFormControlFactory;
-use App\Forms\UsernameFormControlFactory;
-use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use DateTimeImmutable;
-use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
+use App\Service\UserEmailChangeService;
+use Nette\Application\AbortException;
+use Throwable;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 /**
  * class ChangeEmailPresenter
@@ -30,6 +33,7 @@ class ChangeEmailPresenter extends Presenter
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
         private readonly Passwords                  $passwords,
+        private readonly UserEmailChangeService     $emailChangeService,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
     ) {
@@ -44,9 +48,9 @@ class ChangeEmailPresenter extends Presenter
 
     }
 
-    public function createComponentChangeEmailForm() : BootstrapForm
+    public function createComponentChangeEmailForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
@@ -60,7 +64,8 @@ class ChangeEmailPresenter extends Presenter
 
         $form->addComponent($emailControl, 'email');
 
-        $form->addSubmit('send', 'web-user-changeEmail.form.submit.name');
+        $form->addSubmit('send', 'web-user-changeEmail.form.submit.name')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
 
         $form->onValidate[] = [$this, 'changeEmailFormOnValidate'];
         $form->onSuccess[] = [$this, 'changeEmailFormSuccess'];
@@ -105,18 +110,16 @@ class ChangeEmailPresenter extends Presenter
             $this->error('user not found');
         }
 
-        $userEntity->email = $values->email;
-        $userEntity->updatedAt = new DateTimeImmutable();
+        if (mb_strtolower($values->email) === mb_strtolower($userEntity->email)) {
+            $this->flashMessage($this->translator->translate('web-user-changeEmail.form.same'), 'info');
+            $this->redrawControl('flashes');
 
-        $userEmailEntity = new UserEmailEntity();
-        $userEmailEntity->email = $values->email;
-        $userEmailEntity->user = $userEntity;
-
-        $userEntity->addUserEmailEntity($userEmailEntity);
+            return;
+        }
 
         try {
-            $this->em->persist($userEntity);
-            $this->em->flush();
+            // nothing is changed here: the new address gets a confirmation link, the current one a warning
+            $this->emailChangeService->request($userEntity, $values->email);
 
             $this->flashMessage(
                 $this->translator->translate('web-user-changeEmail.form.submit.success'),
@@ -124,9 +127,13 @@ class ChangeEmailPresenter extends Presenter
             );
             $this->redrawControl('flashes');
             $this->redirect('this');
-        } catch (DbalException $exception) {
+        } catch (AbortException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+            Debugger::log($exception, ILogger::EXCEPTION);
+
+            $this->flashMessage($this->translator->translate('web-user-changeEmail.form.submit.error'), 'danger');
             $this->redrawControl('flashes');
         }
     }

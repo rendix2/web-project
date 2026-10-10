@@ -1,0 +1,5 @@
+{
+  "success": "The e-mail of the account was changed.",
+  "invalid": "This link to confirm the e-mail is invalid or has expired.",
+  "taken": "Another account uses this address now, the e-mail was not changed."
+}

@@ -24,7 +24,7 @@ final class Version20250624214039 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_login_attempt');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -36,9 +36,14 @@ final class Version20250624214039 extends AbstractMigration
             ->setComment('IP Address');
 
         $table->addColumn('user_agent', Types::STRING)
+            ->setLength(512)
+            ->setNotnull(false)
             ->setComment('User agent');
 
+        // an ISO code (2 letters) or Local / Unknown
         $table->addColumn('country_code', Types::STRING)
+            ->setLength(16)
+            ->setNotnull(false)
             ->setComment('Country code');
 
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)

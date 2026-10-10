@@ -3,6 +3,7 @@
 namespace App\Model\Facade;
 
 use App\Database\EntityManagerDecorator;
+use App\Forms\Mapper\UserFormMapper;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserEmailEntity;
@@ -28,6 +29,7 @@ class UserFacade
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
+        private readonly UserFormMapper         $userFormMapper,
         private readonly Passwords              $passwords,
         private readonly IMailBuilderFactory    $mailBuilderFactory,
         private readonly Translator             $translator,
@@ -99,17 +101,17 @@ class UserFacade
                 throw new Exception('User not found');
             }
 
-            $userEntity->name = $values->name;
-            $userEntity->surname = $values->surname;
-            $userEntity->username = $values->username;
+            // known BEFORE the mapper overwrites the e-mail: a changed e-mail is remembered in the e-mail history
+            $emailChanged = $userEntity->email !== $values->email;
 
-            if ($userEntity->email !== $values->email) {
+            $this->userFormMapper->apply($values, $userEntity);
+
+            if ($emailChanged) {
                 $userEmailEntity = new UserEmailEntity();
                 $userEmailEntity->email = $values->email;
                 $userEmailEntity->user = $userEntity;
 
                 $userEntity->addUserEmailEntity($userEmailEntity);
-                $userEntity->email = $values->email;
             }
 
             if ($values->password !== '') {
@@ -128,7 +130,10 @@ class UserFacade
                 $userEntity->autoLogins->clear();
             }
 
-            $userEntity->isActive = $values->isActive;
+            if (!$values->isActive) {
+                // a deactivated user keeps nothing that logs him in (his session ends at the next request, AutoLoginService)
+                $userEntity->autoLogins->clear();
+            }
 
             $userEntity->updatedAt = new DateTimeImmutable();
 

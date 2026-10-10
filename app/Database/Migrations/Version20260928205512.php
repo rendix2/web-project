@@ -25,7 +25,7 @@ final class Version20260928205512 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_password_request_attempt');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -39,8 +39,8 @@ final class Version20260928205512 extends AbstractMigration
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->addIndex(['email', 'created_at'], 'K_User_password_request_attempt__Email_created_at');
-        $table->addIndex(['ip_address', 'created_at'], 'K_User_password_request_attempt__Ip_address_created_at');
+        $table->addIndex(['email', 'created_at'], 'K__User_password_request_attempt__Email_created_at');
+        $table->addIndex(['ip_address', 'created_at'], 'K__User_password_request_attempt__Ip_address_created_at');
 
         $primaryKey = new PrimaryKeyConstraintEditor();
         $primaryKey->setIsClustered(false);

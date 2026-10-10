@@ -3,18 +3,16 @@
 namespace App\UI\Web\User\Logout;
 
 use App\Core\AutoLoginAuthenticator;
-use App\Model\Entity\UserAutoLoginEntity;
-use App\Model\Entity\UserEntity;
+use App\Core\AutoLoginTokenService;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
 
 class LogoutPresenter extends Presenter
 {
     public function __construct(
         private readonly Translator             $translator,
-        private readonly EntityManagerDecorator $em,
+        private readonly AutoLoginTokenService  $autoLoginTokens,
     )
     {
         parent::__construct();
@@ -28,37 +26,15 @@ class LogoutPresenter extends Presenter
             $this->redirect(':Web:User:Login:default');
         }
 
-        if ($this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME) !== null) {
-            $userEntity = $this->em
-                ->getRepository(UserEntity::class)
-                ->findOneBy(
-                    [
-                        'id' => $this->getUser()->getId(),
-                    ]
-                );
+        $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
-            if ($userEntity === null) {
-                $this->error('user not found');
-            }
-
-            $userAutoLoginEntity = $this->em
-                ->getRepository(UserAutoLoginEntity::class)
-                ->findOneBy(
-                    [
-                        'user' => $userEntity,
-                        'token' => $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME),
-                    ]
-                );
-
-            if ($userAutoLoginEntity !== null) {
-                try {
-                    $this->em->remove($userAutoLoginEntity);
-                    $this->em->flush();
-                } catch (DbalException $exception) {
-                    // Smazání autologin záznamu selhalo, ale uživatel se odhlašuje ze session tak
-                    // jako tak - nemá smysl mu to blokovat, jen to nahlásit do logu.
-                    bdump($exception);
-                }
+        if (is_string($autoLoginCookie)) {
+            try {
+                $this->autoLoginTokens->revoke($autoLoginCookie);
+            } catch (DbalException $exception) {
+                // Smazání autologin záznamu selhalo, ale uživatel se odhlašuje ze session tak
+                // jako tak - nemá smysl mu to blokovat, jen to nahlásit do logu.
+                bdump($exception);
             }
         }
 

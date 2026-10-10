@@ -174,7 +174,7 @@ class UserDataGrid
                     }
                 )
             )
-            ->setClass('btn btn-sm btn-danger w-100 ajax')
+            ->setClass('btn btn-sm btn-danger ajax')
             ->setTitle('admin-user-list.delete.title')
             ->setIcon('trash')
             ->onClick[] = $onClick;
@@ -252,6 +252,11 @@ class UserDataGrid
             $userEntity->username = $values->username;
             $userEntity->email = $values->email;
             $userEntity->isActive = (bool) $values->isActive;
+
+            if (!$userEntity->isActive) {
+                // a deactivated user keeps nothing that logs him in (his session ends at the next request, AutoLoginService)
+                $userEntity->autoLogins->clear();
+            }
             $userEntity->updatedAt = new DateTimeImmutable();
 
             try {

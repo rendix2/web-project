@@ -71,9 +71,9 @@ final class Version20230621145918 extends AbstractMigration
 
         $table
             ->setComment('Users')
-            ->addUniqueIndex(['email'], 'UK_User_Email')
-            ->addUniqueIndex(['uuid'], 'UK_User_UUID')
-            ->addUniqueIndex(['username'], 'UK_User_Username');
+            ->addUniqueIndex(['email'], 'UK__Users__Email')
+            ->addUniqueIndex(['uuid'], 'UK__Users__Uuid')
+            ->addUniqueIndex(['username'], 'UK__Users__Username');
     }
 
     public function down(Schema $schema) : void

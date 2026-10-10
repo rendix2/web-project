@@ -1,7 +1,5 @@
 parameters:
     level: 10
-    stubFiles:
-        #- %rootDir%/../../../app/PHPStan/Stubs/nette-forms.php
     doctrine:
         objectManagerLoader: %rootDir%/../../../app/PHPStan/object-manager.php
         reportDynamicQueryBuilders: true

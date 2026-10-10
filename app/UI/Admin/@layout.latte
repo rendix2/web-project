@@ -9,9 +9,39 @@
     </head>
 
     <body>
-        {control menu}
+        {var $isUsers = str_starts_with($presenter->getName(), 'Admin:User:')}
+        {var $isRoles = str_starts_with($presenter->getName(), 'Admin:Role:')}
+        {var $isList = str_ends_with($presenter->getName(), ':List')}
 
-        {control menu:breadcrumbs}
+        <nav id="admin-navigation" class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container-fluid">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link{if $isUsers} active{/if}" href="{link :Admin:User:List:default}" n:attr="aria-current => $isUsers ? 'page'">
+                            <i class="fas fa-users"></i> {_admin-menu.users}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link{if $isRoles} active{/if}" href="{link :Admin:Role:List:default}" n:attr="aria-current => $isRoles ? 'page'">
+                            <i class="fas fa-user-tag"></i> {_admin-menu.roles}
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+
+        <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                {if $isUsers}
+                    <li class="breadcrumb-item{if $isList} active{/if}" n:attr="aria-current => $isList ? 'page'"><a href="{link :Admin:User:List:default}">{_admin-menu.users}</a></li>
+                {elseif $isRoles}
+                    <li class="breadcrumb-item{if $isList} active{/if}" n:attr="aria-current => $isList ? 'page'"><a href="{link :Admin:Role:List:default}">{_admin-menu.roles}</a></li>
+                {/if}
+                {if !$isList}
+                    {ifset title}<li class="breadcrumb-item active" aria-current="page">{include title|stripHtml}</li>{/ifset}
+                {/if}
+            </ol>
+        </nav>
 
         {snippet flashes}
         <div class="container-fluid">

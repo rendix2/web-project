@@ -5,8 +5,6 @@ namespace App\UI\Admin\Role\List;
 use App\UI\Admin\AdminBasePresenter;
 use App\UI\Admin\User\List\UserDataGrid;
 use Contributte\Datagrid\Datagrid;
-use Contributte\MenuControl\UI\MenuComponent;
-use Contributte\MenuControl\UI\MenuComponentFactory;
 
 /**
  * class ListPresenter
@@ -18,7 +16,6 @@ class ListPresenter extends AdminBasePresenter
 
     public function __construct(
         private readonly RoleDataGrid         $roleDataGrid,
-        private readonly MenuComponentFactory $menuFactory,
     )
     {
         parent::__construct();
@@ -28,10 +25,6 @@ class ListPresenter extends AdminBasePresenter
     {
     }
 
-    protected function createComponentMenu() : MenuComponent
-    {
-        return $this->menuFactory->create('admin');
-    }
 
     protected function createComponentGrid() : Datagrid
     {

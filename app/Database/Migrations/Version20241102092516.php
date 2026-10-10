@@ -23,7 +23,7 @@ final class Version20241102092516 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_activation');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -50,8 +50,8 @@ final class Version20241102092516 extends AbstractMigration
 
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User activation keys')
-            ->addUniqueIndex(['user_id'], 'UK__user_activation__user_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__user_activation__user_id');
+            ->addUniqueIndex(['user_id'], 'UK__User_activation__User_id')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_activation__User_id');
     }
 
     public function down(Schema $schema) : void

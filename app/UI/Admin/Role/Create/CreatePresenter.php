@@ -3,15 +3,15 @@
 namespace App\UI\Admin\Role\Create;
 
 use App\Database\EntityManagerDecorator;
-use App\Model\Entity\RoleEntity;
+use App\Forms\Mapper\RoleFormMapper;
 use App\UI\Admin\AdminBasePresenter;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Contributte\MenuControl\UI\MenuComponent;
-use Contributte\MenuControl\UI\MenuComponentFactory;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 /**
  * class CreatePresenter
@@ -23,20 +23,16 @@ class CreatePresenter extends AdminBasePresenter
     public function __construct(
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
-        private readonly MenuComponentFactory       $menuFactory,
+        private readonly RoleFormMapper             $roleFormMapper,
     )
     {
         parent::__construct();
     }
 
-    protected function createComponentMenu() : MenuComponent
-    {
-        return $this->menuFactory->create('admin');
-    }
 
-    public function createComponentCreateForm() : BootstrapForm
+    public function createComponentCreateForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
@@ -44,9 +40,11 @@ class CreatePresenter extends AdminBasePresenter
 
         $form->addText('name', 'admin-role-edit.form.name.label')
             ->setRequired('admin-role-edit.form.name.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-user-tag');
 
-        $form->addSubmit('send', 'admin-role-create.form.submit.label');
+        $form->addSubmit('send', 'admin-role-create.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-plus');
 
         $form->onSuccess[] = [$this, 'createFormSuccess'];
 
@@ -57,8 +55,7 @@ class CreatePresenter extends AdminBasePresenter
     {
         $values = $form->getValues(CreateRoleValues::class);
 
-        $roleEntity = new RoleEntity();
-        $roleEntity->name = $values->name;
+        $roleEntity = $this->roleFormMapper->apply($values);
 
         try {
             $this->em->persist($roleEntity);

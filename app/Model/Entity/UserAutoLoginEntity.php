@@ -17,6 +17,7 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'user_auto_login')]
 class UserAutoLoginEntity
 {
+    public const int LIFETIME_DAYS = 30;
 
     #[Id()]
     #[GeneratedValue()]
@@ -24,11 +25,17 @@ class UserAutoLoginEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'autoLogins')]
-    #[JoinColumn(unique: false, nullable: false)]
+    #[JoinColumn(unique: false, nullable: false, onDelete: 'CASCADE')]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 1024)]
-    public string $token;
+    /**
+     * SHA-256 (hex) of the token in the cookie, never the token itself: a leaked table logs nobody in. Unique, so it is a plain index lookup.
+     */
+    #[Column(type: Types::STRING, length: 64, unique: true)]
+    public string $tokenHash;
+
+    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    public DateTimeImmutable $validUntil;
 
     #[Column(type: IpAddressType::NAME, nullable: false)]
     public string $ipAddress;
@@ -36,7 +43,7 @@ class UserAutoLoginEntity
     #[Column(length: 512, nullable: true)]
     public ?string $userAgent;
 
-    #[Column(length: 2, nullable: true)]
+    #[Column(length: 16, nullable: true)]
     public ?string $countryCode;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]
@@ -49,6 +56,8 @@ class UserAutoLoginEntity
     {
         $this->userAgent = null;
         $this->countryCode = null;
+
+        $this->validUntil = new DateTimeImmutable('+' . self::LIFETIME_DAYS . ' days');
 
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;

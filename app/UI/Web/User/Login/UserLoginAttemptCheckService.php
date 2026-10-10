@@ -36,7 +36,7 @@ class UserLoginAttemptCheckService
         $ua = $parser->parse();
 
         $userLoginAttemptEntity = new UserLoginAttemptEntity();
-        $userLoginAttemptEntity->username = $username;
+        $userLoginAttemptEntity->username = $this->normalize($username);
         $userLoginAttemptEntity->ipAddress = $ipAddress;
         $userLoginAttemptEntity->userAgent = $ua->browser();
         $userLoginAttemptEntity->countryCode = $geoIpArray['country'];
@@ -81,8 +81,8 @@ class UserLoginAttemptCheckService
 
             ->select('count(_attempt.id)')
 
-            ->where('_attempt.username = :username')
-            ->setParameter('username', $username)
+            ->where('LOWER(_attempt.username) = :username')
+            ->setParameter('username', $this->normalize($username))
 
             ->andWhere('_attempt.createdAt >= :since')
             ->setParameter('since', $since)
@@ -93,31 +93,29 @@ class UserLoginAttemptCheckService
         return $count >= $this->maxAttempts;
     }
 
-    public function clearAttempts(string $username, string $ipAddress): void
+    /**
+     * A successful login clears the attempts of THAT USERNAME. Never those of the IP: whoever owns any account would reset the limit
+     * of his IP between the guesses of the passwords of the others (password spraying).
+     */
+    public function clearAttempts(string $username) : void
     {
         $this->em
             ->createQueryBuilder()
             ->delete(UserLoginAttemptEntity::class, 'a')
 
-            ->where('a.username = :username')
-            ->setParameter('username', $username)
+            ->where('LOWER(a.username) = :username')
+            ->setParameter('username', $this->normalize($username))
 
             ->getQuery()
             ->execute();
+    }
 
-        if (filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
-            throw new InvalidArgumentException("Neplatná IP adresa při mazání: $ipAddress");
-        }
-
-        $this->em
-            ->createQueryBuilder()
-            ->delete(UserLoginAttemptEntity::class, 'a')
-
-            ->where('a.ipAddress = :ipAddress')
-            ->setParameter('ipAddress', $ipAddress)
-
-            ->getQuery()
-            ->execute();
+    /**
+     * `Admin` and `admin` are one account, so one counter (a different case must not avoid the limit).
+     */
+    private function normalize(string $username) : string
+    {
+        return mb_strtolower($username);
     }
 
 }

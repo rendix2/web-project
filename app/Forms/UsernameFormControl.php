@@ -8,7 +8,7 @@ use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\Inputs\TextInput;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Localization\Translator;
-use Nette\Utils\Html;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class UsernameFormControl extends TextInput
 {
@@ -20,6 +20,8 @@ class UsernameFormControl extends TextInput
         private readonly EntityManagerDecorator $em
     ) {
         parent::__construct($label);
+
+        $this->setOption(IconBootstrapRenderer::ICON, 'fas fa-user');
 
         $this
             ->setRequired('admin-user-edit.form.username.required')
@@ -61,8 +63,8 @@ class UsernameFormControl extends TextInput
             ->createQueryBuilder('u')
             ->select('COUNT(u.id)')
 
-            ->where('u.username = :username')
-            ->setParameter('username', $username);
+            ->where('LOWER(u.username) = :username')
+            ->setParameter('username', mb_strtolower($username));
 
         if ($this->excludeUserId !== null) {
             $qb
@@ -73,21 +75,6 @@ class UsernameFormControl extends TextInput
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
 
-    public function getControl(): Html
-    {
-        $control = parent::getControl();
-        $control->addClass('form-control');
-
-        $wrapper = Html::el('div')->addClass('input-group');
-        $addon = Html::el('span')->addClass('input-group-text');
-        $icon = Html::el('i')->addClass('fa fa-user');
-
-        $addon->addHtml($icon);
-        $wrapper->addHtml($addon);
-        $wrapper->addHtml($control);
-
-        return $wrapper;
-    }
 }
 
 interface UsernameFormControlFactory

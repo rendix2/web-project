@@ -1,5 +1,10 @@
 {
   "form.header": "Email change",
-
-  "form.submit.name": "Change email"
+  "form.submit.name": "Change email",
+  "form.submit.success": "We sent a confirmation link to the new address. The e-mail changes when you open it. We sent a warning to your current address.",
+  "form.submit.error": "The confirmation e-mail could not be sent. Please try again later.",
+  "mail.confirm.subject": "Confirm the change of your e-mail",
+  "mail.requested.subject": "Request to change the e-mail",
+  "mail.changed.subject": "The e-mail of your account was changed",
+  "form.same": "Your account already uses this e-mail."
 }

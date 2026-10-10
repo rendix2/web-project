@@ -37,16 +37,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
             throw new AuthenticationException('Tento účet je dočasně zablokován. Zkuste to prosím později.');
         }
 
-        /**
-         * @var ?UserEntity $userEntity
-         */
-        $userEntity = $this->em
-            ->getRepository(UserEntity::class)
-            ->findOneBy(
-                [
-                    'username' => $username,
-                ]
-            );
+        $userEntity = $this->em->getRepository(UserEntity::class)->findOneByUsername($username);
 
         if ($userEntity === null) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
@@ -72,7 +63,7 @@ class UsernameAndPasswordAuthenticator implements Authenticator
             $roles[] = $role->name;
         }
 
-        $this->userLoginAttemptCheckService->clearAttempts($username, $ip);
+        $this->userLoginAttemptCheckService->clearAttempts($username);
 
         return new SimpleIdentity(
             $userEntity->id,

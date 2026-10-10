@@ -2,49 +2,53 @@
 
 namespace App\Core;
 
-use App\Model\Entity\UserAutoLoginEntity;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Authenticator;
 use Nette\Security\IIdentity;
 use Nette\Security\SimpleIdentity;
-use App\Database\EntityManagerDecorator;
 
+/**
+ * Logs in by the token of the "stay logged in" cookie (the "username" argument is the token, there is no password).
+ * Only an active user with a valid (existing, not expired) token gets in.
+ */
 class AutoLoginAuthenticator implements Authenticator
 {
     public const COOKIE_NAME = 'autoLogin';
 
-
     public function __construct(
-        private readonly EntityManagerDecorator $em,
+        private readonly AutoLoginTokenService $tokens,
     )
     {
     }
 
-    function authenticate(string $username, string $password) : IIdentity
+    public function authenticate(string $username, string $password) : IIdentity
     {
-        $userAutoLoginEntity = $this->em
-            ->getRepository(UserAutoLoginEntity::class)
-            ->findOneBy(
-                [
-                    'token' => $username
-                ]
-            );
+        $entity = $this->tokens->find($username);
 
-        if ($userAutoLoginEntity === null) {
-            throw new AuthenticationException('NO autologin found');
+        if ($entity === null) {
+            throw new AuthenticationException('No valid autologin token.');
+        }
+
+        $user = $entity->user;
+
+        if (!$user->isActive) {
+            // a deactivated user keeps nothing that logs him in
+            $this->tokens->revokeAll($user);
+
+            throw new AuthenticationException('User is not active.');
         }
 
         $roles = [];
 
-        foreach ($userAutoLoginEntity->user->roles as $role) {
+        foreach ($user->roles as $role) {
             $roles[] = $role->name;
         }
 
         return new SimpleIdentity(
-            $userAutoLoginEntity->user->id,
+            $user->id,
             $roles,
             [
-                'name' => $userAutoLoginEntity->user->username
+                'username' => $user->username,
             ],
         );
     }

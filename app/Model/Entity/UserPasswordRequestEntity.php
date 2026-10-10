@@ -22,7 +22,7 @@ class UserPasswordRequestEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'passwordRequests')]
-    #[JoinColumn(unique: true, nullable: false)]
+    #[JoinColumn(unique: true, nullable: false, onDelete: 'CASCADE')]
     public UserEntity $user;
 
     #[Column(type: Types::STRING, length: 1024)]

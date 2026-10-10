@@ -47,16 +47,18 @@ class RoleEntity
     #[JoinTable(
         name: 'user_role',
         joinColumns: [
-            new JoinColumn('role_id', 'id'),
+            new JoinColumn('role_id', 'id', onDelete: 'CASCADE'),
         ],
         inverseJoinColumns: [
-            new JoinColumn('user_id', 'id'),
+            new JoinColumn('user_id', 'id', onDelete: 'CASCADE'),
         ]
     )]
     public Collection $users;
 
     public function __construct()
     {
+        // the role forms have no description, the column is NOT NULL
+        $this->description = '';
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
 

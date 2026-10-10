@@ -3,6 +3,7 @@
 namespace App\UI\Web\User\Login;
 
 use App\Core\AutoLoginAuthenticator;
+use App\Core\AutoLoginTokenService;
 use App\Core\UsernameAndPasswordAuthenticator;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
@@ -15,8 +16,9 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
-use Nette\Utils\Random;
 use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class LoginPresenter extends Presenter
 {
@@ -26,6 +28,7 @@ class LoginPresenter extends Presenter
         private readonly EntityManagerDecorator           $em,
         private readonly UsernameAndPasswordAuthenticator $usernameAndPasswordAuthenticator,
         private readonly GeoIpService                     $geoIpService,
+        private readonly AutoLoginTokenService            $autoLoginTokens,
     )
     {
         parent::__construct();
@@ -39,24 +42,27 @@ class LoginPresenter extends Presenter
         }
     }
 
-    public function createComponentLoginForm() : BootstrapForm
+    public function createComponentLoginForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
 
         $form->addText('username', 'web-user-login.form.username.label')
             ->setRequired('web-user-login.form.username.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-user');
 
         $form->addPassword('password', 'web-user-login.form.password.label')
-            ->setRequired('web-user-login.form.password.required');
+            ->setRequired('web-user-login.form.password.required')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock');
 
         $form->addCheckbox('stayLoggedIn', 'web-user-login.form.stayLoggedIn');
 
         $submitButton = $form->addSubmit('login', 'web-user-login.form.submit.name')
-            ->setHtmlAttribute('class', 'mt-2');
+            ->setHtmlAttribute('class', 'mt-2')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-sign-in-alt');
 
         if ($this->getUser()->isLoggedIn()) {
             $submitButton
@@ -87,18 +93,11 @@ class LoginPresenter extends Presenter
             $this->getUser()->setExpiration($stayLoggedIn ? '14 days' : '2 hours');
 
             if ($stayLoggedIn) {
-                $autoLoginToken = Random::generate(128);
-
-                // Cookie musí přežít zavření prohlížeče (to je smysl "zůstat přihlášen") - session
-                // cookie (expire === null) mizí spolu se session, takže by nikdy nic neobnovila.
-                $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, '30 days');
-
                 $userEntity = $this->em
                     ->getRepository(UserEntity::class)
                     ->findOneBy(
                         [
                             'id' => $this->getUser()->getId(),
-                            'username' => $username,
                         ]
                     );
 
@@ -118,16 +117,13 @@ class LoginPresenter extends Presenter
                 $parser = new UserAgentParser();
                 $ua = $parser->parse();
 
-                $userAutoLoginEntity = new UserAutoLoginEntity();
-                $userAutoLoginEntity->user = $userEntity;
-                $userAutoLoginEntity->token = $autoLoginToken;
-                $userAutoLoginEntity->ipAddress = $ip;
-                $userAutoLoginEntity->countryCode = $geoIpCountry;
-                $userAutoLoginEntity->userAgent = $ua->browser();
-
                 try {
-                    $this->em->persist($userAutoLoginEntity);
-                    $this->em->flush();
+                    $autoLoginToken = $this->autoLoginTokens->issue($userEntity, $ip, $geoIpCountry, $ua->browser());
+
+                    // Cookie musí přežít zavření prohlížeče (to je smysl "zůstat přihlášen") - session
+                    // cookie (expire === null) mizí spolu se session, takže by nikdy nic neobnovila.
+                    // V cookie je token, v databázi jen jeho hash.
+                    $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, UserAutoLoginEntity::LIFETIME_DAYS . ' days');
                 } catch (DbalException $exception) {
                     bdump($exception);
                     $this->flashMessage($this->translator->translate('web-user-login.form.submit.autoLoginError'), 'danger');

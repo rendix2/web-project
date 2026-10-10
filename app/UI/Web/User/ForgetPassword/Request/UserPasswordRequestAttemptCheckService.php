@@ -37,7 +37,7 @@ class UserPasswordRequestAttemptCheckService
         }
 
         $userPasswordRequestAttemptEntity = new UserPasswordRequestAttemptEntity();
-        $userPasswordRequestAttemptEntity->email = $email;
+        $userPasswordRequestAttemptEntity->email = mb_strtolower($email);
         $userPasswordRequestAttemptEntity->ipAddress = $ipAddress;
 
         $this->em->persist($userPasswordRequestAttemptEntity);
@@ -80,8 +80,8 @@ class UserPasswordRequestAttemptCheckService
 
             ->select('count(_attempt.id)')
 
-            ->where('_attempt.email = :email')
-            ->setParameter('email', $email)
+            ->where('LOWER(_attempt.email) = :email')
+            ->setParameter('email', mb_strtolower($email))
 
             ->andWhere('_attempt.createdAt >= :since')
             ->setParameter('since', $since)

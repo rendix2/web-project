@@ -30,7 +30,7 @@ class UserLoginAttemptEntity
     #[Column(length: 512, nullable: true)]
     public ?string $userAgent;
 
-    #[Column(length: 2, nullable: true)]
+    #[Column(length: 16, nullable: true)]
     public ?string $countryCode;
 
     #[Column(type: Types::DATETIME_IMMUTABLE)]

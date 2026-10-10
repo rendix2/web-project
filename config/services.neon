@@ -5,6 +5,7 @@ search:
 			- *Facade
 			- *Grid
 			- *Service
+			- *Mapper
 
 services:
     RouterFactory: App\Core\RouterFactory::createRouter
@@ -14,7 +15,6 @@ includes:
     - ext/guzzle.neon
     - ext/nettrine.neon
     - ext/translation.neon
-    - ext/menu.neon
     - ext/mailing.neon
     - ext/redis.neon
     - ext/pwned.neon

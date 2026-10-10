@@ -3,17 +3,18 @@
 namespace App\UI\Admin\Role\Edit;
 
 use App\Database\EntityManagerDecorator;
+use App\Forms\Mapper\RoleFormMapper;
 use App\Model\Entity\RoleEntity;
 use App\UI\Admin\AdminBasePresenter;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Contributte\MenuControl\UI\MenuComponent;
-use Contributte\MenuControl\UI\MenuComponentFactory;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
 use Throwable;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 /**
  * class EditPresenter
@@ -28,7 +29,7 @@ class EditPresenter extends AdminBasePresenter
     public function __construct(
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
-        private readonly MenuComponentFactory       $menuFactory,
+        private readonly RoleFormMapper             $roleFormMapper,
     )
     {
         parent::__construct();
@@ -51,11 +52,7 @@ class EditPresenter extends AdminBasePresenter
 
         $this->roleEntity = $roleEntity;
 
-        $this['editForm']->setDefaults(
-            [
-                'name' => $roleEntity->name,
-            ]
-        );
+        $this->roleFormMapper->fill($this['editForm'], $roleEntity);
     }
 
     public function renderDefault(string $id) : void
@@ -63,14 +60,10 @@ class EditPresenter extends AdminBasePresenter
         $this->getTemplate()->roleEntity = $this->roleEntity;
     }
 
-    protected function createComponentMenu() : MenuComponent
-    {
-        return $this->menuFactory->create('admin');
-    }
 
-    public function createComponentEditForm() : BootstrapForm
+    public function createComponentEditForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
@@ -78,9 +71,11 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addText('name', 'admin-role-edit.form.name.label')
             ->setRequired('admin-role-edit.form.name.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-user-tag');
 
-        $form->addSubmit('send', 'admin-role-edit.form.submit.label');
+        $form->addSubmit('send', 'admin-role-edit.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
 
         $form->onSuccess[] = [$this, 'editFormSuccess'];
 
@@ -103,7 +98,7 @@ class EditPresenter extends AdminBasePresenter
             $this->error('Role not found');
         }
 
-        $roleEntity->name = $values->name;
+        $this->roleFormMapper->apply($values, $roleEntity);
 
         try {
             $this->em->persist($roleEntity);

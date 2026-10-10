@@ -24,3 +24,5 @@
 - [Grid exerciser, PHP 8.4, bot review, dashboard stats (2026-10-04)](project_grid_exerciser_and_php84_2026_10_04.md) — GridExerciserCest in all 3 projects + DatagridPage adapter; bugs found (REGEXP bool, param-name collision, COLLATE/DATE), PHP 8.4 + nette/forms deprecation, alfred bot fixes/unfixed list, new dashboard grids.
 - [alfred Bootstrap 5 + Datagrid 7.2, version unified (2026-10-04)](project_alfred_bootstrap5_datagrid7_2026_10_04.md) — datagrid scripts from vendor in all 3 projects, BS5 everywhere, verified-by-running gotchas (smooth scroll, Tracy bar, forms-bootstrap V5 switch).
 - [Verify datagrid docs by running](feedback_verify_datagrid_docs_by_running.md) — docs are unreliable; check library code + app code + real browser result; web-project is not a trusted template.
+- [No traits](feedback_no_traits.md) — no PHP traits in any of the 4 projects; use real classes; existing traits removed gradually, never extended (also in tests).
+- [Typed properties conventions](feedback_typed_properties_conventions.md) — no @var on natively typed properties (remove when touched); initialise in the constructor, not at the declaration (tests: _before()).

@@ -11,7 +11,7 @@ use Contributte\FormsBootstrap\Inputs\TextInput;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Localization\Translator;
-use Nette\Utils\Html;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 /**
  * class EmailFormControl
@@ -28,12 +28,15 @@ class EmailFormControl extends TextInput
     {
         parent::__construct($label);
 
+        $this->setOption(IconBootstrapRenderer::ICON, 'fas fa-at');
+
         $this
             ->setHtmlType('email')
             ->setNullable(BootstrapForm::$allwaysUseNullable)
             ->setRequired('admin-user-edit.form.email.required')
             ->addRule(Form::Email, 'admin-user-edit.form.email.invalidFormat')
             ->setMaxLength(512)
+            ->addFilter(static fn (mixed $value) : mixed => is_string($value) ? mb_strtolower(trim($value)) : $value)
 
             ->addRule(
                 function (Control $control): bool {
@@ -70,8 +73,8 @@ class EmailFormControl extends TextInput
             ->createQueryBuilder('u')
             ->select('COUNT(u.id)')
 
-            ->where('u.email = :email')
-            ->setParameter('email', $email);
+            ->where('LOWER(u.email) = :email')
+            ->setParameter('email', mb_strtolower($email));
 
         if ($this->excludeUserId !== null) {
             $qbUser->andWhere('u.id != :excludeUserId')
@@ -88,8 +91,8 @@ class EmailFormControl extends TextInput
             ->createQueryBuilder('ue')
             ->select('COUNT(ue.id)')
 
-            ->where('ue.email = :email')
-            ->setParameter('email', $email);
+            ->where('LOWER(ue.email) = :email')
+            ->setParameter('email', mb_strtolower($email));
 
         if ($this->excludeUserId !== null) {
             $qbHistory
@@ -100,23 +103,6 @@ class EmailFormControl extends TextInput
         return (int) $qbHistory->getQuery()->getSingleScalarResult() > 0;
     }
 
-    public function getControl(): Html
-    {
-        $control = parent::getControl();
-        $control->addClass('form-control');
-
-        $wrapper = Html::el('div')->addClass('input-group');
-
-        $addon = Html::el('span')->addClass('input-group-text');
-        $icon = Html::el('i')->addClass('fa fa-at');
-
-        $addon->addHtml($icon);
-
-        $wrapper->addHtml($addon);
-        $wrapper->addHtml($control);
-
-        return $wrapper;
-    }
 }
 
 interface EmailFormControlFactory

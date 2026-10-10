@@ -23,7 +23,7 @@ final class Version20241027230245 extends AbstractMigration
     {
         $table = $schema->createTable('public.role');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 

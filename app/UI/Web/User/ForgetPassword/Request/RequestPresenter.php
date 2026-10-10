@@ -17,6 +17,8 @@ use Nette\Utils\Random;
 use App\Database\EntityManagerDecorator;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Throwable;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class RequestPresenter extends Presenter
 {
@@ -34,18 +36,20 @@ class RequestPresenter extends Presenter
     {
     }
 
-    public function createComponentRequestForm() : BootstrapForm
+    public function createComponentRequestForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
 
         $form->addEmail('email', 'admin-user-edit.form.email.label')
             ->setRequired('admin-user-edit.form.email.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-at');
 
-        $form->addSubmit('request', 'web-user-forgetPassword-request.form.submit.label');
+        $form->addSubmit('request', 'web-user-forgetPassword-request.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-paper-plane');
 
         $form->onSuccess[] = [$this, 'requestFormSuccess'];
 

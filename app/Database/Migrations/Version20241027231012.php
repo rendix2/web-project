@@ -26,7 +26,7 @@ final class Version20241027231012 extends AbstractMigration
         $table->addColumn('user_id', Types::BIGINT)
             ->setComment('User ID');
 
-        $table->addColumn('role_id', Types::INTEGER)
+        $table->addColumn('role_id', Types::BIGINT)
             ->setComment('Role ID');
 
         $primaryKey = new PrimaryKeyConstraintEditor();
@@ -40,8 +40,8 @@ final class Version20241027231012 extends AbstractMigration
             ->setComment('User roles')
             ->addIndex(['user_id'], 'K__User_role__User_id')
             ->addIndex(['role_id'], 'K__User_role__Role_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_role__User_id')
-            ->addForeignKeyConstraint('role', ['role_id'], ['id'], name: 'FK__User_role__Role_id');
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_role__User_id')
+            ->addForeignKeyConstraint('role', ['role_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_role__Role_id');
     }
 
     public function down(Schema $schema) : void

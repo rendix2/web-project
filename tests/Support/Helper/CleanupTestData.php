@@ -6,6 +6,7 @@ use App\Database\EntityManagerDecorator;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserAutoLoginEntity;
+use App\Model\Entity\UserEmailChangeRequestEntity;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserLoginAttemptEntity;
@@ -121,7 +122,7 @@ class CleanupTestData extends Module
                 'DELETE FROM user_role WHERE user_id IN (' . implode(',', array_map('intval', $userIds)) . ')'
             );
 
-            foreach ([UserPasswordEntity::class, UserEmailEntity::class, UserActivationEntity::class, UserAutoLoginEntity::class, UserPasswordRequestEntity::class] as $class) {
+            foreach ([UserPasswordEntity::class, UserEmailEntity::class, UserActivationEntity::class, UserAutoLoginEntity::class, UserPasswordRequestEntity::class, UserEmailChangeRequestEntity::class] as $class) {
                 $this->deleteWhere($class, 'e.user IN (:ids)', $userIds);
             }
 

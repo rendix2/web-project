@@ -23,7 +23,7 @@ final class Version20241106003834 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_password_request');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -51,7 +51,7 @@ final class Version20241106003834 extends AbstractMigration
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User forgotten passwords requests')
             ->addUniqueIndex(['user_id'], 'UK__User_password_request__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK_User_password_request__User_id');
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_password_request__User_id');
 
     }
 

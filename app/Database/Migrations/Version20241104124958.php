@@ -23,7 +23,7 @@ final class Version20241104124958 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_email');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -48,8 +48,8 @@ final class Version20241104124958 extends AbstractMigration
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User email history')
             ->addIndex(['user_id'], 'K__User_email__User_id')
-            ->addIndex(['email'], 'IDX_User_email_Email')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_email__User_id');
+            ->addIndex(['email'], 'K__User_email__Email')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_email__User_id');
     }
 
     public function down(Schema $schema) : void

@@ -22,7 +22,7 @@ class UserPasswordEntity
     public int $id;
 
     #[ManyToOne(targetEntity: UserEntity::class, inversedBy: 'passwords')]
-    #[JoinColumn(nullable: false)]
+    #[JoinColumn(nullable: false, onDelete: 'CASCADE')]
     public UserEntity $user;
 
     #[Column(type: Types::STRING, length: 1024)]

@@ -8,6 +8,9 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Accent-insensitive grid filters: the REGEXP() DQL function (App\Database\Functions\Regexp) uses unaccent().
  * The extension is "trusted" since PostgreSQL 13, so the database owner can create it.
+ *
+ * Raw SQL on purpose (the exception to the rule "migrations use the Schema API"): an extension is not a table, column or
+ * index, DBAL has no API for it.
  */
 final class Version20261003180000 extends AbstractMigration
 {

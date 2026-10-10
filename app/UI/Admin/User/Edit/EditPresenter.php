@@ -3,6 +3,7 @@
 namespace App\UI\Admin\User\Edit;
 
 use App\Forms\EmailFormControlFactory;
+use App\Forms\Mapper\UserFormMapper;
 use App\Forms\PasswordFormControlFactory;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEntity;
@@ -11,14 +12,14 @@ use App\UI\Admin\AdminBasePresenter;
 use Contributte\Datagrid\Datagrid;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
-use Contributte\MenuControl\UI\MenuComponent;
-use Contributte\MenuControl\UI\MenuComponentFactory;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 use stdClass;
 use Throwable;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class EditPresenter extends AdminBasePresenter
 {
@@ -27,7 +28,6 @@ class EditPresenter extends AdminBasePresenter
     public function __construct(
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
-        private readonly MenuComponentFactory       $menuFactory,
         private readonly RoleDataGrid               $roleDataGrid,
         private readonly EmailDataGrid              $emailDataGrid,
         private readonly PasswordHistoryGrid        $passwordHistoryGrid,
@@ -35,6 +35,7 @@ class EditPresenter extends AdminBasePresenter
         private readonly EmailFormControlFactory    $emailFormControlFactory,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly UserFacade                 $userFacade,
+        private readonly UserFormMapper             $userFormMapper,
     )
     {
         parent::__construct();
@@ -56,15 +57,7 @@ class EditPresenter extends AdminBasePresenter
 
         $this->userEntity = $userEntity;
 
-        $this['editForm']->setDefaults(
-            [
-                'name' => $userEntity->name,
-                'surname' => $userEntity->surname,
-                'username' => $userEntity->username,
-                'email' => $userEntity->email,
-                'isActive' => $userEntity->isActive,
-            ]
-        );
+        $this->userFormMapper->fill($this['editForm'], $userEntity);
     }
 
     public function renderDefault(string $uuid) : void
@@ -93,14 +86,10 @@ class EditPresenter extends AdminBasePresenter
             ->create();
     }
 
-    protected function createComponentMenu() : MenuComponent
-    {
-        return $this->menuFactory->create('admin');
-    }
 
-    public function createComponentEditForm() : BootstrapForm
+    public function createComponentEditForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
@@ -108,11 +97,13 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
 
         $form->addText('surname', 'admin-user-edit.form.surname.label')
             ->setRequired('admin-user-edit.form.surname.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
 
         $usernameControl = $this->usernameFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.username.label'));
         $usernameControl->setExcludeUserId($this->userEntity->id);
@@ -134,6 +125,7 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock')
             ->addConditionOn($passwordControl, Form::Filled, true)
                 ->setRequired('admin-user-edit.form.password2.required')
                 ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
@@ -142,7 +134,8 @@ class EditPresenter extends AdminBasePresenter
 
         $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
 
-        $form->addSubmit('send', 'admin-user-edit.form.submit.label');
+        $form->addSubmit('send', 'admin-user-edit.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
 
         $form->onSuccess[] = [$this, 'editFormSuccess'];
 

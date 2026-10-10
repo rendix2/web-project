@@ -17,6 +17,8 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use App\Database\EntityManagerDecorator;
 use Nette\Security\Passwords;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class ChangePresenter extends Presenter
 {
@@ -82,9 +84,9 @@ class ChangePresenter extends Presenter
     {
     }
 
-    public function createComponentChangePasswordForm() : BootstrapForm
+    public function createComponentChangePasswordForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
@@ -94,6 +96,7 @@ class ChangePresenter extends Presenter
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock')
             ->setRequired('admin-user-edit.form.password2.required')
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
@@ -101,7 +104,8 @@ class ChangePresenter extends Presenter
             ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
-        $form->addSubmit('send', 'web-user-forgetPassword-request.form.submit.label');
+        $form->addSubmit('send', 'web-user-forgetPassword-request.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
 
         $form->onValidate[] = [$this, 'changePasswordFormOnValidate'];
         $form->onSuccess[] = [$this, 'changePasswordFormSuccess'];

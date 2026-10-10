@@ -24,24 +24,33 @@ final class Version20241103230453 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_auto_login');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
         $table->addColumn('user_id', Types::BIGINT)
             ->setComment('User ID');
 
-        $table->addColumn('token', Types::STRING)
-            ->setComment('Token; saved in cookie')
-            ->setLength(1024);
+        // the cookie holds the token, the table only its SHA-256 hash (a leaked table logs nobody in)
+        $table->addColumn('token_hash', Types::STRING)
+            ->setComment('SHA-256 of the token saved in the cookie')
+            ->setLength(64);
+
+        $table->addColumn('valid_until', Types::DATETIME_IMMUTABLE)
+            ->setComment('Token is valid until');
 
         $table->addColumn('ip_address', IpAddressType::NAME)
             ->setComment('IP address');
 
         $table->addColumn('user_agent', Types::STRING)
+            ->setLength(512)
+            ->setNotnull(false)
             ->setComment('User agent');
 
+        // an ISO code (2 letters) or Local / Unknown
         $table->addColumn('country_code', Types::STRING)
+            ->setLength(16)
+            ->setNotnull(false)
             ->setComment('Country code');
 
         $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
@@ -58,7 +67,8 @@ final class Version20241103230453 extends AbstractMigration
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User auto logins')
             ->addIndex(['user_id'], 'K__User_auto_login__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_auto_login__User_id');
+            ->addUniqueIndex(['token_hash'], 'UK__User_auto_login__Token_hash')
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_auto_login__User_id');
     }
 
     public function down(Schema $schema) : void

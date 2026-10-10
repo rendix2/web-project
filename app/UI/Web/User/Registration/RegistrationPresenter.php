@@ -12,6 +12,8 @@ use Contributte\Translation\Translator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Throwable;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 
 class RegistrationPresenter extends Presenter
 {
@@ -30,20 +32,22 @@ class RegistrationPresenter extends Presenter
     {
     }
 
-    public function createComponentRegistrationForm() : BootstrapForm
+    public function createComponentRegistrationForm() : IconBootstrapForm
     {
-        $form = new BootstrapForm();
+        $form = new IconBootstrapForm();
         BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
 
         $form->setTranslator($this->translator);
 
         $form->addText('name', 'admin-user-edit.form.name.label')
             ->setRequired('admin-user-edit.form.name.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
 
         $form->addText('surname', 'admin-user-edit.form.surname.label')
             ->setRequired('admin-user-edit.form.surname.required')
-            ->setMaxLength(512);
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
 
         $form->addComponent(
             $this->usernameFormControlFactory->create($this->translator->translate('admin-user-edit.form.username.label')),
@@ -60,6 +64,7 @@ class RegistrationPresenter extends Presenter
 
         $form->addPassword('password2', 'admin-user-edit.form.password2.label')
             ->setOmitted()
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock')
             ->setRequired('admin-user-edit.form.password2.required')
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
@@ -67,7 +72,8 @@ class RegistrationPresenter extends Presenter
                 ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
-        $form->addSubmit('send', 'web-user-registration.form.submit.label');
+        $form->addSubmit('send', 'web-user-registration.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-user-plus');
 
         $form->onSuccess[] = [$this, 'registrationFormSuccess'];
 

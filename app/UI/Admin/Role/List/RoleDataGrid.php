@@ -133,7 +133,7 @@ class RoleDataGrid
                     }
                 )
             )
-            ->setClass('btn btn-sm btn-danger w-100 ajax')
+            ->setClass('btn btn-sm btn-danger ajax')
             ->setTitle('admin-role-list.delete.title')
             ->setIcon('trash')
             ->onClick[] = $onClick;

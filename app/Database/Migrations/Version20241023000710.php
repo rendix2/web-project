@@ -19,7 +19,7 @@ final class Version20241023000710 extends AbstractMigration
     {
         $table = $schema->createTable('public.user_password');
 
-        $table->addColumn('id', Types::INTEGER)
+        $table->addColumn('id', Types::BIGINT)
             ->setAutoincrement(true)
             ->setComment('ID');
 
@@ -44,7 +44,7 @@ final class Version20241023000710 extends AbstractMigration
         $table->addPrimaryKeyConstraint($primaryKey->create())
             ->setComment('User password history')
             ->addIndex(['user_id'], 'K__User_password__User_id')
-            ->addForeignKeyConstraint('users', ['user_id'], ['id'], name: 'FK__User_password__User_id');
+            ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_password__User_id');
     }
 
     public function down(Schema $schema) : void

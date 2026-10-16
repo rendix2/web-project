@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\ForgetPassword\Request;
 
+use stdClass;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordRequestEntity;
@@ -86,7 +87,12 @@ class RequestPresenter extends Presenter
         // "úspěšná" hláška vedle ní by byla matoucí, ne bezpečnostně nutná - provozní chyba
         // sama o sobě nic o existenci účtu neprozrazuje).
         if ($succeeded) {
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.success'));
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'info';
+            $flash->message = $this->translator->translate('web-user-forgetPassword-request.form.submit.success');
+
+            $this->flashMessage($flash);
         }
 
         $this->redrawControl('flashes');
@@ -122,7 +128,12 @@ class RequestPresenter extends Presenter
             // odkaz by byl po kliknutí vždy "neplatný". Chyba samotná je jen provozní (neprozrazuje
             // nic o existenci účtu), takže se dá klidně přeložená a jasně ukázat.
             bdump($exception);
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.error'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-forgetPassword-request.form.submit.error');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
 
             return false;
@@ -149,7 +160,12 @@ class RequestPresenter extends Presenter
             $mail->send();
         } catch (Throwable $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-request.form.submit.error'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-forgetPassword-request.form.submit.error');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
 
             return false;

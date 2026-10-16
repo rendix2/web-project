@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\ChangeEmail;
 
+use stdClass;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\PasswordFormControlFactory;
 use App\Model\Entity\UserEntity;
@@ -111,7 +112,12 @@ class ChangeEmailPresenter extends Presenter
         }
 
         if (mb_strtolower($values->email) === mb_strtolower($userEntity->email)) {
-            $this->flashMessage($this->translator->translate('web-user-changeEmail.form.same'), 'info');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'info';
+            $flash->message = $this->translator->translate('web-user-changeEmail.form.same');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
 
             return;
@@ -121,10 +127,12 @@ class ChangeEmailPresenter extends Presenter
             // nothing is changed here: the new address gets a confirmation link, the current one a warning
             $this->emailChangeService->request($userEntity, $values->email);
 
-            $this->flashMessage(
-                $this->translator->translate('web-user-changeEmail.form.submit.success'),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-changeEmail.form.submit.success');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
             $this->redirect('this');
         } catch (AbortException $exception) {
@@ -133,7 +141,12 @@ class ChangeEmailPresenter extends Presenter
             bdump($exception);
             Debugger::log($exception, ILogger::EXCEPTION);
 
-            $this->flashMessage($this->translator->translate('web-user-changeEmail.form.submit.error'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-changeEmail.form.submit.error');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

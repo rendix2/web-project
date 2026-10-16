@@ -8,7 +8,7 @@ modules:
         - PhpBrowser:
               url: http://web-project-web
         - Contributte\Codeception\Module\NetteDIModule:
-              tempDir: ../../temp/codeception
+              tempDir: ../../temp/codeception/functional
               logDir: ../../log/codeception
               appDir: ../../app
               wwwDir: ../../www

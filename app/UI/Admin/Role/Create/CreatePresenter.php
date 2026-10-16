@@ -2,6 +2,7 @@
 
 namespace App\UI\Admin\Role\Create;
 
+use stdClass;
 use App\Database\EntityManagerDecorator;
 use App\Forms\Mapper\RoleFormMapper;
 use App\UI\Admin\AdminBasePresenter;
@@ -61,14 +62,21 @@ class CreatePresenter extends AdminBasePresenter
             $this->em->persist($roleEntity);
             $this->em->flush();
 
-            $this->flashMessage(
-                $this->translator->translate('admin-role-create.form.submit.success', ['name' => $values->name]),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('admin-role-create.form.submit.success', ['name' => $values->name]);
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('messages.operationFailed');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

@@ -1,3 +1,44 @@
+/* One look for every card: the same corners and the same shadow. A card carries no `shadow*`, `rounded*` or `border-dark` class of its
+   own (the Bootstrap utilities are !important, one such class would make that card differ): tests/Acceptance/CardLookCest measures it in a browser. */
+.card {
+    --bs-card-border-radius: var(--bs-border-radius-lg);
+    box-shadow: var(--bs-box-shadow-sm);
+}
+
+/* A `.card-group` is a ROW OF SEPARATE CARDS: Bootstrap glues the cards of a group into one block (the first one is rounded on the
+   left only, the middle ones are square, the last one is rounded on the right only, the shared border is dropped). Every card of a
+   group keeps its own corners, border and shadow, the cards are apart by a gap. */
+@media (min-width: 576px) {
+    .card-group {
+        gap: 1rem;
+    }
+
+    .card-group > .card + .card {
+        border-left: var(--bs-card-border-width) solid var(--bs-card-border-color);
+    }
+
+    .card-group > .card:not(:first-child),
+    .card-group > .card:not(:last-child) {
+        border-radius: var(--bs-card-border-radius);
+    }
+
+    .card-group > .card:not(:first-child) .card-header,
+    .card-group > .card:not(:last-child) .card-header,
+    .card-group > .card:not(:first-child) .card-img-top,
+    .card-group > .card:not(:last-child) .card-img-top {
+        border-top-left-radius: var(--bs-card-inner-border-radius);
+        border-top-right-radius: var(--bs-card-inner-border-radius);
+    }
+
+    .card-group > .card:not(:first-child) .card-footer,
+    .card-group > .card:not(:last-child) .card-footer,
+    .card-group > .card:not(:first-child) .card-img-bottom,
+    .card-group > .card:not(:last-child) .card-img-bottom {
+        border-bottom-left-radius: var(--bs-card-inner-border-radius);
+        border-bottom-right-radius: var(--bs-card-inner-border-radius);
+    }
+}
+
 html, body {
     margin: 0;
     padding: 0;

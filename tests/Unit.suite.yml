@@ -10,7 +10,7 @@ modules:
         - Contributte\Codeception\Module\NetteApplicationModule:
               followRedirects: false
         - Contributte\Codeception\Module\NetteDIModule:
-              tempDir: ../../temp/codeception
+              tempDir: ../../temp/codeception/unit
               logDir: ../../log/codeception
               appDir: ../../app
               wwwDir: ../../www

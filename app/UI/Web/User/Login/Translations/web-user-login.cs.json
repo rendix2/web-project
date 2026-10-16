@@ -15,5 +15,11 @@
 
   "no_account_yet": "Nemáš zatím účet?",
   "registration": "Registrace",
-  "login": "Přihlášení"
+  "login": "Přihlášení",
+  "error.ipBlocked": "Z této IP adresy je příliš mnoho pokusů. Zkuste to prosím později.",
+  "error.userBlocked": "Tento účet je dočasně zablokován. Zkuste to prosím později.",
+  "error.userNotFound": "Uživatel nebyl nalezen.",
+  "error.userNotActive": "Účet není aktivní.",
+  "error.invalidPassword": "Nesprávné heslo.",
+  "error.userNotFoundAfterLogin": "Uživatel nebyl nalezen po přihlášení."
 }

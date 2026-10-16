@@ -30,11 +30,11 @@ class UsernameAndPasswordAuthenticator implements Authenticator
         $ip = $this->request->getRemoteAddress() ?? '0.0.0.0';
 
         if ($this->userLoginAttemptCheckService->isIpBlocked($ip)) {
-            throw new AuthenticationException('Z této IP adresy je příliš mnoho pokusů. Zkuste to prosím později.');
+            throw new AuthenticationException('web-user-login.error.ipBlocked');
         }
 
         if ($this->userLoginAttemptCheckService->isUserNameBlocked($username)) {
-            throw new AuthenticationException('Tento účet je dočasně zablokován. Zkuste to prosím později.');
+            throw new AuthenticationException('web-user-login.error.userBlocked');
         }
 
         $userEntity = $this->em->getRepository(UserEntity::class)->findOneByUsername($username);
@@ -42,19 +42,19 @@ class UsernameAndPasswordAuthenticator implements Authenticator
         if ($userEntity === null) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
-            throw new AuthenticationException('User not found.');
+            throw new AuthenticationException('web-user-login.error.userNotFound');
         }
 
         if (!$userEntity->isActive) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
-            throw new AuthenticationException('User is not active');
+            throw new AuthenticationException('web-user-login.error.userNotActive');
         }
 
         if (!$this->passwords->verify($password, $userEntity->password)) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
-            throw new AuthenticationException('Invalid password.');
+            throw new AuthenticationException('web-user-login.error.invalidPassword');
         }
 
         $roles = [];

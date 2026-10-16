@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\ConfirmEmail;
 
+use stdClass;
 use App\Service\EmailChangeException;
 use App\Service\UserEmailChangeService;
 use Nette\Application\UI\Presenter;
@@ -25,9 +26,19 @@ class ConfirmEmailPresenter extends Presenter
         try {
             $this->emailChangeService->confirm($userId, $key);
 
-            $this->flashMessage($this->translator->translate('web-user-confirmEmail.success'), 'success');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-confirmEmail.success');
+
+            $this->flashMessage($flash);
         } catch (EmailChangeException $exception) {
-            $this->flashMessage($this->translator->translate('web-user-confirmEmail.' . $exception->reason), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-confirmEmail.' . $exception->reason);
+
+            $this->flashMessage($flash);
         }
 
         $this->redirect(':Web:User:Login:default');

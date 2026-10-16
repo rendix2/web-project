@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\Registration;
 
+use stdClass;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\PasswordFormControlFactory;
 use App\Forms\UsernameFormControlFactory;
@@ -87,14 +88,21 @@ class RegistrationPresenter extends Presenter
         try {
             $this->userFacade->register($values);
 
-            $this->flashMessage(
-                $this->translator->translate('web-user-registration.form.submit.success', ['username' => $values->username]),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-registration.form.submit.success', ['username' => $values->username]);
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (Throwable $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('messages.operationFailed');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

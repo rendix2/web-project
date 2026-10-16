@@ -10,7 +10,7 @@ modules:
               host: selenium-chrome
               browser: chrome
         - Contributte\Codeception\Module\NetteDIModule:
-              tempDir: ../../temp/codeception
+              tempDir: ../../temp/codeception/acceptance
               logDir: ../../log/codeception
               appDir: ../../app
               wwwDir: ../../www

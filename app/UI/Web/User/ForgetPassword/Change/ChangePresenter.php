@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\ForgetPassword\Change;
 
+use stdClass;
 use App\Forms\PasswordFormControlFactory;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
@@ -212,10 +213,12 @@ class ChangePresenter extends Presenter
             $this->em->persist($userEntity);
             $this->em->flush();
 
-            $this->flashMessage(
-                $this->translator->translate('web-user-changePassword.form.submit.success'),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-changePassword.form.submit.success');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
             $this->redrawControl('editFormWrapper');
             $this->redrawControl('editForm');
@@ -223,7 +226,12 @@ class ChangePresenter extends Presenter
             $this->redirect(':Web:User:Login:default');
         } catch (DbalException $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('web-user-forgetPassword-set.form.submit.error'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-forgetPassword-set.form.submit.error');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

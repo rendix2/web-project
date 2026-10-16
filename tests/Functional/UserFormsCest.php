@@ -53,7 +53,7 @@ class UserFormsCest
         $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'definitely-wrong']);
         $I->seeResponseCodeIs(200);
         $I->dontSeeInSource('id="tracy-bs"');
-        $I->see('Invalid password.');
+        $I->see('Nesprávné heslo.');
     }
 
     public function adminUserAndRoleGridsInlineEdit(FunctionalTester $I) : void

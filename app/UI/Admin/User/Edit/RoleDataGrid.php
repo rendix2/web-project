@@ -2,6 +2,7 @@
 
 namespace App\UI\Admin\User\Edit;
 
+use stdClass;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\Datagrid\Datagrid;
@@ -109,12 +110,22 @@ class RoleDataGrid
                 $this->em->persist($this->userEntity);
                 $this->em->flush();
 
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('admin-user-edit.roleGrid.role.added'), 'success');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'success';
+                $flash->message = $this->translator->translate('admin-user-edit.roleGrid.role.added');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
                 bdump($exception);
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'danger';
+                $flash->message = $this->translator->translate('messages.operationFailed');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
@@ -154,12 +165,22 @@ class RoleDataGrid
                 $this->em->persist($this->userEntity);
                 $this->em->flush();
 
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('admin-user-edit.roleGrid.role.removed'), 'success');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'success';
+                $flash->message = $this->translator->translate('admin-user-edit.roleGrid.role.removed');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
                 bdump($exception);
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'danger';
+                $flash->message = $this->translator->translate('messages.operationFailed');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
             }
         };

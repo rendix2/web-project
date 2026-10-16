@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\Login;
 
+use stdClass;
 use App\Core\AutoLoginAuthenticator;
 use App\Core\AutoLoginTokenService;
 use App\Core\UsernameAndPasswordAuthenticator;
@@ -37,7 +38,12 @@ class LoginPresenter extends Presenter
     public function renderDefault() : void
     {
         if ($this->getUser()->isLoggedIn()) {
-            $this->flashMessage($this->translator->translate('web-user-login.alreadyLoggedIn'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('web-user-login.alreadyLoggedIn');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }
@@ -102,7 +108,7 @@ class LoginPresenter extends Presenter
                     );
 
                 if ($userEntity === null) {
-                    throw new AuthenticationException('Uživatel nebyl nalezen po přihlášení.');
+                    throw new AuthenticationException('web-user-login.error.userNotFoundAfterLogin');
                 }
 
                 if ($ip === null) {
@@ -126,18 +132,31 @@ class LoginPresenter extends Presenter
                     $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, UserAutoLoginEntity::LIFETIME_DAYS . ' days');
                 } catch (DbalException $exception) {
                     bdump($exception);
-                    $this->flashMessage($this->translator->translate('web-user-login.form.submit.autoLoginError'), 'danger');
+                    $flash = new stdClass();
+                    $flash->place = 'general';
+                    $flash->type = 'danger';
+                    $flash->message = $this->translator->translate('web-user-login.form.submit.autoLoginError');
+
+                    $this->flashMessage($flash);
                     $this->redrawControl('flashes');
                 }
             }
 
-            $this->flashMessage(
-                $this->translator->translate('web-user-login.form.submit.success'),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-login.form.submit.success');
+
+            $this->flashMessage($flash);
             $this->redirect(':Web:Home:default');
         } catch (AuthenticationException $exception) {
-            $this->flashMessage($exception->getMessage(), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            // the message of the exception is a translation key (the authenticators throw keys)
+            $flash->message = $this->translator->translate($exception->getMessage());
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

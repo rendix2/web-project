@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\Activation;
 
+use stdClass;
 use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserEntity;
 use DateTimeImmutable;
@@ -56,7 +57,12 @@ class ActivationPresenter extends Presenter
         $this->em->remove($userActivationEntity);
         $this->em->flush();
 
-        $this->flashMessage($this->translator->translate('web-user-activation.success'), 'success');
+        $flash = new stdClass();
+        $flash->place = 'general';
+        $flash->type = 'success';
+        $flash->message = $this->translator->translate('web-user-activation.success');
+
+        $this->flashMessage($flash);
         $this->redrawControl('flashes');
 
         $this->redirect(':Web:User:Login:default');

@@ -2,6 +2,7 @@
 
 namespace App\UI\Admin\User\List;
 
+use stdClass;
 use App\Forms\EmailFormControl;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\UsernameFormControl;
@@ -151,16 +152,23 @@ class UserDataGrid
                 $this->em->remove($userEntity);
                 $this->em->flush();
 
-                $this->grid->getPresenter()->flashMessage(
-                    $this->translator->translate('admin-user-list.delete.success', ['username' => $userEntity->username]),
-                    'success'
-                );
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'success';
+                $flash->message = $this->translator->translate('admin-user-list.delete.success', ['username' => $userEntity->username]);
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
 
                 $this->grid->reload();
             } catch (DbalException $exception) {
                 bdump($exception);
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'danger';
+                $flash->message = $this->translator->translate('messages.operationFailed');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
             }
         };
@@ -213,10 +221,12 @@ class UserDataGrid
 
         $onSubmitEdit = function(string $uuid, UserInlineEditValues $values) : void {
             if (substr_count($values->fullName, ' ') === 0) {
-                $this->grid->getPresenter()->flashMessage(
-                    $this->translator->translate('admin-user-list.form.fullName.noSpace'),
-                    'danger'
-                );
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'danger';
+                $flash->message = $this->translator->translate('admin-user-list.form.fullName.noSpace');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
 
                 return;
@@ -263,15 +273,22 @@ class UserDataGrid
                 $this->em->persist($userEntity);
                 $this->em->flush();
 
-                $this->grid->getPresenter()->flashMessage(
-                    $this->translator->translate('admin-user-list.edit.success', ['username' => $userEntity->username]),
-                    'success'
-                );
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'success';
+                $flash->message = $this->translator->translate('admin-user-list.edit.success', ['username' => $userEntity->username]);
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
                 bdump($exception);
-                $this->grid->getPresenter()->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+                $flash = new stdClass();
+                $flash->place = 'general';
+                $flash->type = 'danger';
+                $flash->message = $this->translator->translate('messages.operationFailed');
+
+                $this->grid->getPresenter()->flashMessage($flash);
                 $this->grid->getPresenter()->redrawControl('flashes');
             }
         };

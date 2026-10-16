@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\Logout;
 
+use stdClass;
 use App\Core\AutoLoginAuthenticator;
 use App\Core\AutoLoginTokenService;
 use Doctrine\DBAL\Exception as DbalException;
@@ -43,10 +44,12 @@ class LogoutPresenter extends Presenter
         $this->getHttpResponse()->deleteCookie(AutoLoginAuthenticator::COOKIE_NAME);
 
         $this->getUser()->logout(true);
-        $this->flashMessage(
-            $this->translator->translate('web-user-logout.success'),
-            'success'
-        );
+        $flash = new stdClass();
+        $flash->place = 'general';
+        $flash->type = 'success';
+        $flash->message = $this->translator->translate('web-user-logout.success');
+
+        $this->flashMessage($flash);
         $this->redirect(':Web:User:Login:default');
     }
 

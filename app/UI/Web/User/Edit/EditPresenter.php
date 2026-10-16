@@ -2,6 +2,7 @@
 
 namespace App\UI\Web\User\Edit;
 
+use stdClass;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
@@ -105,14 +106,21 @@ class EditPresenter extends Presenter
             $this->em->persist($userEntity);
             $this->em->flush();
 
-            $this->flashMessage(
-                $this->translator->translate('web-user-edit.form.submit.success'),
-                'success',
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('web-user-edit.form.submit.success');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('messages.operationFailed');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

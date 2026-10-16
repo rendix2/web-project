@@ -2,6 +2,7 @@
 
 namespace App\UI\Admin\User\Create;
 
+use stdClass;
 use App\Core\AutoLoginAuthenticator;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\Mapper\UserFormMapper;
@@ -112,14 +113,21 @@ class CreatePresenter extends AdminBasePresenter
             $this->em->persist($userEntity);
             $this->em->flush();
 
-            $this->flashMessage(
-                $this->translator->translate('admin-user-create.form.submit.success', ['username' => $values->username]),
-                'success'
-            );
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'success';
+            $flash->message = $this->translator->translate('admin-user-create.form.submit.success', ['username' => $values->username]);
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
             bdump($exception);
-            $this->flashMessage($this->translator->translate('messages.operationFailed'), 'danger');
+            $flash = new stdClass();
+            $flash->place = 'general';
+            $flash->type = 'danger';
+            $flash->message = $this->translator->translate('messages.operationFailed');
+
+            $this->flashMessage($flash);
             $this->redrawControl('flashes');
         }
     }

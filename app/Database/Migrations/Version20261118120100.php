@@ -17,11 +17,15 @@ final class Version20261118120100 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $schema->getTable('role')->getColumn('description')->setComment('Description');
+        $schema->getTable('role')
+            ->getColumn('description')
+            ->setComment('Description');
     }
 
     public function down(Schema $schema) : void
     {
-        $schema->getTable('role')->getColumn('description')->setComment('Name');
+        $schema->getTable('role')
+            ->getColumn('description')
+            ->setComment('Name');
     }
 }

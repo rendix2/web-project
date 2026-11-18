@@ -33,6 +33,10 @@ class RoleDataGrid
 
     public function create() : Datagrid
     {
+        // a new grid for every create(): the service is shared in the container, a second create() (a second request of the same
+        // container, a forward) added the columns to the first grid again ("There is already column at key [id] defined")
+        $this->grid = new SecuredDatagrid();
+
         $this->createColumns();
         $this->createActions();
         $this->createInlineEdit();

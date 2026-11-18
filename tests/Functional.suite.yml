@@ -21,3 +21,6 @@ modules:
         # after NetteDIModule: they need the container created for the test (order matters for _before/_after)
         - Tests\Support\Helper\CleanupTestData
 step_decorators: ~
+# the code of the application runs in the web server here (no c3 / remote coverage): `--coverage` measures Unit + Integration
+coverage:
+    enabled: false

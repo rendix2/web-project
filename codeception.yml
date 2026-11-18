@@ -11,3 +11,12 @@ actor_suffix: Tester
 extensions:
     enabled:
         - Codeception\Extension\RunFailed
+# line coverage of app/ only, collected with `--coverage` (`make coverage` / `composer coverage`, pcov of the dev image); the
+# Functional and Acceptance suites count only the code they run in the test process (no c3: the requests of the web server
+# are not measured)
+coverage:
+    enabled: true
+    # every file of app/ counts, also the ones no test loads (otherwise the total is of the loaded files only)
+    show_uncovered: true
+    include:
+        - app/*

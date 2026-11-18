@@ -26,3 +26,6 @@ step_decorators:
     - Codeception\Step\ConditionalAssertion
     - Codeception\Step\TryTo
     - Codeception\Step\Retry
+# the code of the application runs in the web server here (no c3 / remote coverage): `--coverage` measures Unit + Integration
+coverage:
+    enabled: false

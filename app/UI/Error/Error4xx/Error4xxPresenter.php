@@ -11,7 +11,7 @@ use Nette\Bridges\ApplicationLatte\DefaultTemplate;
  * Handles 4xx HTTP error responses.
  */
 #[Requires(methods: '*', forward: true)]
-final class ErrorPresenter extends Presenter
+final class Error4xxPresenter extends Presenter
 {
     public function renderDefault(BadRequestException $exception) : void
     {

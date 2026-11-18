@@ -130,3 +130,8 @@ test: test-build
 	php vendor/bin/codecept run --steps -v Integration
 	php vendor/bin/codecept run --steps -v Functional
 	php vendor/bin/codecept run --steps -v Acceptance
+
+# line coverage of app/ (codeception.yml `coverage:`) over all suites: pcov is in the dev image only and off by default
+# (pcov.enabled=0, normal runs stay fast), this run switches it on; HTML report in tests/_output/coverage/
+coverage: test-build
+	php -d pcov.enabled=1 vendor/bin/codecept run --coverage --coverage-html --coverage-text

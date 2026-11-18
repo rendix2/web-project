@@ -1,5 +1,6 @@
-# Suite for integration tests: services with the real DI container and the database (no HTTP, no browser).
-# A test that needs neither belongs to Unit, one that needs the web server to Functional.
+# Suite for integration tests: services with the real DI container and the database, and pages requested through the Nette
+# Application of that container IN the test process (NetteApplicationModule: no web server, no browser, measured by `--coverage`).
+# A test that needs neither belongs to Unit, one that needs the real web server (HTTP, Apache, sessions of PHP) to Functional.
 
 actor: IntegrationTester
 suite_namespace: Tests\Integration
@@ -17,6 +18,9 @@ modules:
               newContainerForEachTest: true
               removeDefaultExtensions: false
               debugMode: true
+        # requests through the Nette Application of the test's container, IN the test process (no web server, measured by
+        # `--coverage`): amOnPage(), submitForm(), see() ... of presenters, forms and grids
+        - Contributte\Codeception\Module\NetteApplicationModule
         # after NetteDIModule: needs the container created for the test
         - Tests\Support\Helper\CleanupTestData
 step_decorators: ~

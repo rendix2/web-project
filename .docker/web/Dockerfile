@@ -39,6 +39,11 @@ RUN docker-php-ext-install -j "$(nproc)" openssl
 RUN apt install libicu-dev -y --fix-missing
 RUN docker-php-ext-install -j "$(nproc)" intl
 
+# code coverage (`make coverage` / `composer coverage`): pcov, ONLY in this dev image (never in prod.Dockerfile) and switched
+# off (pcov.enabled=0), so normal runs are as fast as without it; the coverage run turns it on with `php -d pcov.enabled=1`
+RUN pecl install pcov && docker-php-ext-enable pcov
+RUN echo "pcov.enabled=0" > /usr/local/etc/php/conf.d/docker-php-ext-pcov-off.ini
+
 # OPcache: the same opcache.ini as alfred and family-tree, dev and production
 COPY ./.docker/web/config/opcache.ini /usr/local/etc/php/conf.d/zzz-opcache-custom.ini
 

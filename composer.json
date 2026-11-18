@@ -98,7 +98,12 @@
       "parallel-lint app tests",
       "phpcs --standard=ruleset.xml app tests"
     ],
-    "cs-fix": "phpcbf --standard=ruleset.xml app tests"
+    "cs-fix": "phpcbf --standard=ruleset.xml app tests",
+    "coverage": [
+      "Composer\\Config::disableProcessTimeout",
+      "codecept build",
+      "@php -d pcov.enabled=1 vendor/bin/codecept run --coverage --coverage-html --coverage-text"
+    ]
   },
   "minimum-stability": "stable",
   "prefer-stable": true,

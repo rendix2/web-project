@@ -35,7 +35,9 @@ security:
 
 routing:
     debugger: true
-    cache: true
+    # no compile-time cache: it evals the body of the router service at compile time, which works only for a static factory
+    # call; the router is `@routerFactory::create()` of a normal service (no static methods), building 3 routes costs nothing
+    cache: false
 
 tracy:
     maxLength: 500

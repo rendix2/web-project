@@ -12,7 +12,9 @@ search:
 				- App\UI\Grid\*
 
 services:
-    RouterFactory: App\Core\RouterFactory::createRouter
+    # a normal service (no static method): the router is what its create() returns
+    routerFactory: App\Core\RouterFactory
+    router: @routerFactory::create()
 
 includes:
     - ext/console.neon

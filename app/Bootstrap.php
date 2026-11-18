@@ -16,12 +16,12 @@ final class Bootstrap
      * detection left debug mode (and Tracy) permanently forced on for every visitor everywhere,
      * including production - see the removed unconditional setDebugMode(true) below.
      */
-    public static function isProduction() : bool
+    public function isProduction() : bool
     {
         return file_exists('/.docker-production-build');
     }
 
-    public static function boot(string $context) : Configurator
+    public function boot(string $context) : Configurator
     {
         $sep = DIRECTORY_SEPARATOR;
         $dir = __DIR__;
@@ -69,7 +69,7 @@ final class Bootstrap
             ]
         );
 
-        $configurator->setDebugMode(!self::isProduction());
+        $configurator->setDebugMode(!$this->isProduction());
 
         $configurator->enableTracy($logContextDir);
         $configurator->setTempDirectory($tempContextDir);
@@ -94,9 +94,9 @@ final class Bootstrap
         return $configurator;
     }
 
-    public static function runWebApplication() : void
+    public function runWebApplication() : void
     {
-        $container = self::boot('web')->createContainer();
+        $container = $this->boot('web')->createContainer();
         $application = $container->getByType(WebApplication::class);
 
         // "Zůstat přihlášen" (viz LoginPresenter/AutoLoginService) musí platit na CELÉ veřejné
@@ -107,9 +107,9 @@ final class Bootstrap
         $application->run();
     }
 
-    public static function runConsoleApplication() : void
+    public function runConsoleApplication() : void
     {
-        self::boot('console')
+        $this->boot('console')
             ->createContainer()
             ->getByType(ConsoleApplication::class)
             ->run();

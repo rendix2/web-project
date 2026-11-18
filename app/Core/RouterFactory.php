@@ -4,13 +4,13 @@ namespace App\Core;
 
 use Nette\Application\Routers\Route;
 use Nette\Application\Routers\RouteList;
-use Nette\StaticClass;
 
+/**
+ * A normal service (config/services.neon `routerFactory`), the router service is `@routerFactory::create()`.
+ */
 final class RouterFactory
 {
-    use StaticClass;
-
-    public static function createRouter() : RouteList
+    public function create() : RouteList
     {
         $router = new RouteList();
 

@@ -4,4 +4,4 @@ use App\Bootstrap;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-Bootstrap::runWebApplication();
+(new Bootstrap())->runWebApplication();

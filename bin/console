@@ -5,4 +5,4 @@ use App\Bootstrap;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-Bootstrap::runConsoleApplication();
+(new Bootstrap())->runConsoleApplication();

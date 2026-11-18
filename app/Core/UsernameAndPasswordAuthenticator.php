@@ -4,7 +4,6 @@ namespace App\Core;
 
 use App\Model\Entity\UserEntity;
 use App\UI\Web\User\Login\UserLoginAttemptCheckService;
-use DateTimeImmutable;
 use Nette\Http\IRequest;
 use Nette\Security\AuthenticationException;
 use Nette\Security\Authenticator;
@@ -13,8 +12,16 @@ use Nette\Security\Passwords;
 use Nette\Security\SimpleIdentity;
 use App\Database\EntityManagerDecorator;
 
+/**
+ * The login by username and password. It does not reveal which accounts exist (account enumeration): an unknown username and
+ * a wrong password get the same message (INVALID_CREDENTIALS), and an unknown username costs a password hash too, so it does
+ * not answer faster. "The account is not active" is said only after the right password of that account.
+ */
 class UsernameAndPasswordAuthenticator implements Authenticator
 {
+    public const string INVALID_CREDENTIALS = 'web-user-login.error.invalidCredentials';
+
+    public const string NOT_ACTIVE = 'web-user-login.error.userNotActive';
 
     public function __construct(
         private readonly EntityManagerDecorator       $em,
@@ -40,21 +47,22 @@ class UsernameAndPasswordAuthenticator implements Authenticator
         $userEntity = $this->em->getRepository(UserEntity::class)->findOneByUsername($username);
 
         if ($userEntity === null) {
+            // the same work as the check of a real password: an unknown username must not answer faster
+            $this->passwords->hash($password);
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
-            throw new AuthenticationException('web-user-login.error.userNotFound');
-        }
-
-        if (!$userEntity->isActive) {
-            $this->userLoginAttemptCheckService->logAttempt($username, $ip);
-
-            throw new AuthenticationException('web-user-login.error.userNotActive');
+            throw new AuthenticationException(self::INVALID_CREDENTIALS);
         }
 
         if (!$this->passwords->verify($password, $userEntity->password)) {
             $this->userLoginAttemptCheckService->logAttempt($username, $ip);
 
-            throw new AuthenticationException('web-user-login.error.invalidPassword');
+            throw new AuthenticationException(self::INVALID_CREDENTIALS);
+        }
+
+        if (!$userEntity->isActive) {
+            // the visitor knows the password: telling him why he cannot log in reveals nothing
+            throw new AuthenticationException(self::NOT_ACTIVE);
         }
 
         $roles = [];

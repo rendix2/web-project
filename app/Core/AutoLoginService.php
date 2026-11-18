@@ -5,11 +5,15 @@ namespace App\Core;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
+use App\Service\BrowserNameService;
 use App\UI\Admin\AdminBasePresenter;
+use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\Application;
 use Nette\Application\IPresenter;
 use Nette\Application\UI\Presenter;
 use Nette\Security\AuthenticationException;
+use Tracy\Debugger;
+use Tracy\ILogger;
 
 /**
  * class AutoLoginService
@@ -22,6 +26,7 @@ use Nette\Security\AuthenticationException;
  * 2) A visitor that is not logged in and has the "stay logged in" cookie: login() - the cookie is checked (AutoLoginAuthenticator) and
  *    REPLACED by a new one. The public side is always silent: a missing or invalid cookie means "not logged in", the page goes on.
  *    The admin has to be logged in, AdminBasePresenter::startup() calls login() itself and answers 401.
+ * 3) remember() (the login form with "stay logged in") and forget() (the logout) - the only other places that touch the cookie.
  *
  * @package App\Core
  */
@@ -31,7 +36,40 @@ class AutoLoginService
         private readonly AutoLoginAuthenticator $autoLoginAuthenticator,
         private readonly AutoLoginTokenService  $tokens,
         private readonly EntityManagerDecorator $em,
+        private readonly BrowserNameService     $browserName,
     ) {
+    }
+
+    /**
+     * "Stay logged in": a new token for the user, its cookie survives closing the browser (a session cookie would vanish with the
+     * session and never log anybody in again). The cookie holds the token, the database only its hash.
+     *
+     * @throws DbalException the token could not be saved (the login itself is done)
+     */
+    public function remember(Presenter $presenter, UserEntity $user, string $ipAddress, ?string $countryCode) : void
+    {
+        $token = $this->tokens->issue($user, $ipAddress, $countryCode, $this->browserName->current());
+
+        $presenter->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $token, $this->lifetime());
+    }
+
+    /**
+     * The logout: the token of the cookie is deleted from the database and the cookie from the browser. A failed delete does not
+     * stop the logout (the authenticator refuses the cookie once it is gone from the browser anyway), it is only logged.
+     */
+    public function forget(Presenter $presenter) : void
+    {
+        $cookie = $presenter->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
+
+        if (is_string($cookie)) {
+            try {
+                $this->tokens->revoke($cookie);
+            } catch (DbalException $exception) {
+                Debugger::log($exception, ILogger::EXCEPTION);
+            }
+        }
+
+        $presenter->getHttpResponse()->deleteCookie(AutoLoginAuthenticator::COOKIE_NAME);
     }
 
     public function tryLogin(Application $application, IPresenter $presenter) : void

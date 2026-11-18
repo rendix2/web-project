@@ -18,8 +18,7 @@
   "login": "Login",
   "error.ipBlocked": "Too many attempts from this IP address. Please try again later.",
   "error.userBlocked": "This account is temporarily blocked. Please try again later.",
-  "error.userNotFound": "User not found.",
+  "error.invalidCredentials": "Invalid username or password.",
   "error.userNotActive": "The account is not active.",
-  "error.invalidPassword": "Invalid password.",
   "error.userNotFoundAfterLogin": "The user was not found after the login."
 }

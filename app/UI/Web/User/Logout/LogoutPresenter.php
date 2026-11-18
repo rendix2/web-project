@@ -3,17 +3,15 @@
 namespace App\UI\Web\User\Logout;
 
 use stdClass;
-use App\Core\AutoLoginAuthenticator;
-use App\Core\AutoLoginTokenService;
-use Doctrine\DBAL\Exception as DbalException;
+use App\Core\AutoLoginService;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 
 class LogoutPresenter extends Presenter
 {
     public function __construct(
-        private readonly Translator             $translator,
-        private readonly AutoLoginTokenService  $autoLoginTokens,
+        private readonly Translator       $translator,
+        private readonly AutoLoginService $autoLoginService,
     )
     {
         parent::__construct();
@@ -27,21 +25,8 @@ class LogoutPresenter extends Presenter
             $this->redirect(':Web:User:Login:default');
         }
 
-        $autoLoginCookie = $this->getHttpRequest()->getCookie(AutoLoginAuthenticator::COOKIE_NAME);
-
-        if (is_string($autoLoginCookie)) {
-            try {
-                $this->autoLoginTokens->revoke($autoLoginCookie);
-            } catch (DbalException $exception) {
-                // Smazání autologin záznamu selhalo, ale uživatel se odhlašuje ze session tak
-                // jako tak - nemá smysl mu to blokovat, jen to nahlásit do logu.
-                bdump($exception);
-            }
-        }
-
-        // Zruší i cookie v prohlížeči, ne jen záznam v DB - jinak by ji prohlížeč posílal navždy
-        // (neškodně - AutoLoginAuthenticator ji po smazání entity výše stejně odmítne - ale zbytečně).
-        $this->getHttpResponse()->deleteCookie(AutoLoginAuthenticator::COOKIE_NAME);
+        // token "zůstat přihlášen" pryč z databáze i cookie z prohlížeče
+        $this->autoLoginService->forget($this);
 
         $this->getUser()->logout(true);
         $flash = new stdClass();

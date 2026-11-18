@@ -53,7 +53,8 @@ class UserFormsCest
         $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'definitely-wrong']);
         $I->seeResponseCodeIs(200);
         $I->dontSeeInSource('id="tracy-bs"');
-        $I->see('Nesprávné heslo.');
+        // the same message as for an unknown username (LoginDoesNotRevealAccountsCest)
+        $I->see('Nesprávné uživatelské jméno nebo heslo.');
     }
 
     public function adminUserAndRoleGridsInlineEdit(FunctionalTester $I) : void

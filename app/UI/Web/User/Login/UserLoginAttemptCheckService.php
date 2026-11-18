@@ -4,9 +4,9 @@ namespace App\UI\Web\User\Login;
 
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserLoginAttemptEntity;
+use App\Service\BrowserNameService;
 use App\Service\GeoIpService;
 use DateTimeImmutable;
-use donatj\UserAgent\UserAgentParser;
 use InvalidArgumentException;
 
 class UserLoginAttemptCheckService
@@ -19,6 +19,7 @@ class UserLoginAttemptCheckService
     public function __construct(
         private readonly EntityManagerDecorator $em,
         private readonly GeoIpService           $geoIpService,
+        private readonly BrowserNameService     $browserName,
     ) {
         $this->maxAttempts = 5;
         $this->lockTimeSeconds = 900;
@@ -32,13 +33,10 @@ class UserLoginAttemptCheckService
 
         $geoIpArray = $this->geoIpService->getInfo($ipAddress);
 
-        $parser = new UserAgentParser();
-        $ua = $parser->parse();
-
         $userLoginAttemptEntity = new UserLoginAttemptEntity();
         $userLoginAttemptEntity->username = $this->normalize($username);
         $userLoginAttemptEntity->ipAddress = $ipAddress;
-        $userLoginAttemptEntity->userAgent = $ua->browser();
+        $userLoginAttemptEntity->userAgent = $this->browserName->current();
         $userLoginAttemptEntity->countryCode = $geoIpArray['country'];
 
         $this->em->persist($userLoginAttemptEntity);

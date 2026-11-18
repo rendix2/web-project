@@ -78,15 +78,23 @@ class AutoLoginTokenService
 
     public function revoke(string $token) : void
     {
-        $this->em->createQuery('DELETE FROM ' . UserAutoLoginEntity::class . ' a WHERE a.tokenHash = :hash')
+        $this->em
+            ->createQueryBuilder()
+            ->delete(UserAutoLoginEntity::class, '_autoLogin')
+            ->where('_autoLogin.tokenHash = :hash')
             ->setParameter('hash', $this->hash($token))
+            ->getQuery()
             ->execute();
     }
 
     public function revokeAll(UserEntity $user) : void
     {
-        $this->em->createQuery('DELETE FROM ' . UserAutoLoginEntity::class . ' a WHERE a.user = :user')
+        $this->em
+            ->createQueryBuilder()
+            ->delete(UserAutoLoginEntity::class, '_autoLogin')
+            ->where('_autoLogin.user = :user')
             ->setParameter('user', $user)
+            ->getQuery()
             ->execute();
         // the identity map still holds the removed rows
         $user->autoLogins->clear();

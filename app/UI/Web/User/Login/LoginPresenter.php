@@ -3,16 +3,13 @@
 namespace App\UI\Web\User\Login;
 
 use stdClass;
-use App\Core\AutoLoginAuthenticator;
-use App\Core\AutoLoginTokenService;
+use App\Core\AutoLoginService;
 use App\Core\UsernameAndPasswordAuthenticator;
-use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
 use App\Service\GeoIpService;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Doctrine\DBAL\Exception as DbalException;
-use donatj\UserAgent\UserAgentParser;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
@@ -29,7 +26,7 @@ class LoginPresenter extends Presenter
         private readonly EntityManagerDecorator           $em,
         private readonly UsernameAndPasswordAuthenticator $usernameAndPasswordAuthenticator,
         private readonly GeoIpService                     $geoIpService,
-        private readonly AutoLoginTokenService            $autoLoginTokens,
+        private readonly AutoLoginService                 $autoLoginService,
     )
     {
         parent::__construct();
@@ -120,16 +117,9 @@ class LoginPresenter extends Presenter
                     $geoIpCountry = $geoIpArray['country'];
                 }
 
-                $parser = new UserAgentParser();
-                $ua = $parser->parse();
-
                 try {
-                    $autoLoginToken = $this->autoLoginTokens->issue($userEntity, $ip, $geoIpCountry, $ua->browser());
-
-                    // Cookie musí přežít zavření prohlížeče (to je smysl "zůstat přihlášen") - session
-                    // cookie (expire === null) mizí spolu se session, takže by nikdy nic neobnovila.
-                    // V cookie je token, v databázi jen jeho hash.
-                    $this->getHttpResponse()->setCookie(AutoLoginAuthenticator::COOKIE_NAME, $autoLoginToken, UserAutoLoginEntity::LIFETIME_DAYS . ' days');
+                    // token + cookie, která přežije zavření prohlížeče (AutoLoginService::remember())
+                    $this->autoLoginService->remember($this, $userEntity, $ip, $geoIpCountry);
                 } catch (DbalException $exception) {
                     bdump($exception);
                     $flash = new stdClass();

@@ -38,8 +38,12 @@ class UserEmailChangeService
     {
         $newEmail = $this->normalize($newEmail);
 
-        $this->em->createQuery('DELETE FROM ' . UserEmailChangeRequestEntity::class . ' r WHERE r.user = :user')
+        $this->em
+            ->createQueryBuilder()
+            ->delete(UserEmailChangeRequestEntity::class, '_request')
+            ->where('_request.user = :user')
             ->setParameter('user', $user)
+            ->getQuery()
             ->execute();
 
         $token = bin2hex(random_bytes(32));
@@ -113,14 +117,26 @@ class UserEmailChangeService
 
     private function isTakenByAnother(UserEntity $user, string $email) : bool
     {
-        $count = (int) $this->em->createQuery('SELECT COUNT(u.id) FROM ' . UserEntity::class . ' u WHERE LOWER(u.email) = :email AND u.id != :id')
+        $count = (int) $this->em
+            ->getRepository(UserEntity::class)
+            ->createQueryBuilder('_user')
+            ->select('COUNT(_user.id)')
+            ->where('LOWER(_user.email) = :email')
             ->setParameter('email', $email)
+            ->andWhere('_user.id <> :id')
             ->setParameter('id', $user->id)
+            ->getQuery()
             ->getSingleScalarResult();
 
-        $history = (int) $this->em->createQuery('SELECT COUNT(e.id) FROM ' . UserEmailEntity::class . ' e WHERE LOWER(e.email) = :email AND e.user != :user')
+        $history = (int) $this->em
+            ->getRepository(UserEmailEntity::class)
+            ->createQueryBuilder('_email')
+            ->select('COUNT(_email.id)')
+            ->where('LOWER(_email.email) = :email')
             ->setParameter('email', $email)
+            ->andWhere('_email.user <> :user')
             ->setParameter('user', $user)
+            ->getQuery()
             ->getSingleScalarResult();
 
         return $count + $history > 0;

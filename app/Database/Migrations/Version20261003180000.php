@@ -21,11 +21,13 @@ final class Version20261003180000 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
+        // an extension: DBAL has no API for it
         $this->addSql('CREATE EXTENSION IF NOT EXISTS unaccent');
     }
 
     public function down(Schema $schema) : void
     {
-        // left installed on purpose: harmless, and other code may rely on it
+        // an extension: DBAL has no API for it
+        $this->addSql('DROP EXTENSION IF EXISTS unaccent');
     }
 }

@@ -24,23 +24,23 @@ class UserEmailChangeRequestEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::BIGINT)]
+    #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
     public int $id;
 
-    #[ManyToOne(targetEntity: UserEntity::class)]
-    #[JoinColumn(unique: true, nullable: false, onDelete: 'CASCADE')]
+    #[ManyToOne(targetEntity: UserEntity::class, cascade: ['persist'])]
+    #[JoinColumn(unique: true, nullable: false, onDelete: 'CASCADE', options: ['comment' => 'User ID'])]
     public UserEntity $user;
 
-    #[Column(type: Types::STRING, length: 512)]
+    #[Column(type: Types::STRING, length: 512, options: ['comment' => 'New email'])]
     public string $newEmail;
 
-    #[Column(type: Types::STRING, length: 64, unique: true)]
+    #[Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => 'SHA-256 of the token in the link'])]
     public string $tokenHash;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Link is valid until'])]
     public DateTimeImmutable $validUntil;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

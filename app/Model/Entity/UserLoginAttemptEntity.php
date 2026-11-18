@@ -18,22 +18,22 @@ class UserLoginAttemptEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::BIGINT, unique: true)]
+    #[Column(type: Types::BIGINT, unique: true, options: ['comment' => 'ID'])]
     public int $id;
 
-    #[Column(type: Types::STRING, length: 512, unique: false)]
+    #[Column(type: Types::STRING, length: 512, unique: false, options: ['comment' => 'Username'])]
     public string $username;
 
-    #[Column(type: IpAddressType::NAME, nullable: false)]
+    #[Column(type: IpAddressType::NAME, nullable: false, options: ['comment' => 'IP Address'])]
     public string $ipAddress;
 
-    #[Column(length: 512, nullable: true)]
+    #[Column(length: 512, nullable: true, options: ['comment' => 'User agent'])]
     public ?string $userAgent;
 
-    #[Column(length: 16, nullable: true)]
+    #[Column(length: 16, nullable: true, options: ['comment' => 'Country code'])]
     public ?string $countryCode;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

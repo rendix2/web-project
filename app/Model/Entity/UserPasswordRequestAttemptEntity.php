@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Entity;
 use Doctrine\ORM\Mapping\GeneratedValue;
 use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\Index;
 use Doctrine\ORM\Mapping\Table;
 
 /**
@@ -22,20 +23,22 @@ use Doctrine\ORM\Mapping\Table;
  */
 #[Entity()]
 #[Table(name: 'user_password_request_attempt')]
+#[Index(name: 'K__User_password_request_attempt__Email_created_at', columns: ['email', 'created_at'])]
+#[Index(name: 'K__User_password_request_attempt__Ip_address_created_at', columns: ['ip_address', 'created_at'])]
 class UserPasswordRequestAttemptEntity
 {
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::BIGINT, unique: true)]
+    #[Column(type: Types::BIGINT, unique: true, options: ['comment' => 'ID'])]
     public int $id;
 
-    #[Column(type: Types::STRING, length: 512)]
+    #[Column(type: Types::STRING, length: 512, options: ['comment' => 'Email'])]
     public string $email;
 
-    #[Column(type: IpAddressType::NAME, nullable: false)]
+    #[Column(type: IpAddressType::NAME, nullable: false, options: ['comment' => 'IP Address'])]
     public string $ipAddress;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

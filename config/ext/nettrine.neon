@@ -22,6 +22,10 @@ nettrine.dbal:
     types:
         uuid: Ramsey\Uuid\Doctrine\UuidType
         ip_address: App\Database\Types\IpAddressType
+    # DBAL introspects an INET column as a plain string, so every schema diff (orm:schema-tool:update, migrations:diff,
+    # tests/Integration/Schema/SchemaInSyncCest) proposed "ALTER ... TYPE INET" for a column that already is INET (same as alfred)
+    typesMapping:
+        inet: ip_address
     connections:
         default:
             driver: %database.default.driver%

@@ -188,7 +188,8 @@ class UserDataGrid
             ->onClick[] = $onClick;
 
         $allowDelete = function(UserEntity $userEntity) : bool {
-            return $userEntity->id !== (string)$this->grid->getPresenter()->getUser()->id;
+            // the identity id may come back from the session as int or string
+            return (string) $userEntity->id !== (string) $this->grid->getPresenter()->getUser()->getId();
         };
 
         $this->grid->allowRowsAction('delete', $allowDelete);

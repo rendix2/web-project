@@ -22,19 +22,19 @@ class RoleEntity
 
     #[Id()]
     #[GeneratedValue()]
-    #[Column(type: Types::BIGINT)]
+    #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
     public int $id;
 
-    #[Column(type: Types::STRING, length: 512)]
+    #[Column(type: Types::STRING, length: 512, options: ['comment' => 'Name'])]
     public string $name;
 
-    #[Column(type: Types::TEXT)]
+    #[Column(type: Types::TEXT, options: ['comment' => 'Description'])]
     public string $description;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
     /**
@@ -47,10 +47,10 @@ class RoleEntity
     #[JoinTable(
         name: 'user_role',
         joinColumns: [
-            new JoinColumn('role_id', 'id', onDelete: 'CASCADE'),
+            new JoinColumn('role_id', 'id', onDelete: 'CASCADE', options: ['comment' => 'Role ID']),
         ],
         inverseJoinColumns: [
-            new JoinColumn('user_id', 'id', onDelete: 'CASCADE'),
+            new JoinColumn('user_id', 'id', onDelete: 'CASCADE', options: ['comment' => 'User ID']),
         ]
     )]
     public Collection $users;

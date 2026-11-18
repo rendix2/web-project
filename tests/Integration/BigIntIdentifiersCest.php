@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Integration;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use App\Database\EntityManagerDecorator;
-use Tests\Support\UnitTester;
+use Tests\Support\IntegrationTester;
 
 /**
  * Project-wide rule: every numeric record ID is a BIGINT (entities, primary keys, foreign keys, sequences).
@@ -14,7 +14,7 @@ use Tests\Support\UnitTester;
  */
 class BigIntIdentifiersCest
 {
-    public function everyNumericEntityIdentifierIsMappedAsBigInt(UnitTester $I) : void
+    public function everyNumericEntityIdentifierIsMappedAsBigInt(IntegrationTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);
@@ -34,7 +34,7 @@ class BigIntIdentifiersCest
         $I->assertSame([], $wrong, 'These identifiers are not BIGINT.');
     }
 
-    public function everyKeyColumnAndSequenceInTheDatabaseIsBigInt(UnitTester $I) : void
+    public function everyKeyColumnAndSequenceInTheDatabaseIsBigInt(IntegrationTester $I) : void
     {
         /** @var Connection $connection */
         $connection = $I->grabService(Connection::class);

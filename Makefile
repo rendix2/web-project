@@ -16,12 +16,13 @@ guard-not-production:
 git:
 	git config --global --add safe.directory /var/www/html
 
-php: composer.json composer.lock
+# composer.lock / package-lock.json are never committed (.gitignore): a fresh checkout has none, so they are no prerequisite
+php: composer.json
 	#php bin/console nette:cache:purge
 	composer validate
 	composer install
 
-js: package.json package-lock.json
+js: package.json
 	npm install
 	npm run build
 
@@ -101,8 +102,12 @@ test-build:
 	php vendor/bin/codecept clean
 	php vendor/bin/codecept build
 
+# Unit = no container, no database (tests/Unit.suite.yml); Integration = the DI container + the database, no web server
 unit: test-build
 	php vendor/bin/codecept run --steps -v Unit
+
+integration: test-build
+	php vendor/bin/codecept run --steps -v Integration
 
 functional: test-build
 	php vendor/bin/codecept run --steps -v Functional
@@ -110,5 +115,9 @@ functional: test-build
 acceptance: test-build
 	php vendor/bin/codecept run --steps -v Acceptance
 
+# the suites cheapest first; stops at the first failing one
 test: test-build
-	php vendor/bin/codecept run --steps -v
+	php vendor/bin/codecept run --steps -v Unit
+	php vendor/bin/codecept run --steps -v Integration
+	php vendor/bin/codecept run --steps -v Functional
+	php vendor/bin/codecept run --steps -v Acceptance

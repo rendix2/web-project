@@ -1,0 +1,22 @@
+# Suite for integration tests: services with the real DI container and the database (no HTTP, no browser).
+# A test that needs neither belongs to Unit, one that needs the web server to Functional.
+
+actor: IntegrationTester
+suite_namespace: Tests\Integration
+modules:
+    enabled:
+        - Asserts
+        - Contributte\Codeception\Module\NetteDIModule:
+              tempDir: ../../temp/codeception/integration
+              logDir: ../../log/codeception
+              appDir: ../../app
+              wwwDir: ../../www
+              configFiles:
+                  - ../../config/codeception/common.neon
+                  - ../../config/codeception/local.neon
+              newContainerForEachTest: true
+              removeDefaultExtensions: false
+              debugMode: true
+        # after NetteDIModule: needs the container created for the test
+        - Tests\Support\Helper\CleanupTestData
+step_decorators: ~

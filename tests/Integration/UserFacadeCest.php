@@ -1,21 +1,21 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit;
+namespace Tests\Integration;
 
 use App\Model\Entity\UserEntity;
 use App\Model\Facade\UserFacade;
 use App\UI\Web\User\Registration\RegistrationValues;
 use App\Database\EntityManagerDecorator;
-use Tests\Support\UnitTester;
+use Tests\Support\IntegrationTester;
 
 class UserFacadeCest
 {
-    public function containerResolvesTheFacade(UnitTester $I) : void
+    public function containerResolvesTheFacade(IntegrationTester $I) : void
     {
         $I->assertInstanceOf(UserFacade::class, $I->grabService(UserFacade::class));
     }
 
-    public function registerStoresTheTypedValues(UnitTester $I) : void
+    public function registerStoresTheTypedValues(IntegrationTester $I) : void
     {
         $tag = (string) random_int(100000, 999999);
 

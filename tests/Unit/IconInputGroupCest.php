@@ -184,7 +184,7 @@ class IconInputGroupCest
         $root = dirname(__DIR__, 2) . '/app';
 
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root, \FilesystemIterator::SKIP_DOTS)) as $file) {
-            if ($file->getExtension() === 'php') {
+            if ($file instanceof \SplFileInfo && $file->getExtension() === 'php') {
                 yield substr($file->getPathname(), strlen($root) + 1) => (string) file_get_contents($file->getPathname());
             }
         }

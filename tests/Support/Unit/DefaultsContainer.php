@@ -20,7 +20,9 @@ final class DefaultsContainer extends Container
 
     public function setDefaults(array|object $values, bool $erase = false) : static
     {
-        $this->defaults = (array) $values;
+        /** @var array<string, mixed> $defaults */
+        $defaults = (array) $values;
+        $this->defaults = $defaults;
 
         return $this;
     }

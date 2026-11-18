@@ -54,7 +54,9 @@ class CardHeaderTitleIconCest
             preg_match_all('/<i\s[^>]*class="([^"]*)"/', $content, $classes, PREG_OFFSET_CAPTURE);
 
             foreach ($classes[1] as [$classList, $offset]) {
-                foreach (preg_split('/\s+/', $classList) ?: [] as $class) {
+                $parts = preg_split('/\s+/', $classList);
+
+                foreach ($parts === false ? [] : $parts as $class) {
                     if (str_starts_with($class, 'fa-') && !isset($known[$class]) && !in_array($class, $modifiers, true)) {
                         $unknown[] = $path . ':' . (substr_count(substr($content, 0, $offset), "\n") + 1) . ' ' . $class;
                     }
@@ -158,6 +160,7 @@ class CardHeaderTitleIconCest
         preg_match_all('/<div\b[^>]*>|<\/div>|<h1\b/', $content, $matches, PREG_OFFSET_CAPTURE);
 
         $stack = [];
+        /** @var array<int, array{line: int, html: string}> $headers */
         $headers = [];
         $h1 = [];
 
@@ -168,7 +171,10 @@ class CardHeaderTitleIconCest
                 $entry = array_pop($stack);
 
                 if ($entry !== null && $entry['header'] !== null) {
-                    $headers[$entry['header']]['html'] = substr($content, $entry['offset'], $offset - $entry['offset']);
+                    $headers[$entry['header']] = [
+                        'line' => $headers[$entry['header']]['line'],
+                        'html' => substr($content, $entry['offset'], $offset - $entry['offset']),
+                    ];
                 }
 
                 continue;
@@ -199,6 +205,6 @@ class CardHeaderTitleIconCest
             $stack[] = ['header' => $index, 'offset' => $offset];
         }
 
-        return ['headers' => $headers, 'h1' => $h1];
+        return ['headers' => array_values($headers), 'h1' => $h1];
     }
 }

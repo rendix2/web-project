@@ -5,82 +5,85 @@ namespace Tests\Functional;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
+use Codeception\Attribute\DataProvider;
 use Codeception\Example;
 use Tests\Support\FunctionalTester;
 
 /**
- * Smoke test of every server-rendered page: it has to answer 200 and must not render a Tracy exception. A plain
- * HTTP check on purpose - the Acceptance (Selenium) tests drive the UI, but they do not notice a page that answers
- * 500/404 behind a flash message or a redirect. `{user}` / `{role}` are replaced by the id of an existing record.
+ * Smoke test of every server-rendered page for every role: nobody logged in, a plain user (role Normal) and an admin. Each page
+ * either renders (200, no Tracy exception) or is refused with the expected code (401 / 403) - never a 500, never shown to whom it
+ * is not meant for. A plain HTTP check on purpose: the Acceptance (Selenium) tests drive the UI, but they do not see the status
+ * code. `{user}` / `{role}` are replaced by the id of an existing record. A new page belongs into PAGES.
  */
 class WebPagesSmokeCest
 {
+    private const OK = 200;
+
     /**
-     * @return array<string, array{0: string}>
+     * url => expected answer per role (200 = rendered, otherwise the code it is refused with)
+     *
+     * @var array<string, array{anonymous: int, User: int, Admin: int}>
      */
-    protected function publicPagesProvider() : array
+    private const PAGES = [
+        '/' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
+        '/web.user.login/' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
+        '/web.user.registration/' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
+        '/web.user.forget-password.request/' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
+        // the public profile of a user
+        '/web.user.view/default/{user}' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
+
+        '/web.user.edit/' => ['anonymous' => 403, 'User' => self::OK, 'Admin' => self::OK],
+        '/web.user.change-password/' => ['anonymous' => 403, 'User' => self::OK, 'Admin' => self::OK],
+        '/web.user.change-email/' => ['anonymous' => 403, 'User' => self::OK, 'Admin' => self::OK],
+
+        // AdminBasePresenter: 401 without a login, 403 without the role Admin
+        '/admin.user.list/' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+        '/admin.user.create/' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+        '/admin.user.edit/default/{user}' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+        '/admin.role.list/' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+        '/admin.role.create/' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+        '/admin.role.edit/default/{role}' => ['anonymous' => 401, 'User' => 403, 'Admin' => self::OK],
+    ];
+
+    /**
+     * @return array<string, array{0: string, 1: string, 2: int}> url, role, expected answer
+     */
+    protected function pagesProvider() : array
     {
-        return $this->examples([
-            '/',
-            '/web.user.login/',
-            '/web.user.registration/',
-            '/web.user.forget-password.request/',
-        ]);
+        $examples = [];
+
+        foreach (self::PAGES as $url => $answers) {
+            foreach ($answers as $role => $answer) {
+                $examples[$role . ' ' . $url] = [$url, $role, $answer];
+            }
+        }
+
+        return $examples;
     }
 
     /**
-     * @return array<string, array{0: string}>
+     * @param Example<int, string|int> $example
      */
-    protected function loggedInPagesProvider() : array
+    #[DataProvider('pagesProvider')]
+    public function pageAnswersAsExpectedForTheRole(FunctionalTester $I, Example $example) : void
     {
-        return $this->examples([
-            '/web.user.edit/',
-            '/web.user.change-password/',
-            '/web.user.change-email/',
-            '/web.user.view/default/{user}',
-            '/admin.user.list/',
-            '/admin.user.create/',
-            '/admin.user.edit/default/{user}',
-            '/admin.role.list/',
-            '/admin.role.create/',
-            '/admin.role.edit/default/{role}',
-        ]);
-    }
+        $page = $example[0];
+        $role = $example[1];
+        $answer = $example[2];
+        assert(is_string($page) && is_string($role) && is_int($answer));
 
-    /**
-     * @dataProvider publicPagesProvider
-     */
-    public function publicPageRendersWithoutError(FunctionalTester $I, Example $example) : void
-    {
-        $I->amOnPage($example[0]);
+        $I->loginAs($role);
+        $I->amOnPage($this->resolve($I, $page));
 
-        $this->assertPageIsOk($I);
-    }
-
-    /**
-     * @dataProvider loggedInPagesProvider
-     */
-    public function loggedInPageRendersWithoutError(FunctionalTester $I, Example $example) : void
-    {
-        $I->amOnPage('/web.user.login/');
-        $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'secret']);
-        $I->seeResponseCodeIs(200);
-
-        $I->amOnPage($this->resolve($I, $example[0]));
-
-        $this->assertPageIsOk($I);
-    }
-
-    private function assertPageIsOk(FunctionalTester $I) : void
-    {
-        $I->seeResponseCodeIs(200);
-        $I->dontSeeInSource('id="tracy-bs"');
-        $I->dontSeeInSource('Nette\\Application\\BadRequestException');
+        if ($answer === self::OK) {
+            $I->seePageIsOk($role . ' ' . $page);
+        } else {
+            $I->seeRefused($answer, $role . ' ' . $page);
+        }
     }
 
     private function resolve(FunctionalTester $I, string $url) : string
     {
-        /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);
 
         if (str_contains($url, '{user}')) {
@@ -96,20 +99,5 @@ class WebPagesSmokeCest
         }
 
         return $url;
-    }
-
-    /**
-     * @param list<string> $urls
-     * @return array<string, array{0: string}>
-     */
-    private function examples(array $urls) : array
-    {
-        $examples = [];
-
-        foreach ($urls as $url) {
-            $examples[$url] = [$url];
-        }
-
-        return $examples;
     }
 }

@@ -14,7 +14,9 @@ class FormMappingConventionCest
     {
         $missing = [];
 
-        foreach (glob(__DIR__ . '/../../app/Forms/Mapper/*FormMapper.php') ?: [] as $file) {
+        $files = glob(__DIR__ . '/../../app/Forms/Mapper/*FormMapper.php');
+
+        foreach ($files === false ? [] : $files as $file) {
             $name = basename($file, '.php');
 
             if (!is_file(__DIR__ . '/Forms/Mapper/' . $name . 'Cest.php')) {
@@ -29,7 +31,9 @@ class FormMappingConventionCest
     {
         $violations = [];
 
-        foreach (glob(__DIR__ . '/../../app/UI/Admin/{User,Role}/{Edit,Create}/*Presenter.php', GLOB_BRACE) ?: [] as $file) {
+        $files = glob(__DIR__ . '/../../app/UI/Admin/{User,Role}/{Edit,Create}/*Presenter.php', GLOB_BRACE);
+
+        foreach ($files === false ? [] : $files as $file) {
             $source = (string) file_get_contents($file);
 
             // `$this['editForm']->setDefaults(` = the entity's fields copied into the form by hand

@@ -81,19 +81,23 @@ class ForeignKeyCascadeCest
         $connection = $em->getConnection();
 
         foreach (['user_password', 'user_email', 'user_activation', 'user_auto_login', 'user_password_request', 'user_email_change_request', 'user_role'] as $table) {
-            $I->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM ' . $table . ' WHERE user_id = ?', [$userId]), 'The test data are missing in ' . $table);
+            $I->assertSame(1, $this->number($connection->fetchOne('SELECT COUNT(*) FROM ' . $table . ' WHERE user_id = ?', [$userId])), 'The test data are missing in ' . $table);
         }
 
         // plain SQL: the database does it, not the ORM
         $connection->executeStatement('DELETE FROM users WHERE id = ?', [$userId]);
 
         foreach (['user_password', 'user_email', 'user_activation', 'user_auto_login', 'user_password_request', 'user_email_change_request', 'user_role'] as $table) {
-            $I->assertSame(0, (int) $connection->fetchOne('SELECT COUNT(*) FROM ' . $table . ' WHERE user_id = ?', [$userId]), $table . ' keeps rows of a deleted user.');
+            $I->assertSame(0, $this->number($connection->fetchOne('SELECT COUNT(*) FROM ' . $table . ' WHERE user_id = ?', [$userId])), $table . ' keeps rows of a deleted user.');
         }
 
-        $I->assertSame(1, (int) $connection->fetchOne('SELECT COUNT(*) FROM role WHERE id = ?', [$roleId]), 'Deleting a user deleted the role.');
+        $I->assertSame(1, $this->number($connection->fetchOne('SELECT COUNT(*) FROM role WHERE id = ?', [$roleId])), 'Deleting a user deleted the role.');
 
         $connection->executeStatement('DELETE FROM role WHERE id = ?', [$roleId]);
     }
 
+    private function number(mixed $value) : int
+    {
+        return is_numeric($value) ? (int) $value : -1;
+    }
 }

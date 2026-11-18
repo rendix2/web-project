@@ -1,0 +1,46 @@
+{
+    "title": "Role",
+    "headings": [
+        "Seznam rolí"
+    ],
+    "breadcrumb": [
+        "Role"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [],
+    "buttons": [
+        "Přidat roli"
+    ],
+    "grids": {
+        "grid": {
+            "columns": [
+                "name"
+            ],
+            "headers": [
+                "Název Skrýt sloupec",
+                "Akce"
+            ],
+            "sortable": [
+                "name"
+            ],
+            "filters": [
+                "name:text"
+            ],
+            "perPage": [
+                "10",
+                "20",
+                "50",
+                "all"
+            ],
+            "rowActions": [
+                "Detail role",
+                "Smazat roli",
+                "Inline editovat roli"
+            ],
+            "hasSummary": false
+        }
+    }
+}

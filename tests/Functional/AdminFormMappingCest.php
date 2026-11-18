@@ -101,6 +101,10 @@ class AdminFormMappingCest
         $em = $this->em($I);
         $saved = $em->getRepository(UserEntity::class)->find($user->id);
 
+        if ($saved === null) {
+            $I->fail('The user is gone.');
+        }
+
         $I->assertSame('NewName', $saved->name);
         $I->assertSame('NewSurname', $saved->surname);
         $I->assertSame('mapnew' . $tag, $saved->username);
@@ -141,6 +145,10 @@ class AdminFormMappingCest
 
         $em = $this->em($I);
         $saved = $em->getRepository(UserEntity::class)->find($user->id);
+
+        if ($saved === null) {
+            $I->fail('The user is gone.');
+        }
 
         $I->assertFalse($saved->isActive, 'An unchecked box deactivates the user.');
         $I->assertNotSame($oldHash, $saved->password);

@@ -32,7 +32,7 @@ final class DatagridPage
         $this->crawler->filterXPath('//div[contains(concat(" ", normalize-space(@class), " "), " datagrid ")]')->each(
             static function (Crawler $grid) use (&$names) : void {
                 if ($grid->attr('data-datagrid-name') !== null) { // contributte/datagrid 7
-                    $names[] = (string) $grid->attr('data-datagrid-name');
+                    $names[] = $grid->attr('data-datagrid-name');
 
                     return;
                 }
@@ -99,7 +99,9 @@ final class DatagridPage
         $this->grid($grid)->filterXPath('.//thead//*[(self::input or self::select) and starts-with(@name, "filter[")]')->each(
             static function (Crawler $field) use (&$filters) : void {
                 $name = (string) $field->attr('name');
-                preg_match('~^filter\[([^\]]+)\]~', $name, $m);
+                if (preg_match('~^filter\[([^\]]+)\]~', $name, $m) !== 1) {
+                    return;
+                }
 
                 $options = [];
                 $kind = 'text';
@@ -269,7 +271,7 @@ final class DatagridPage
 
         $this->grid($grid)->filterXPath('(.//tbody/tr[@data-id])[1]//td[contains(@class, "col-action")]//a')->each(
             static function (Crawler $a) use (&$titles) : void {
-                $titles[] = trim((string) ($a->attr('title') ?? $a->text()));
+                $titles[] = trim($a->attr('title') ?? $a->text());
             },
         );
 

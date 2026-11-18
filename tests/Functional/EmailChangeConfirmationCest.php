@@ -230,14 +230,14 @@ class EmailChangeConfirmationCest
         $em = $this->em($I);
         $em->clear();
 
-        return array_values($em->getRepository(MailEntity::class)->findBy(['emailTo' => $email], ['id' => 'ASC']));
+        return $em->getRepository(MailEntity::class)->findBy(['emailTo' => $email], ['id' => 'ASC']);
     }
 
     private function keyFromMail(FunctionalTester $I, string $email) : string
     {
         $I->assertSame(1, preg_match('~key=([0-9a-f]{64})~', $this->sentMail($email), $m), 'No confirmation link was sent to ' . $email);
 
-        return $m[1];
+        return $m[1] ?? '';
     }
 
     /**
@@ -245,8 +245,13 @@ class EmailChangeConfirmationCest
      */
     private function sentMail(string $email) : string
     {
-        $files = glob(dirname(__DIR__, 2) . '/temp/web/mails/*') ?: [];
-        usort($files, static fn (string $a, string $b) : int => filemtime($b) <=> filemtime($a) ?: strcmp($b, $a));
+        $files = glob(dirname(__DIR__, 2) . '/temp/web/mails/*');
+        $files = $files === false ? [] : $files;
+        usort($files, static function (string $a, string $b) : int {
+            $byTime = filemtime($b) <=> filemtime($a);
+
+            return $byTime !== 0 ? $byTime : strcmp($b, $a);
+        });
 
         foreach ($files as $file) {
             $content = (string) file_get_contents($file);

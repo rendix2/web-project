@@ -33,7 +33,7 @@ class ColumnLengthsCest
             );
 
             $I->assertSame($length, $mapped, $class . '::$' . $field . ' (mapping)');
-            $I->assertSame($length, (int) $stored, $table . '.' . $column . ' (database)');
+            $I->assertSame($length, is_numeric($stored) ? (int) $stored : null, $table . '.' . $column . ' (database)');
         }
     }
 

@@ -21,7 +21,11 @@ class HttpExtension extends \Contributte\Codeception\DI\HttpExtension
         $request = $builder->getByType(IRequest::class) ?? 'httpRequest';
 
         if ($builder->hasDefinition($request)) {
-            $builder->getDefinition($request)->setFactory(Request::class);
+            $definition = $builder->getDefinition($request);
+
+            if ($definition instanceof \Nette\DI\Definitions\ServiceDefinition) {
+                $definition->setFactory(Request::class);
+            }
         }
     }
 }

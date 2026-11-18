@@ -5,6 +5,8 @@ namespace App\UI\Admin\User\Edit;
 use stdClass;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
+use App\UI\Grid\IdFilterCondition;
+use App\UI\Grid\SecuredDatagrid;
 use Contributte\Datagrid\Datagrid;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
@@ -14,7 +16,7 @@ use App\Database\EntityManagerDecorator;
 
 class RoleDataGrid
 {
-    private Datagrid $grid;
+    private SecuredDatagrid $grid;
 
     private UserEntity $userEntity;
 
@@ -23,7 +25,7 @@ class RoleDataGrid
         private readonly Translator             $translator,
     )
     {
-        $this->grid = new Datagrid();
+        $this->grid = new SecuredDatagrid();
     }
 
     public function setUserEntity(UserEntity $userEntity) : RoleDataGrid
@@ -60,6 +62,7 @@ class RoleDataGrid
             ->setDefaultHide(true)
             ->setSortable(true)
             ->setFilterText()
+            ->setCondition(new IdFilterCondition('_role.id'))
             ->setPlaceholder('admin-user-list.id.search');
 
         $this->grid

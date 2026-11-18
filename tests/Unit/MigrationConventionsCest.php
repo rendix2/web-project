@@ -31,14 +31,8 @@ class MigrationConventionsCest
      */
     private const string CUTOFF = 'Version20230621145918';
 
-    /**
-     * Migrations that break a rule on purpose. A NEW migration never goes here - fix it instead. An exception no longer needed
-     * fails `exceptionsAreStillNeeded`.
-     *
-     * @var array<string, array<self::RULE_*, string>> migration => rule => why it is accepted
-     */
-    private const array EXCEPTIONS = [
-    ];
+    // no EXCEPTIONS list (alfred has one for migrations that already ran in production): web-project is not deployed, a
+    // migration that breaks a rule is fixed
 
     private const string RULE_SCHEMA_API = 'schema-api';
     private const string RULE_NAMING = 'naming';
@@ -93,25 +87,6 @@ class MigrationConventionsCest
         $this->assertRule($I, self::RULE_ONE_TABLE, 'Split the migration: one migration changes the structure of one table (a literal name)');
     }
 
-    public function exceptionsAreStillNeeded(UnitTester $I) : void
-    {
-        $violations = $this->violations();
-        $stale = [];
-
-        foreach (self::EXCEPTIONS as $version => $rules) {
-            $I->assertGreaterThanOrEqual(self::CUTOFF, $version, $version . ' is older than CUTOFF, it does not need an exception.');
-            $I->assertArrayHasKey($version, $violations, $version . ' (an exception) does not exist.');
-
-            foreach (array_keys($rules) as $rule) {
-                if (($violations[$version][$rule] ?? []) === []) {
-                    $stale[] = $version . ' ' . $rule;
-                }
-            }
-        }
-
-        $I->assertSame([], $stale, "These exceptions are not needed any more, remove them from EXCEPTIONS:\n" . implode("\n", $stale));
-    }
-
     private function assertRule(UnitTester $I, string $rule, string $hint) : void
     {
         $violations = $this->violations();
@@ -120,10 +95,6 @@ class MigrationConventionsCest
         $I->assertArrayHasKey(self::CUTOFF, $violations, 'The CUTOFF migration does not exist.');
 
         foreach ($violations as $version => $rules) {
-            if (isset(self::EXCEPTIONS[$version][$rule])) {
-                continue;
-            }
-
             foreach ($rules[$rule] as $message) {
                 $found[] = $version . ': ' . $message;
             }
@@ -266,7 +237,8 @@ class MigrationConventionsCest
 
         // web-project (AGENTS.md "Names of indexes and foreign keys"): K__<Table>__<Columns>, the table without its schema
         // ("public.users" -> Users), the columns joined by one underscore with only the first letter capital (Email_created_at)
-        $table = str_contains($table, '.') ? substr($table, strrpos($table, '.') + 1) : $table;
+        $dot = strrpos($table, '.');
+        $table = $dot === false ? $table : substr($table, $dot + 1);
         $expected = self::NAMED_METHODS[$method] . '__' . ucfirst($table) . '__' . ucfirst(implode('_', $columns));
 
         if ($name !== $expected) {

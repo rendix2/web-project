@@ -47,6 +47,11 @@ class AutoLoginSecurityCest
         $I->see('Již jste přihlášeni.');
 
         $newToken = $I->grabCookie(AutoLoginAuthenticator::COOKIE_NAME);
+
+        if (!is_string($newToken)) {
+            $I->fail('The stay-logged-in cookie is missing.');
+        }
+
         $I->assertNotSame($oldToken, $newToken, 'The token was not rotated.');
         $I->assertSame(hash('sha256', $newToken), $this->onlyRow($I, $user)->tokenHash);
 
@@ -151,7 +156,13 @@ class AutoLoginSecurityCest
         $I->seeResponseCodeIs(200);
         $I->dontSeeInSource('id="tracy-bs"');
 
-        return $I->grabCookie(AutoLoginAuthenticator::COOKIE_NAME);
+        $token = $I->grabCookie(AutoLoginAuthenticator::COOKIE_NAME);
+
+        if (!is_string($token)) {
+            $I->fail('The login did not set the stay-logged-in cookie.');
+        }
+
+        return $token;
     }
 
     private function onlyRow(FunctionalTester $I, UserEntity $user) : UserAutoLoginEntity

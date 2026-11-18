@@ -110,7 +110,7 @@ class MigrationsDownUpCest
                     'version_column_name' => 'version',
                 ],
                 'migrations_paths' => [
-                    rtrim(self::NAMESPACE, '\\') => codecept_root_dir() . 'app/Database/Migrations',
+                    rtrim(self::NAMESPACE, '\\') => dirname(__DIR__, 2) . '/app/Database/Migrations',
                 ],
             ]),
             new ExistingConnection($connection),
@@ -137,7 +137,7 @@ class MigrationsDownUpCest
     {
         $target = self::CUTOFF;
 
-        $files = glob(codecept_root_dir() . 'app/Database/Migrations/Version*.php');
+        $files = glob(dirname(__DIR__, 2) . '/app/Database/Migrations/Version*.php');
 
         foreach ($files === false ? [] : $files as $file) {
             $name = basename($file, '.php');

@@ -11,6 +11,6 @@ $robotLoaderTempDir = $rootDir . '/temp/robotloader-tests';
 FileSystem::createDir($robotLoaderTempDir);
 
 $robotLoader = new RobotLoader();
-$robotLoader->setTempDirectory($robotLoaderTempDir);
+$robotLoader->setCacheDirectory($robotLoaderTempDir);
 $robotLoader->addDirectory($rootDir . '/app');
 $robotLoader->register();

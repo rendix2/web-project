@@ -1,0 +1,57 @@
+{
+    "title": "Uživatelé",
+    "headings": [
+        "Seznam uživatelů"
+    ],
+    "breadcrumb": [
+        "Uživatelé"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [],
+    "buttons": [
+        "Přidat Uživatele"
+    ],
+    "grids": {
+        "grid": {
+            "columns": [
+                "fullName",
+                "username",
+                "email",
+                "isActive"
+            ],
+            "headers": [
+                "Celé jméno Skrýt sloupec",
+                "Uživatelské jméno Skrýt sloupec",
+                "Email Skrýt sloupec",
+                "Aktivní Skrýt sloupec",
+                "Akce"
+            ],
+            "sortable": [
+                "fullName",
+                "username",
+                "email",
+                "isActive"
+            ],
+            "filters": [
+                "fullName:text",
+                "username:text",
+                "email:text",
+                "isActive:select"
+            ],
+            "perPage": [
+                "10",
+                "20",
+                "50",
+                "all"
+            ],
+            "rowActions": [
+                "Detail Uživatele",
+                "Inline editovat Uživatele"
+            ],
+            "hasSummary": false
+        }
+    }
+}

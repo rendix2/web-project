@@ -115,8 +115,8 @@ class CleanupTestData extends Module
             $rows = $em->createQuery('SELECT u.email, u.username FROM ' . UserEntity::class . ' u WHERE u.id IN (:ids)')
                 ->setParameter('ids', $userIds)
                 ->getArrayResult();
-            $emails = array_column($rows, 'email');
-            $usernames = array_column($rows, 'username');
+            $emails = array_values(array_filter(array_column($rows, 'email'), is_string(...)));
+            $usernames = array_values(array_filter(array_column($rows, 'username'), is_string(...)));
 
             $em->getConnection()->executeStatement(
                 'DELETE FROM user_role WHERE user_id IN (' . implode(',', array_map('intval', $userIds)) . ')'
@@ -167,6 +167,12 @@ class CleanupTestData extends Module
         /** @var NetteDIModule $di */
         $di = $this->getModule(NetteDIModule::class);
 
-        return $di->grabService(EntityManagerDecorator::class);
+        $em = $di->grabService(EntityManagerDecorator::class);
+
+        if (!$em instanceof EntityManagerDecorator) {
+            throw new \LogicException('The container has no EntityManagerDecorator.');
+        }
+
+        return $em;
     }
 }

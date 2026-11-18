@@ -74,7 +74,7 @@ class JoinsAreSelectedCest
                     $selected = preg_match("~'" . preg_quote($join[2][0], '~') . "'~", $arguments) === 1;
 
                     if (!$selected && !$scalar) {
-                        $found[] = [substr_count($source, "\n", 0, $offset + (int) $join[0][1]) + 1, $join[1][0] . ' AS ' . $join[2][0]];
+                        $found[] = [substr_count($source, "\n", 0, $offset + $join[0][1]) + 1, $join[1][0] . ' AS ' . $join[2][0]];
                     }
                 }
             }

@@ -44,11 +44,11 @@ class FormToggleIdsCest
                     $violations[] = $name . ': defines the id "' . $id . '" ' . $count . 'x';
                 }
 
-                if (!in_array((string) $id, $toggled[1], true)) {
+                if (!in_array($id, $toggled[1], true)) {
                     $violations[] = $name . ': defines the id "' . $id . '" which nothing toggles (a dead option, a duplicate id on the page)';
                 }
 
-                $definedIn[(string) $id][] = $name;
+                $definedIn[$id][] = $name;
             }
         }
 

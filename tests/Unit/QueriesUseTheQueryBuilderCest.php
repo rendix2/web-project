@@ -5,10 +5,13 @@ namespace Tests\Unit;
 use Tests\Support\UnitTester;
 
 /**
- * Queries go through the QueryBuilder, never hand-written DQL/SQL (AGENTS.md, the same rule as alfred): no
- * `$em->createQuery('...')`, no `$connection->executeQuery()` / `executeStatement()` / `fetch*()` with an SQL string.
- * Use `$em->createQueryBuilder()` or `$repository->createQueryBuilder('_alias')`. Exempt: the migrations (Schema API and
- * the data steps `addSql()` is for).
+ * Queries go through the QueryBuilder, never hand-written DQL/SQL (AGENTS.md; the same guard in alfred, web-project and
+ * family-tree): no `$em->createQuery('...')`, no `$connection->executeQuery($sql)` / `executeStatement($sql)` / `fetch*($sql)`.
+ * Use `$em->createQueryBuilder()`, `$repository->createQueryBuilder('_alias')` or the DBAL `$connection->createQueryBuilder()`.
+ *
+ * Allowed: the calls WITHOUT an SQL string - `$queryBuilder->executeStatement()` / `executeQuery()` of a DBAL QueryBuilder and
+ * `$result->fetchOne()` of its result - and `createQuery($queryBuilder->getDQL())` (the DQL comes from a QueryBuilder). Exempt: the
+ * migrations (Schema API and the data steps `addSql()` is for).
  */
 class QueriesUseTheQueryBuilderCest
 {
@@ -16,10 +19,10 @@ class QueriesUseTheQueryBuilderCest
      * @var array<string, string> pattern => what it is
      */
     private const array FORBIDDEN = [
-        '~->createQuery\s*\(~' => 'hand-written DQL (createQuery)',
+        '~->createQuery\s*\((?!\s*\$\w+->getDQL\(\)\s*\))\s*[^)\s]~' => 'hand-written DQL (createQuery)',
         '~->createNativeQuery\s*\(~' => 'hand-written SQL (createNativeQuery)',
-        '~->(?:executeQuery|executeStatement|executeUpdate)\s*\(~' => 'hand-written SQL (execute*)',
-        '~->fetch(?:One|Associative|AllAssociative|AllNumeric|FirstColumn|AllKeyValue)\s*\(~' => 'hand-written SQL (fetch*)',
+        '~->(?:executeQuery|executeStatement|executeUpdate)\s*\(\s*[^)\s]~' => 'hand-written SQL (execute* with an SQL string)',
+        '~->fetch(?:One|Associative|AllAssociative|AllNumeric|FirstColumn|AllKeyValue|AllAssociativeIndexed)\s*\(\s*[^)\s]~' => 'hand-written SQL (fetch* with an SQL string)',
     ];
 
     public function theApplicationWritesNoQueriesByHand(UnitTester $I) : void

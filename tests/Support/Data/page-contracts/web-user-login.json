@@ -1,0 +1,46 @@
+{
+    "title": "",
+    "headings": [
+        "Přihlášení"
+    ],
+    "breadcrumb": [],
+    "navigation": [],
+    "forms": [
+        {
+            "id": "frm-loginForm",
+            "fields": [
+                {
+                    "name": "username",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "password",
+                    "tag": "input",
+                    "type": "password",
+                    "required": true
+                },
+                {
+                    "name": "stayLoggedIn",
+                    "tag": "input",
+                    "type": "checkbox",
+                    "required": false
+                }
+            ],
+            "labels": [
+                "Uživatelské jméno",
+                "Heslo",
+                "Zůstat přihlášen",
+                "Zůstat přihlášen"
+            ],
+            "submit": [
+                "Přihlásit se"
+            ]
+        }
+    ],
+    "buttons": [
+        "Přihlásit se"
+    ],
+    "grids": []
+}

@@ -76,8 +76,6 @@ class LoginDoesNotRevealAccountsCest
         }
 
         $I->fail('The login of ' . $username . ' succeeded.');
-
-        return '';
     }
 
     private function em(IntegrationTester $I) : EntityManagerDecorator

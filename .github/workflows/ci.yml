@@ -34,6 +34,10 @@ jobs:
       - name: Composer validate
         run: composer validate
 
+      # PHPStan analyses tests/ too: the actors ($I->...) are generated first
+      - name: Codeception build
+        run: php vendor/bin/codecept build
+
       - name: PHPStan
         run: php vendor/bin/phpstan analyse --no-progress
 

@@ -1,0 +1,80 @@
+{
+    "title": "Vytvoření Uživatele",
+    "headings": [
+        "Vytvoření Uživatele"
+    ],
+    "breadcrumb": [
+        "Uživatelé",
+        "Vytvoření Uživatele"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [
+        {
+            "id": "frm-createForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "surname",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "username",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "email",
+                    "tag": "input",
+                    "type": "email",
+                    "required": true
+                },
+                {
+                    "name": "password",
+                    "tag": "input",
+                    "type": "password",
+                    "required": true
+                },
+                {
+                    "name": "password2",
+                    "tag": "input",
+                    "type": "password",
+                    "required": false
+                },
+                {
+                    "name": "isActive",
+                    "tag": "input",
+                    "type": "checkbox",
+                    "required": false
+                }
+            ],
+            "labels": [
+                "Jméno",
+                "Příjmení",
+                "Uživatelské jméno",
+                "Email",
+                "Heslo",
+                "Heslo pro kontrolu",
+                "Aktivní",
+                "Aktivní"
+            ],
+            "submit": [
+                "Vytvořit Uživatele"
+            ]
+        }
+    ],
+    "buttons": [
+        "Vytvořit Uživatele"
+    ],
+    "grids": []
+}

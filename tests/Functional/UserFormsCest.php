@@ -86,9 +86,14 @@ class UserFormsCest
 
         $em->clear();
         $edited = $this->findUser($I, 'regtest' . $tag);
-        $I->assertSame('Grid', $edited?->name);
-        $I->assertSame('Renamed', $edited?->surname);
-        $I->assertTrue($edited?->isActive);
+
+        if ($edited === null) {
+            $I->fail('The edited user is gone.');
+        }
+
+        $I->assertSame('Grid', $edited->name);
+        $I->assertSame('Renamed', $edited->surname);
+        $I->assertTrue($edited->isActive);
     }
 
     public function adminRoleGridInlineEdit(FunctionalTester $I) : void

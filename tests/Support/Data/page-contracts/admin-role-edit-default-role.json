@@ -1,0 +1,37 @@
+{
+    "title": "Editace role Normal",
+    "headings": [
+        "Normal"
+    ],
+    "breadcrumb": [
+        "Role",
+        "Editace role Normal"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [
+        {
+            "id": "frm-editForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                }
+            ],
+            "labels": [
+                "Role"
+            ],
+            "submit": [
+                "admin-role-edit.form.submit.label"
+            ]
+        }
+    ],
+    "buttons": [
+        "admin-role-edit.form.submit.label"
+    ],
+    "grids": []
+}

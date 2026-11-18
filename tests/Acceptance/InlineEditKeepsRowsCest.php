@@ -3,6 +3,7 @@
 namespace Tests\Acceptance;
 
 use Codeception\Util\Locator;
+use Codeception\Attribute\DataProvider;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use Codeception\Example;
@@ -25,8 +26,9 @@ class InlineEditKeepsRowsCest
     }
 
     /**
-     * @dataProvider pagesProvider
+     * @param Example<int, string> $example
      */
+    #[DataProvider('pagesProvider')]
     public function otherRowsStayWhenOneRowIsEdited(AcceptanceTester $I, Example $example) : void
     {
         $rows = 'return document.querySelectorAll("table tbody tr[data-id]").length;';
@@ -58,18 +60,18 @@ class InlineEditKeepsRowsCest
             $I->amOnPage($example[0]);
             $I->waitForElement('table tbody tr[data-id]', 10);
 
-            $before = (int) $I->executeJS($rows);
+            $before = $this->rowCount($I, $rows);
             Assert::assertGreaterThan(1, $before, 'The grid needs at least two rows for this check.');
 
             $I->executeJS('document.getElementById("tracy-debug")?.remove(); document.documentElement.style.scrollBehavior = "auto";');
             $I->scrollTo(Locator::firstElement('table > tbody > tr[data-id]'));
             $I->click(Locator::firstElement('table > tbody > tr[data-id] a.datagrid-inline-edit-trigger'));
             $I->waitForJS('return ' . $editing . ' > 0;', 10);
-            Assert::assertSame($before, (int) $I->executeJS($rows), 'Clicking "Edit" removed rows from the grid.');
+            Assert::assertSame($before, $this->rowCount($I, $rows), 'Clicking "Edit" removed rows from the grid.');
 
             $I->click(Locator::find('*', ['name' => 'inline_edit[submit]']));
             $I->waitForJS('return ' . $editing . ' === 0;', 10);
-            Assert::assertSame($before, (int) $I->executeJS($rows), 'Saving the row removed the other rows from the grid.');
+            Assert::assertSame($before, $this->rowCount($I, $rows), 'Saving the row removed the other rows from the grid.');
             $I->dontSeeElement('#tracy-bs');
         } finally {
             foreach ($created as $role) {
@@ -78,5 +80,12 @@ class InlineEditKeepsRowsCest
 
             $em->flush();
         }
+    }
+
+    private function rowCount(AcceptanceTester $I, string $script) : int
+    {
+        $count = $I->executeJS($script);
+
+        return is_int($count) ? $count : -1;
     }
 }

@@ -6,6 +6,8 @@ use stdClass;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
+use App\UI\Grid\IdFilterCondition;
+use App\UI\Grid\SecuredDatagrid;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
@@ -20,14 +22,14 @@ use Nette\Localization\Translator;
 class RoleDataGrid
 {
 
-    private Datagrid $grid;
+    private SecuredDatagrid $grid;
 
     public function __construct(
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
     )
     {
-        $this->grid = new Datagrid();
+        $this->grid = new SecuredDatagrid();
     }
 
     public function create() : Datagrid
@@ -59,6 +61,7 @@ class RoleDataGrid
             ->setDefaultHide(true)
             ->setSortable(true)
             ->setFilterText()
+            ->setCondition(new IdFilterCondition('_role.id'))
             ->setPlaceholder('admin-role-list.id.search');
 
         $this->grid

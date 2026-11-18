@@ -23,7 +23,7 @@ class NoMenuPackageCest
 
         foreach (['app', 'config'] as $dir) {
             foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(dirname(__DIR__, 2) . '/' . $dir, \FilesystemIterator::SKIP_DOTS)) as $file) {
-                if (str_contains((string) file_get_contents($file->getPathname()), $needle)) {
+                if ($file instanceof \SplFileInfo && str_contains((string) file_get_contents($file->getPathname()), $needle)) {
                     $found[] = $file->getPathname();
                 }
             }

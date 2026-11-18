@@ -1,0 +1,37 @@
+{
+    "title": "Vytvoření Role",
+    "headings": [
+        "Vytvoření Role"
+    ],
+    "breadcrumb": [
+        "Role",
+        "Vytvoření Role"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [
+        {
+            "id": "frm-createForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                }
+            ],
+            "labels": [
+                "Role"
+            ],
+            "submit": [
+                "Vytvořit Role"
+            ]
+        }
+    ],
+    "buttons": [
+        "Vytvořit Role"
+    ],
+    "grids": []
+}

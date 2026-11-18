@@ -1,0 +1,22 @@
+{
+    "title": "Congratulations!",
+    "headings": [
+        "Congratulations!",
+        "Backend Core",
+        "Persistence",
+        "Frontend",
+        "Components"
+    ],
+    "breadcrumb": [],
+    "navigation": [],
+    "forms": [],
+    "buttons": [
+        "Quick Start",
+        "Documentation",
+        "Forum",
+        "Blog",
+        "Login",
+        "Sign up"
+    ],
+    "grids": []
+}

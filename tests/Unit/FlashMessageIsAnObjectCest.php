@@ -35,8 +35,8 @@ class FlashMessageIsAnObjectCest
             $content = (string) file_get_contents($file->getPathname());
             $name = substr($file->getPathname(), strlen($root) + 1);
 
-            $total = preg_match_all('~->flashMessage\(~', $content, $all);
-            $withObject = preg_match_all('~->flashMessage\(\s*\$flash\w*\s*\)~', $content, $objects);
+            $total = (int) preg_match_all('~->flashMessage\(~', $content, $all);
+            $withObject = (int) preg_match_all('~->flashMessage\(\s*\$flash\w*\s*\)~', $content, $objects);
 
             if ($total === 0) {
                 continue;

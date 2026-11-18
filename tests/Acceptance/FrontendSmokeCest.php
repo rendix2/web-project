@@ -32,13 +32,15 @@ class FrontendSmokeCest
             $I->wait(1);
 
             $logs = [];
-            $I->executeInSelenium(static function ($webDriver) use (&$logs) : void {
+            $I->executeInSelenium(static function (\Facebook\WebDriver\Remote\RemoteWebDriver $webDriver) use (&$logs) : void {
                 $logs = $webDriver->manage()->getLog('browser');
             });
 
             foreach ($logs as $entry) {
-                if ($entry['level'] === 'SEVERE' && !str_contains($entry['message'], 'favicon')) {
-                    $problems[] = $page . ': ' . substr((string) $entry['message'], 0, 300);
+                $message = is_array($entry) ? ($entry['message'] ?? null) : null;
+
+                if (is_array($entry) && ($entry['level'] ?? null) === 'SEVERE' && is_string($message) && !str_contains($message, 'favicon')) {
+                    $problems[] = $page . ': ' . substr($message, 0, 300);
                 }
             }
 

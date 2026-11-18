@@ -3,6 +3,8 @@
 namespace Tests\Functional;
 
 use App\Database\EntityManagerDecorator;
+use Codeception\Attribute\Group;
+use Codeception\Attribute\DataProvider;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
 use Codeception\Example;
@@ -17,10 +19,9 @@ use Tests\Support\FunctionalTester;
  * a filter only narrows (and a value that matches nothing really empties the grid: the filter condition callbacks run),
  * reset gives the original rows back.
  *
- * @group grid
- *
  * It exists as the safety net for the Bootstrap 5 + datagrid update: the markup knowledge is in Tests\Support\Grid\DatagridPage.
  */
+#[Group('grid')]
 class GridExerciserCest
 {
     private const NOTHING = 'zzqq-no-such-value-';
@@ -60,7 +61,14 @@ class GridExerciserCest
         $root = dirname(__DIR__, 2) . '/log';
         $sizes = [];
 
-        foreach (array_merge(glob($root . '/exception.log') ?: [], glob($root . '/error.log') ?: [], glob($root . '/*/exception.log') ?: [], glob($root . '/*/error.log') ?: []) as $file) {
+        $files = [];
+
+        foreach ([$root . '/exception.log', $root . '/error.log', $root . '/*/exception.log', $root . '/*/error.log'] as $pattern) {
+            $found = glob($pattern);
+            $files = [...$files, ...($found === false ? [] : $found)];
+        }
+
+        foreach ($files as $file) {
             if (!str_contains($file, '/codeception/')) {
                 $sizes[$file] = (int) filesize($file);
             }
@@ -86,15 +94,18 @@ class GridExerciserCest
     }
 
     /**
-     * @dataProvider pagesProvider
+     * @param Example<int, string> $example
      */
+    #[DataProvider('pagesProvider')]
     public function everyGridOfThePageBehaves(FunctionalTester $I, Example $example) : void
     {
         $I->amOnPage('/web.user.login/');
         $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'secret']);
         $I->seeResponseCodeIs(200);
 
-        $url = $this->resolve($I, $example[0]);
+        $page = $example[0];
+        assert(is_string($page));
+        $url = $this->resolve($I, $page);
         $I->amOnPage($url);
         $this->assertPageIsFine($I);
 

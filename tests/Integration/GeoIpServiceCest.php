@@ -27,7 +27,10 @@ class GeoIpServiceCest
         /** @var GeoIpService $service */
         $service = $I->grabService(GeoIpService::class);
 
-        $I->assertSame(['country' => 'Local', 'city' => 'Local'], $service->getInfo($example['ip']));
+        $ip = $example['ip'];
+        assert(is_string($ip));
+
+        $I->assertSame(['country' => 'Local', 'city' => 'Local'], $service->getInfo($ip));
     }
 
     /**

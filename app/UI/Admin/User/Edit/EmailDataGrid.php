@@ -4,6 +4,8 @@ namespace App\UI\Admin\User\Edit;
 
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
+use App\UI\Grid\IdFilterCondition;
+use App\UI\Grid\SecuredDatagrid;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
@@ -13,7 +15,7 @@ use Nette\Utils\Html;
 class EmailDataGrid
 {
 
-    private Datagrid $grid;
+    private SecuredDatagrid $grid;
 
     private UserEntity $userEntity;
 
@@ -22,7 +24,7 @@ class EmailDataGrid
         private readonly Translator             $translator,
     )
     {
-        $this->grid = new Datagrid();
+        $this->grid = new SecuredDatagrid();
     }
 
     public function setUserEntity(UserEntity $userEntity) : EmailDataGrid
@@ -60,6 +62,7 @@ class EmailDataGrid
             ->setDefaultHide(true)
             ->setSortable(true)
             ->setFilterText()
+            ->setCondition(new IdFilterCondition('_email.id'))
             ->setPlaceholder('admin-user-list.id.search');
 
         $this->grid

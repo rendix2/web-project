@@ -3,6 +3,7 @@
 namespace Tests\Functional;
 
 use App\Database\EntityManagerDecorator;
+use Codeception\Attribute\DataProvider;
 use App\Model\Entity\UserEntity;
 use Codeception\Example;
 use PHPUnit\Framework\Assert;
@@ -31,10 +32,14 @@ class InlineEditAjaxCest
     }
 
     /**
-     * @dataProvider pagesProvider
+     * @param Example<int, string> $example
      */
+    #[DataProvider('pagesProvider')]
     public function inlineEditLinksAreAjax(FunctionalTester $I, Example $example) : void
     {
+        $page = $example[0];
+        assert(is_string($page));
+
         $I->amOnPage('/web.user.login/');
         $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'secret']);
 
@@ -43,14 +48,14 @@ class InlineEditAjaxCest
         $user = $em->getRepository(UserEntity::class)->findOneBy(['username' => 'TestUsername']);
         $I->assertNotNull($user);
 
-        $I->amOnPage(str_replace('{user}', (string) $user->uuid, $example[0]));
+        $I->amOnPage(str_replace('{user}', (string) $user->uuid, $page));
         $I->seeResponseCodeIs(200);
 
         preg_match_all('~<a\b[^>]*\bdatagrid-inline-edit-trigger\b[^>]*>~', $I->grabPageSource(), $links);
 
         $plain = array_values(array_filter($links[0], static fn (string $link): bool => preg_match('~\bclass="[^"]*\bajax\b~', $link) !== 1));
 
-        Assert::assertSame([], $plain, 'Inline edit links of ' . $example[0] . ' are not AJAX links (add "ajax" to setClass()).');
+        Assert::assertSame([], $plain, 'Inline edit links of ' . $page . ' are not AJAX links (add "ajax" to setClass()).');
     }
 
     public function userListHasInlineEditLinks(FunctionalTester $I) : void

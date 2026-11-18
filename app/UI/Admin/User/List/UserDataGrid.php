@@ -11,17 +11,20 @@ use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Facade\UserFacade;
 use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
+use App\UI\Grid\IdFilterCondition;
+use App\UI\Grid\SecuredDatagrid;
 use Contributte\Datagrid\Datagrid;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
+use Ramsey\Uuid\Uuid;
 use App\Database\EntityManagerDecorator;
 
 class UserDataGrid
 {
-    private Datagrid $grid;
+    private SecuredDatagrid $grid;
 
     public function __construct(
         private readonly EntityManagerDecorator     $em,
@@ -30,7 +33,7 @@ class UserDataGrid
         private readonly EmailFormControlFactory    $emailFormControlFactory,
     )
     {
-        $this->grid = new Datagrid();
+        $this->grid = new SecuredDatagrid();
     }
 
     public function create() : Datagrid
@@ -62,6 +65,7 @@ class UserDataGrid
             ->setDefaultHide(true)
             ->setSortable(true)
             ->setFilterText()
+            ->setCondition(new IdFilterCondition('_user.id'))
             ->setPlaceholder('admin-user-list.id.search');
 
         $this->grid
@@ -301,7 +305,9 @@ class UserDataGrid
             $uuid = is_array($inlineEditPost) ? ($inlineEditPost['_id'] ?? null) : null;
             $userId = null;
 
-            if ($uuid !== null) {
+            // straight from the request: a malformed uuid never reaches Doctrine (ValueNotConvertible, a 500); SecuredDatagrid
+            // answers the submit with a 404 right after the form is built
+            if (is_string($uuid) && Uuid::isValid($uuid)) {
                 $user = $this->em
                     ->getRepository(UserEntity::class)
                     ->findOneBy(

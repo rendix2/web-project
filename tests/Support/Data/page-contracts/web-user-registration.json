@@ -1,0 +1,66 @@
+{
+    "title": "",
+    "headings": [
+        "Registrace"
+    ],
+    "breadcrumb": [],
+    "navigation": [],
+    "forms": [
+        {
+            "id": "frm-registrationForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "surname",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "username",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "email",
+                    "tag": "input",
+                    "type": "email",
+                    "required": true
+                },
+                {
+                    "name": "password",
+                    "tag": "input",
+                    "type": "password",
+                    "required": true
+                },
+                {
+                    "name": "password2",
+                    "tag": "input",
+                    "type": "password",
+                    "required": true
+                }
+            ],
+            "labels": [
+                "Jméno",
+                "Příjmení",
+                "Uživatelské jméno",
+                "Email",
+                "Heslo",
+                "Heslo pro kontrolu"
+            ],
+            "submit": [
+                "Registrovat"
+            ]
+        }
+    ],
+    "buttons": [
+        "Registrovat"
+    ],
+    "grids": []
+}

@@ -1,0 +1,39 @@
+{
+    "title": "",
+    "headings": [
+        "Editace"
+    ],
+    "breadcrumb": [],
+    "navigation": [],
+    "forms": [
+        {
+            "id": "frm-editForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "surname",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                }
+            ],
+            "labels": [
+                "Jméno",
+                "Příjmení"
+            ],
+            "submit": [
+                "Uložit"
+            ]
+        }
+    ],
+    "buttons": [
+        "Uložit",
+        "Zpět bez uložení"
+    ],
+    "grids": []
+}

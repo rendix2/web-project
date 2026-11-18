@@ -6,6 +6,10 @@ search:
 			- *Grid
 			- *Service
 			- *Mapper
+		# the datagrid component itself (`new SecuredDatagrid()` in every grid), no shared service
+		exclude:
+			classes:
+				- App\UI\Grid\*
 
 services:
     RouterFactory: App\Core\RouterFactory::createRouter

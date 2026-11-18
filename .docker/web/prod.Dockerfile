@@ -27,16 +27,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         intl \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ( \
-    echo "opcache.enable=1"; \
-    echo "opcache.jit_buffer_size=256M"; \
-    echo "opcache.memory_consumption=128"; \
-    echo "opcache.interned_strings_buffer=8"; \
-    echo "opcache.max_accelerated_files=20000"; \
-    echo "opcache.revalidate_freq=0"; \
-    echo "opcache.validate_timestamps=0"; \
-    echo "opcache.fast_shutdown=1"; \
-    ) >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+# OPcache: the same opcache.ini as alfred and family-tree, dev and production
+COPY ./.docker/web/config/opcache.ini /usr/local/etc/php/conf.d/zzz-opcache-custom.ini
 
 # ---- composer dependencies (no-dev, optimized autoloader) ----
 FROM php-base AS composer-build

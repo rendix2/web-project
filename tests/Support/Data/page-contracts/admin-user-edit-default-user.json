@@ -1,0 +1,142 @@
+{
+    "title": "Editace Uživatele TestName TestSurname",
+    "headings": [
+        "TestName TestSurname",
+        "Role",
+        "Emaily",
+        "Historie hesel"
+    ],
+    "breadcrumb": [
+        "Uživatelé",
+        "Editace Uživatele TestName TestSurname"
+    ],
+    "navigation": [
+        "Uživatelé",
+        "Role"
+    ],
+    "forms": [
+        {
+            "id": "frm-editForm",
+            "fields": [
+                {
+                    "name": "name",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "surname",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "username",
+                    "tag": "input",
+                    "type": "text",
+                    "required": true
+                },
+                {
+                    "name": "email",
+                    "tag": "input",
+                    "type": "email",
+                    "required": true
+                },
+                {
+                    "name": "password",
+                    "tag": "input",
+                    "type": "password",
+                    "required": false
+                },
+                {
+                    "name": "password2",
+                    "tag": "input",
+                    "type": "password",
+                    "required": false
+                },
+                {
+                    "name": "isActive",
+                    "tag": "input",
+                    "type": "checkbox",
+                    "required": false
+                }
+            ],
+            "labels": [
+                "Jméno",
+                "Příjmení",
+                "Uživatelské jméno",
+                "Email",
+                "Heslo",
+                "Heslo pro kontrolu",
+                "Aktivní",
+                "Aktivní"
+            ],
+            "submit": [
+                "Uložit"
+            ]
+        }
+    ],
+    "buttons": [
+        "Uložit"
+    ],
+    "grids": {
+        "emailsGrid": {
+            "columns": [
+                "email",
+                "createdAt"
+            ],
+            "headers": [],
+            "sortable": [],
+            "filters": [],
+            "perPage": [
+                "10",
+                "20",
+                "50",
+                "all"
+            ],
+            "rowActions": [],
+            "hasSummary": false
+        },
+        "passwordHistoryGrid": {
+            "columns": [
+                "createdAt"
+            ],
+            "headers": [],
+            "sortable": [],
+            "filters": [],
+            "perPage": [
+                "10",
+                "20",
+                "50",
+                "all"
+            ],
+            "rowActions": [],
+            "hasSummary": false
+        },
+        "rolesGrid": {
+            "columns": [
+                "name"
+            ],
+            "headers": [
+                "Role Skrýt sloupec",
+                "Akce"
+            ],
+            "sortable": [
+                "name"
+            ],
+            "filters": [
+                "name:text"
+            ],
+            "perPage": [
+                "10",
+                "20",
+                "50",
+                "all"
+            ],
+            "rowActions": [
+                " Přidat roli"
+            ],
+            "hasSummary": false
+        }
+    }
+}

@@ -16,7 +16,7 @@ class GridActionButtonsCest
         $checked = 0;
 
         foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(dirname(__DIR__, 2) . '/app/UI', \FilesystemIterator::SKIP_DOTS)) as $file) {
-            if ($file->getExtension() !== 'php') {
+            if (!$file instanceof \SplFileInfo || $file->getExtension() !== 'php') {
                 continue;
             }
 

@@ -50,10 +50,6 @@ class Bootstrap5MarkupCest
                 $content = (string) file_get_contents($file->getPathname());
 
                 foreach (self::BANNED as $pattern => $hint) {
-                    if ($hint === '') {
-                        continue;
-                    }
-
                     if (preg_match($pattern, $content, $match, PREG_OFFSET_CAPTURE) === 1) {
                         $line = substr_count(substr($content, 0, $match[0][1]), "\n") + 1;
                         $found[] = substr($file->getPathname(), strlen($root) + 1) . ':' . $line . ' ' . $match[0][0] . ' (' . $hint . ')';

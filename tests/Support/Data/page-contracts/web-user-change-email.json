@@ -1,0 +1,38 @@
+{
+    "title": "",
+    "headings": [
+        "Změna emailu"
+    ],
+    "breadcrumb": [],
+    "navigation": [],
+    "forms": [
+        {
+            "id": "frm-changeEmailForm",
+            "fields": [
+                {
+                    "name": "currentPassword",
+                    "tag": "input",
+                    "type": "password",
+                    "required": true
+                },
+                {
+                    "name": "email",
+                    "tag": "input",
+                    "type": "email",
+                    "required": true
+                }
+            ],
+            "labels": [
+                "Současné heslo",
+                "Email"
+            ],
+            "submit": [
+                "Změnit email"
+            ]
+        }
+    ],
+    "buttons": [
+        "Změnit email"
+    ],
+    "grids": []
+}

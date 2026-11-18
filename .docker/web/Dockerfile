@@ -39,17 +39,8 @@ RUN docker-php-ext-install -j "$(nproc)" openssl
 RUN apt install libicu-dev -y --fix-missing
 RUN docker-php-ext-install -j "$(nproc)" intl
 
-# Custom Opcache
-RUN ( \
-  echo "opcache.enable=1"; \
-  echo "opcache.jit_buffer_size=256M"; \
-  echo "opcache.memory_consumption=128"; \
-  echo "opcache.interned_strings_buffer=8"; \
-  echo "opcache.max_accelerated_files=20000"; \
-  echo "opcache.revalidate_freq=5"; \
-  echo "opcache.fast_shutdown=1"; \
-  echo "opcache.enable_cli=1"; \
-  ) >> /usr/local/etc/php/conf.d/docker-php-ext-opcache.ini
+# OPcache: the same opcache.ini as alfred and family-tree, dev and production
+COPY ./.docker/web/config/opcache.ini /usr/local/etc/php/conf.d/zzz-opcache-custom.ini
 
 # mod rewrite
 RUN a2enmod rewrite

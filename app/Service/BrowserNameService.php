@@ -14,7 +14,8 @@ class BrowserNameService
 {
     public function __construct(
         private readonly IRequest $request,
-    ) {
+    )
+    {
     }
 
     public function current() : ?string

@@ -1,9 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Web\User\ForgetPassword\Change;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -16,14 +18,11 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
 use Nette\Security\Passwords;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 class ChangePresenter extends Presenter
 {
-
     public function __construct(
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
@@ -34,7 +33,7 @@ class ChangePresenter extends Presenter
         parent::__construct();
     }
 
-    public function actionDefault(string $userId, string $forgetKey): void
+    public function actionDefault(string $userId, string $forgetKey) : void
     {
         /**
          * @var ?UserEntity $userEntity
@@ -68,7 +67,7 @@ class ChangePresenter extends Presenter
                 ->getRepository(UserPasswordRequestEntity::class)
                 ->findBy(
                     [
-                        'user' => $userEntity
+                        'user' => $userEntity,
                     ]
                 );
 
@@ -79,10 +78,6 @@ class ChangePresenter extends Presenter
             $this->em->flush();
             $this->error('Tento odkaz pro obnovu hesla je expirovaný.', IResponse::S403_Forbidden);
         }
-    }
-
-    public function renderDefault(string $userId, string $forgetKey) : void
-    {
     }
 
     public function createComponentChangePasswordForm() : IconBootstrapForm
@@ -123,7 +118,7 @@ class ChangePresenter extends Presenter
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $this->getParameter('userId')
+                    'id' => $this->getParameter('userId'),
                 ]
             );
 
@@ -166,7 +161,7 @@ class ChangePresenter extends Presenter
             ->getRepository(UserPasswordRequestEntity::class)
             ->findOneBy(
                 [
-                    'user' => $userEntity
+                    'user' => $userEntity,
                 ]
             );
 
@@ -178,7 +173,7 @@ class ChangePresenter extends Presenter
             ->getRepository(UserPasswordRequestEntity::class)
             ->findBy(
                 [
-                    'user' => $userEntity
+                    'user' => $userEntity,
                 ]
             );
 
@@ -235,5 +230,4 @@ class ChangePresenter extends Presenter
             $this->redrawControl('flashes');
         }
     }
-
 }

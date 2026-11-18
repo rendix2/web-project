@@ -2,9 +2,9 @@
 
 namespace Tests\Integration;
 
+use App\Database\EntityManagerDecorator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
-use App\Database\EntityManagerDecorator;
 use Tests\Support\IntegrationTester;
 
 /**

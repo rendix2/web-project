@@ -47,7 +47,7 @@ class GridRowPermissionsCest
         $I->assertFalse($this->userExists($I, (string) $other->uuid), 'The hand made delete request does not work at all (the test request is wrong).');
     }
 
-    public function anUnknownOrALinkActionIsNotFound(FunctionalTester $I) : void
+    public function anUnknownOrLinkActionIsNotFound(FunctionalTester $I) : void
     {
         $other = $this->createUser($I);
 
@@ -64,7 +64,6 @@ class GridRowPermissionsCest
     {
         return '/admin.user.list/?' . http_build_query(['grid-__id' => $id, 'grid-__key' => $action, 'do' => 'grid-actionCallback']);
     }
-
 
     private function userExists(FunctionalTester $I, string $uuid) : bool
     {

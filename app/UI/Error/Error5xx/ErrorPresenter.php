@@ -17,7 +17,6 @@ use Tracy\ILogger;
 #[Requires(forward: true)]
 final class ErrorPresenter implements IPresenter
 {
-
     public function __construct(
         private readonly ILogger $logger,
     )
@@ -31,7 +30,7 @@ final class ErrorPresenter implements IPresenter
         $this->logger->log($exception, ILogger::EXCEPTION);
 
         // Display a generic error message to the user
-        return new CallbackResponse(function(IRequest $httpRequest, IResponse $httpResponse) : void {
+        return new CallbackResponse(function (IRequest $httpRequest, IResponse $httpResponse) : void {
             $contentType = (string) $httpResponse->getHeader('Content-Type');
 
             if (preg_match('#^text/html(?:;|$)#', $contentType) === 1) {
@@ -39,5 +38,4 @@ final class ErrorPresenter implements IPresenter
             }
         });
     }
-
 }

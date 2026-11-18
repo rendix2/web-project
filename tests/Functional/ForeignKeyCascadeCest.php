@@ -19,7 +19,7 @@ use Tests\Support\FunctionalTester;
  */
 class ForeignKeyCascadeCest
 {
-    public function deletingAUserRemovesEverythingThatBelongsToHim(FunctionalTester $I) : void
+    public function deletingUserRemovesEverythingThatBelongsToHim(FunctionalTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);

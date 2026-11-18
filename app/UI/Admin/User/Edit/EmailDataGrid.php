@@ -1,7 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Admin\User\Edit;
 
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use App\UI\Grid\IdFilterCondition;
@@ -9,12 +10,10 @@ use App\UI\Grid\SecuredDatagrid;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
 use Nette\Utils\Html;
 
 class EmailDataGrid
 {
-
     private SecuredDatagrid $grid;
 
     private UserEntity $userEntity;
@@ -68,20 +67,16 @@ class EmailDataGrid
         $this->grid
             ->addColumnText('email', 'admin-user-edit.form.email.label')
             ->setRenderer(
-                function(UserEmailEntity $userEmailEntity) : string {
-                    return $userEmailEntity->email;
-                }
+                fn (UserEmailEntity $userEmailEntity) : string => $userEmailEntity->email
             );
 
         $this->grid
             ->addColumnDateTime('createdAt', 'admin-user-edit.emailGrid.createdAt')
             ->setRenderer(
-                function(UserEmailEntity $userEmailEntity) : string {
-                    return $userEmailEntity->createdAt->format('d.m.Y');
-                }
+                fn (UserEmailEntity $userEmailEntity) : string => $userEmailEntity->createdAt->format('d.m.Y')
             );
 
-        $this->grid->setRowCallback(function(UserEmailEntity $item, Html $tr) {
+        $this->grid->setRowCallback(function (UserEmailEntity $item, Html $tr) : void {
             if ($item === $this->userEntity->emails->last()) {
                 $tr->addClass('table-primary');
             }

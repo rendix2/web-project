@@ -2,10 +2,10 @@
 
 namespace Tests\Integration;
 
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEntity;
 use App\Model\Facade\UserFacade;
 use App\UI\Web\User\Registration\RegistrationValues;
-use App\Database\EntityManagerDecorator;
 use Tests\Support\IntegrationTester;
 
 class UserFacadeCest

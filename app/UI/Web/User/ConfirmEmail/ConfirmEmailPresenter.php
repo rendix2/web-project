@@ -2,11 +2,11 @@
 
 namespace App\UI\Web\User\ConfirmEmail;
 
-use stdClass;
 use App\Service\EmailChangeException;
 use App\Service\UserEmailChangeService;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
+use stdClass;
 
 /**
  * The link of the confirmation mail sent to the NEW address of an account (see UserEmailChangeService).
@@ -43,5 +43,4 @@ class ConfirmEmailPresenter extends Presenter
 
         $this->redirect(':Web:User:Login:default');
     }
-
 }

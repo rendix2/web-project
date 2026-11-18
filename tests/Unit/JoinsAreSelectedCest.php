@@ -15,7 +15,7 @@ use Tests\Support\UnitTester;
  */
 class JoinsAreSelectedCest
 {
-    public function theDetectorFindsAJoinThatIsNotSelected(UnitTester $I) : void
+    public function theDetectorFindsJoinThatIsNotSelected(UnitTester $I) : void
     {
         $I->assertCount(1, $this->violations("<?php \$q = \$r->createQueryBuilder('p')->leftJoin('p.town', 't')->getQuery();"));
         // 't' is selected, 'c' is not
@@ -61,7 +61,7 @@ class JoinsAreSelectedCest
         foreach (explode(';', $source) as $statement) {
             if (preg_match_all("~->(?:inner|left)?[Jj]oin\\(\\s*'([^']+)'\\s*,\\s*'([^']+)'~", $statement, $joins, PREG_SET_ORDER | PREG_OFFSET_CAPTURE) > 0
                 && !str_contains($statement, '@join-filter-only')) {
-                preg_match_all("~(?:addSelect|->select)\\(([^;]*?)\\)\\s*(?=->|$)~s", $statement, $selects);
+                preg_match_all('~(?:addSelect|->select)\\(([^;]*?)\\)\\s*(?=->|$)~s', $statement, $selects);
                 $arguments = implode(' ', $selects[1]);
                 preg_match_all("~'([^']*)'~", $arguments, $quoted);
                 $scalar = false;

@@ -58,6 +58,4 @@ final class Version20241102092516 extends AbstractMigration
     {
         $schema->dropTable('public.user_activation');
     }
-
 }
-

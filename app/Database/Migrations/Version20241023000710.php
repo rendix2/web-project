@@ -14,7 +14,6 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20241023000710 extends AbstractMigration
 {
-
     public function up(Schema $schema) : void
     {
         $table = $schema->createTable('public.user_password');
@@ -51,6 +50,4 @@ final class Version20241023000710 extends AbstractMigration
     {
         $schema->dropTable('public.user_password');
     }
-
 }
-

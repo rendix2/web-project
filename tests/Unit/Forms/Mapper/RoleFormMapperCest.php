@@ -39,7 +39,7 @@ class RoleFormMapperCest
         $I->assertSame('kept', $role->description, 'The form has no description: it is left alone.');
     }
 
-    public function aCreateBuildsANewRoleWithAnEmptyDescription(UnitTester $I) : void
+    public function createBuildsNewRoleWithAnEmptyDescription(UnitTester $I) : void
     {
         $values = new CreateRoleValues();
         $values->name = 'Editor';

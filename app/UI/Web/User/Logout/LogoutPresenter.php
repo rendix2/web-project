@@ -2,10 +2,10 @@
 
 namespace App\UI\Web\User\Logout;
 
-use stdClass;
 use App\Core\AutoLoginService;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
+use stdClass;
 
 class LogoutPresenter extends Presenter
 {
@@ -37,5 +37,4 @@ class LogoutPresenter extends Presenter
         $this->flashMessage($flash);
         $this->redirect(':Web:User:Login:default');
     }
-
 }

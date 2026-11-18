@@ -2,18 +2,17 @@
 
 namespace App\PHPStan\Doctrine\Types;
 
-use PHPStan\Type\Type;
+use App\Database\Types\IpAddressType;
+use PHPStan\Type\Doctrine\Descriptors\DoctrineTypeDescriptor;
 use PHPStan\Type\StringType;
-use PHPStan\Type\NullType;
-use PHPStan\Type\UnionType;
+use PHPStan\Type\Type;
 
-class IpAddressTypeDescriptor implements \PHPStan\Type\Doctrine\Descriptors\DoctrineTypeDescriptor
+class IpAddressTypeDescriptor implements DoctrineTypeDescriptor
 {
-
     #[\Override]
     public function getType() : string
     {
-        return \App\Database\Types\IpAddressType::class;
+        return IpAddressType::class;
     }
 
     #[\Override]

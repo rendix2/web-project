@@ -78,7 +78,7 @@ class AdminNavigationCest
         $I->seeElement('//nav[@aria-label="breadcrumb"]//li[contains(@class, "active")][@aria-current="page"]');
     }
 
-    public function navigationIsNotRenderedByAMenuComponent(FunctionalTester $I) : void
+    public function navigationIsNotRenderedByMenuComponent(FunctionalTester $I) : void
     {
         $this->login($I);
         $I->amOnPage('/admin.user.list/');
@@ -93,5 +93,4 @@ class AdminNavigationCest
         $I->submitForm('#frm-loginForm', ['username' => 'TestUsername', 'password' => 'secret']);
         $I->seeResponseCodeIs(200);
     }
-
 }

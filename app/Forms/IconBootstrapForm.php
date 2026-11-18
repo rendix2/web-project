@@ -16,5 +16,4 @@ class IconBootstrapForm extends BootstrapForm
 
         $this->setRenderer(new IconBootstrapRenderer());
     }
-
 }

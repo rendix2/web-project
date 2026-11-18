@@ -9,9 +9,7 @@ namespace App\UI\Web\User\Edit;
  */
 final class EditUserProfileValues
 {
-
     public string $name;
 
     public string $surname;
-
 }

@@ -48,5 +48,4 @@ final class Version20241027231012 extends AbstractMigration
     {
         $schema->dropTable('public.user_role');
     }
-
 }

@@ -56,5 +56,4 @@ final class Version20241104124958 extends AbstractMigration
     {
         $schema->dropTable('public.user_email');
     }
-
 }

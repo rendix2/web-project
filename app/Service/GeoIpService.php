@@ -40,12 +40,12 @@ class GeoIpService
     /**
      * @return array{country: string, city: string}
      */
-    public function getInfo(string $ip): array
+    public function getInfo(string $ip) : array
     {
         if ($this->isLocalIp($ip)) {
             return [
                 'country' => 'Local',
-                'city' => 'Local'
+                'city' => 'Local',
             ];
         }
 
@@ -60,13 +60,13 @@ class GeoIpService
         if ($cache !== null && $cache->updatedAt > new DateTimeImmutable('-7 days')) {
             return [
                 'country' => $cache->countryCode,
-                'city' => $cache->city
+                'city' => $cache->city,
             ];
         }
 
         try {
             $response = $this->client->request('GET', rawurlencode($ip), [
-                'query' => ['fields' => 'success,country_code,city']
+                'query' => ['fields' => 'success,country_code,city'],
             ]);
             $data = Json::decode($response->getBody()->getContents(), true);
 
@@ -85,7 +85,7 @@ class GeoIpService
 
                 return [
                     'country' => $cache->countryCode,
-                    'city' => $cache->city
+                    'city' => $cache->city,
                 ];
             }
         } catch (Throwable $exception) {
@@ -96,20 +96,20 @@ class GeoIpService
         if ($cache !== null) {
             return [
                 'country' => $cache->countryCode,
-                'city' => $cache->city
+                'city' => $cache->city,
             ];
         }
 
         return [
             'country' => '??',
-            'city' => '??'
+            'city' => '??',
         ];
     }
 
     /**
      * Loopback, private (10/8, 172.16/12, 192.168/16, fc00::/7) and reserved ranges, and anything that is not an IP address.
      */
-    private function isLocalIp(string $ip): bool
+    private function isLocalIp(string $ip) : bool
     {
         if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
             return true;

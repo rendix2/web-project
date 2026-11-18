@@ -133,8 +133,12 @@ class UserFormsCest
     {
         $I->amOnPage('/web.user.registration/');
         $I->submitForm('#frm-registrationForm', [
-            'name' => 'Reg', 'surname' => 'Test', 'username' => 'regtest' . $tag, 'email' => 'regtest' . $tag . '@example.com',
-            'password' => self::PASSWORD, 'password2' => self::PASSWORD,
+            'name' => 'Reg',
+            'surname' => 'Test',
+            'username' => 'regtest' . $tag,
+            'email' => 'regtest' . $tag . '@example.com',
+            'password' => self::PASSWORD,
+            'password2' => self::PASSWORD,
         ]);
 
         $user = $this->findUser($I, 'regtest' . $tag);

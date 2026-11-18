@@ -11,7 +11,6 @@ use InvalidArgumentException;
 
 class UserLoginAttemptCheckService
 {
-
     private int $maxAttempts;
 
     private int $lockTimeSeconds;
@@ -20,12 +19,13 @@ class UserLoginAttemptCheckService
         private readonly EntityManagerDecorator $em,
         private readonly GeoIpService           $geoIpService,
         private readonly BrowserNameService     $browserName,
-    ) {
+    )
+    {
         $this->maxAttempts = 5;
         $this->lockTimeSeconds = 900;
     }
 
-    public function logAttempt(string $username, string $ipAddress): void
+    public function logAttempt(string $username, string $ipAddress) : void
     {
         if (filter_var($ipAddress, FILTER_VALIDATE_IP) === false) {
             throw new InvalidArgumentException("Neplatná IP adresa: $ipAddress");
@@ -43,7 +43,7 @@ class UserLoginAttemptCheckService
         $this->em->flush();
     }
 
-    public function isIpBlocked(string $ipAddress): bool
+    public function isIpBlocked(string $ipAddress) : bool
     {
         $since = new DateTimeImmutable("-{$this->lockTimeSeconds} seconds");
 
@@ -69,7 +69,7 @@ class UserLoginAttemptCheckService
         return $count >= $this->maxAttempts;
     }
 
-    public function isUserNameBlocked(string $username): bool
+    public function isUserNameBlocked(string $username) : bool
     {
         $since = new DateTimeImmutable("-{$this->lockTimeSeconds} seconds");
 
@@ -115,5 +115,4 @@ class UserLoginAttemptCheckService
     {
         return mb_strtolower($username);
     }
-
 }

@@ -9,18 +9,17 @@ use Doctrine\Persistence\ObjectManager;
 
 class RoleFixture implements FixtureInterface, OrderedFixtureInterface
 {
-
     public function load(ObjectManager $manager) : void
     {
         $roleEntity = new RoleEntity();
-        $roleEntity->name = "Normal";
+        $roleEntity->name = 'Normal';
         $roleEntity->description = 'Normal role for normal users';
 
         $manager->persist($roleEntity);
         $manager->flush();
 
         $roleEntity = new RoleEntity();
-        $roleEntity->name = "Admin";
+        $roleEntity->name = 'Admin';
         $roleEntity->description = 'Admin role. This role can do everything!';
 
         $manager->persist($roleEntity);
@@ -31,5 +30,4 @@ class RoleFixture implements FixtureInterface, OrderedFixtureInterface
     {
         return 0;
     }
-
 }

@@ -8,12 +8,11 @@ use Nette\StaticClass;
 
 final class RouterFactory
 {
-
     use StaticClass;
 
     public static function createRouter() : RouteList
     {
-        $router = new RouteList;
+        $router = new RouteList();
 
         $router->addRoute('<presenter>/<action>/<uuid>', [
                 'presenter' => 'Web:Home',
@@ -21,8 +20,7 @@ final class RouterFactory
                 'uuid' => [
                     Route::Pattern => '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}',
                 ],
-            ]
-        );
+            ]);
 
         $router->addRoute('<presenter>/<action>/<id>', [
                 'presenter' => 'Web:Home',
@@ -30,12 +28,10 @@ final class RouterFactory
                 'id' => [
                     Route::Pattern => '\d+',
                 ],
-            ]
-        );
+            ]);
 
         $router->addRoute('<presenter>/<action>', 'Web:Home:default');
 
         return $router;
     }
-
 }

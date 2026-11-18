@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'user_activation')]
 class UserActivationEntity
 {
-
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
@@ -32,7 +31,6 @@ class UserActivationEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Key is valid until'])]
     public DateTimeImmutable $validUntil;
 
-
     #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
@@ -45,5 +43,4 @@ class UserActivationEntity
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
-
 }

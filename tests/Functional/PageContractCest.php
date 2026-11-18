@@ -20,37 +20,6 @@ use Tests\Support\Grid\PageContract;
 class PageContractCest
 {
     /**
-     * @return array<string, array{0: string, 1: string}> url, role
-     */
-    protected function pagesProvider() : array
-    {
-        $pages = [
-            '/' => FunctionalTester::ROLE_ANONYMOUS,
-            '/web.user.login/' => FunctionalTester::ROLE_ANONYMOUS,
-            '/web.user.registration/' => FunctionalTester::ROLE_ANONYMOUS,
-            '/web.user.forget-password.request/' => FunctionalTester::ROLE_ANONYMOUS,
-            '/web.user.view/default/{user}' => FunctionalTester::ROLE_ADMIN,
-            '/web.user.edit/' => FunctionalTester::ROLE_ADMIN,
-            '/web.user.change-password/' => FunctionalTester::ROLE_ADMIN,
-            '/web.user.change-email/' => FunctionalTester::ROLE_ADMIN,
-            '/admin.user.list/' => FunctionalTester::ROLE_ADMIN,
-            '/admin.user.create/' => FunctionalTester::ROLE_ADMIN,
-            '/admin.user.edit/default/{user}' => FunctionalTester::ROLE_ADMIN,
-            '/admin.role.list/' => FunctionalTester::ROLE_ADMIN,
-            '/admin.role.create/' => FunctionalTester::ROLE_ADMIN,
-            '/admin.role.edit/default/{role}' => FunctionalTester::ROLE_ADMIN,
-        ];
-
-        $examples = [];
-
-        foreach ($pages as $url => $role) {
-            $examples[$url] = [$url, $role];
-        }
-
-        return $examples;
-    }
-
-    /**
      * @param Example<int, string> $example
      */
     #[DataProvider('pagesProvider')]
@@ -81,6 +50,37 @@ class PageContractCest
         }
 
         $I->assertSame((string) file_get_contents($file), $json, 'The contract of ' . $page . ' changed (' . basename($file) . ').');
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string}> url, role
+     */
+    protected function pagesProvider() : array
+    {
+        $pages = [
+            '/' => FunctionalTester::ROLE_ANONYMOUS,
+            '/web.user.login/' => FunctionalTester::ROLE_ANONYMOUS,
+            '/web.user.registration/' => FunctionalTester::ROLE_ANONYMOUS,
+            '/web.user.forget-password.request/' => FunctionalTester::ROLE_ANONYMOUS,
+            '/web.user.view/default/{user}' => FunctionalTester::ROLE_ADMIN,
+            '/web.user.edit/' => FunctionalTester::ROLE_ADMIN,
+            '/web.user.change-password/' => FunctionalTester::ROLE_ADMIN,
+            '/web.user.change-email/' => FunctionalTester::ROLE_ADMIN,
+            '/admin.user.list/' => FunctionalTester::ROLE_ADMIN,
+            '/admin.user.create/' => FunctionalTester::ROLE_ADMIN,
+            '/admin.user.edit/default/{user}' => FunctionalTester::ROLE_ADMIN,
+            '/admin.role.list/' => FunctionalTester::ROLE_ADMIN,
+            '/admin.role.create/' => FunctionalTester::ROLE_ADMIN,
+            '/admin.role.edit/default/{role}' => FunctionalTester::ROLE_ADMIN,
+        ];
+
+        $examples = [];
+
+        foreach ($pages as $url => $role) {
+            $examples[$url] = [$url, $role];
+        }
+
+        return $examples;
     }
 
     private function resolve(FunctionalTester $I, string $url) : string

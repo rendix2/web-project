@@ -2,11 +2,11 @@
 
 namespace Tests\Acceptance;
 
-use Codeception\Util\Locator;
-use Codeception\Attribute\DataProvider;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
+use Codeception\Attribute\DataProvider;
 use Codeception\Example;
+use Codeception\Util\Locator;
 use PHPUnit\Framework\Assert;
 use Tests\Support\AcceptanceTester;
 
@@ -16,15 +16,6 @@ use Tests\Support\AcceptanceTester;
  */
 class InlineEditKeepsRowsCest
 {
-    /**
-     * @return array<string, array{0: string}>
-     */
-    protected function pagesProvider() : array
-    {
-        // the user list has a single fixture user (the edit link of its grid is checked by Functional/InlineEditAjaxCest)
-        return ['/admin.role.list/' => ['/admin.role.list/']];
-    }
-
     /**
      * @param Example<int, string> $example
      */
@@ -80,6 +71,15 @@ class InlineEditKeepsRowsCest
 
             $em->flush();
         }
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    protected function pagesProvider() : array
+    {
+        // the user list has a single fixture user (the edit link of its grid is checked by Functional/InlineEditAjaxCest)
+        return ['/admin.role.list/' => ['/admin.role.list/']];
     }
 
     private function rowCount(AcceptanceTester $I, string $script) : int

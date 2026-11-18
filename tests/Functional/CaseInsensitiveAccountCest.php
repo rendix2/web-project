@@ -38,8 +38,12 @@ class CaseInsensitiveAccountCest
 
         $I->amOnPage('/web.user.registration/');
         $I->submitForm('#frm-registrationForm', [
-            'name' => 'Reg', 'surname' => 'Test', 'username' => strtoupper($user->username), 'email' => 'other' . $tag . '@example.com',
-            'password' => self::PASSWORD, 'password2' => self::PASSWORD,
+            'name' => 'Reg',
+            'surname' => 'Test',
+            'username' => strtoupper($user->username),
+            'email' => 'other' . $tag . '@example.com',
+            'password' => self::PASSWORD,
+            'password2' => self::PASSWORD,
         ]);
         $I->seeResponseCodeIs(200);
 
@@ -53,8 +57,12 @@ class CaseInsensitiveAccountCest
 
         $I->amOnPage('/web.user.registration/');
         $I->submitForm('#frm-registrationForm', [
-            'name' => 'Reg', 'surname' => 'Test', 'username' => 'casemailother' . $tag, 'email' => strtoupper($user->email),
-            'password' => self::PASSWORD, 'password2' => self::PASSWORD,
+            'name' => 'Reg',
+            'surname' => 'Test',
+            'username' => 'casemailother' . $tag,
+            'email' => strtoupper($user->email),
+            'password' => self::PASSWORD,
+            'password2' => self::PASSWORD,
         ]);
         $I->seeResponseCodeIs(200);
 
@@ -69,8 +77,12 @@ class CaseInsensitiveAccountCest
 
         $I->amOnPage('/web.user.registration/');
         $I->submitForm('#frm-registrationForm', [
-            'name' => 'Reg', 'surname' => 'Test', 'username' => 'caseshort' . $tag, 'email' => 'Mixed.Case' . $tag . '@Example.COM',
-            'password' => self::PASSWORD, 'password2' => self::PASSWORD,
+            'name' => 'Reg',
+            'surname' => 'Test',
+            'username' => 'caseshort' . $tag,
+            'email' => 'Mixed.Case' . $tag . '@Example.COM',
+            'password' => self::PASSWORD,
+            'password2' => self::PASSWORD,
         ]);
 
         $em = $this->em($I);
@@ -136,5 +148,4 @@ class CaseInsensitiveAccountCest
 
         return $em;
     }
-
 }

@@ -39,5 +39,4 @@ class UserPasswordEntity
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
-
 }

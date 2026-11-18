@@ -64,7 +64,7 @@ class UserFormMapperCest
         $I->assertSame('hash', $user->password, 'The password is the facade\'s business (hashing, history).');
     }
 
-    public function aCreateBuildsANewUser(UnitTester $I) : void
+    public function createBuildsNewUser(UnitTester $I) : void
     {
         $values = new CreateUserValues();
         $values->name = 'Created';

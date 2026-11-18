@@ -5,12 +5,12 @@ namespace App\PHPStan\Rules;
 use PhpParser\Node;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
+use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Type\ObjectType;
-use PHPStan\Type\Type;
+
 // OPRAVA: Používáme správnou třídu a metody pro VerbosityLevel
-use PHPStan\Type\VerbosityLevel;
 
 /**
  * @implements Rule<MethodCall>
@@ -22,6 +22,9 @@ final class FlashMessageStdClassRule implements Rule
         return MethodCall::class;
     }
 
+    /**
+     * @return list<IdentifierRuleError>
+     */
     public function processNode(Node $node, Scope $scope) : array
     {
         if (!$node->name instanceof Node\Identifier || $node->name->toString() !== 'flashMessage') {

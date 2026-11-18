@@ -20,7 +20,7 @@ class LoginLogoutCest
 {
     private const PASSWORD = 'Abcdefgh1234!x';
 
-    public function stayingLoggedInPersistsAcrossANewBrowserSession(FunctionalTester $I) : void
+    public function stayingLoggedInPersistsAcrossNewBrowserSession(FunctionalTester $I) : void
     {
         $userEntity = $this->createActiveUser($I, 'stay');
 

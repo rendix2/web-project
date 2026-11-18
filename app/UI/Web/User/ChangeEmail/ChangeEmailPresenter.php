@@ -2,22 +2,22 @@
 
 namespace App\UI\Web\User\ChangeEmail;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
 use App\Forms\EmailFormControlFactory;
+use App\Forms\IconBootstrapForm;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserEntity;
+use App\Service\UserEmailChangeService;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
+use Nette\Application\AbortException;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
-use App\Database\EntityManagerDecorator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
-use App\Service\UserEmailChangeService;
-use Nette\Application\AbortException;
+use stdClass;
 use Throwable;
 use Tracy\Debugger;
 use Tracy\ILogger;
@@ -29,7 +29,6 @@ use Tracy\ILogger;
  */
 class ChangeEmailPresenter extends Presenter
 {
-
     public function __construct(
         private readonly EntityManagerDecorator     $em,
         private readonly Translator                 $translator,
@@ -37,7 +36,8 @@ class ChangeEmailPresenter extends Presenter
         private readonly UserEmailChangeService     $emailChangeService,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -46,7 +46,6 @@ class ChangeEmailPresenter extends Presenter
         if (!$this->getUser()->isLoggedIn()) {
             $this->error('Pro změnu e-mailu musíte být přihlášeni.', IResponse::S403_Forbidden);
         }
-
     }
 
     public function createComponentChangeEmailForm() : IconBootstrapForm
@@ -57,7 +56,8 @@ class ChangeEmailPresenter extends Presenter
         $form->setTranslator($this->translator);
 
         $form->addComponent(
-            $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')), 'currentPassword',
+            $this->passwordFormControlFactory->create((string) $this->translator->translate('web-user-changePassword.form.currentPassword.label')),
+            'currentPassword',
         );
 
         $emailControl = $this->emailFormControlFactory->create((string) $this->translator->translate('admin-user-edit.form.email.label'));
@@ -150,5 +150,4 @@ class ChangeEmailPresenter extends Presenter
             $this->redrawControl('flashes');
         }
     }
-
 }

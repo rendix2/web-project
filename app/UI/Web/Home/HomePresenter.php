@@ -6,9 +6,4 @@ use Nette\Application\UI\Presenter;
 
 class HomePresenter extends Presenter
 {
-
-    public function actionDefault() : void
-    {
-    }
-
 }

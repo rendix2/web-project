@@ -18,21 +18,15 @@ use Tests\Support\IntegrationTester;
  */
 class ForeignKeyOnDeleteCest
 {
-    /**
-     * @var list<array{table: non-empty-string, column: string, referencedTable: string, onDelete: string}>
-     */
+    /** @var list<array{table: non-empty-string, column: string, referencedTable: string, onDelete: string}> */
     private array $contract;
 
-    /**
-     * @var list<non-empty-string>
-     */
+    /** @var list<non-empty-string> */
     private array $guardedTables;
 
     private EntityManagerDecorator $em;
 
-    /**
-     * @var list<ClassMetadata<object>>
-     */
+    /** @var list<ClassMetadata<object>> */
     private array $allMetadata;
 
     public function _before(IntegrationTester $I) : void
@@ -100,10 +94,13 @@ class ForeignKeyOnDeleteCest
             if (preg_match('/^\s*ALTER\s+TABLE\s+' . $tablePattern . '\s/i', $sql) !== 1) {
                 continue;
             }
+
             if (preg_match('/FOREIGN\s+KEY/i', $sql) === 1) {
                 $offending[] = $sql;
+
                 continue;
             }
+
             if (preg_match_all('/DROP\s+CONSTRAINT\s+(?:IF\s+EXISTS\s+)?"?([A-Za-z0-9_]+)"?/i', $sql, $matches) > 0) {
                 foreach ($matches[1] as $constraintName) {
                     $lower = strtolower($constraintName);
@@ -138,6 +135,7 @@ class ForeignKeyOnDeleteCest
                     break;
                 }
             }
+
             $I->assertNotNull($found, "$label: no single-column foreign key on this column in the database");
 
             $referencedTable = strtolower($found->getReferencedTableName()->getUnqualifiedName()->getValue());
@@ -156,6 +154,7 @@ class ForeignKeyOnDeleteCest
                         $nullable = !$column->getNotnull();
                     }
                 }
+
                 $I->assertTrue($nullable, "$label: ON DELETE SET NULL needs a nullable column in the database");
             }
         }
@@ -173,6 +172,7 @@ class ForeignKeyOnDeleteCest
             if ($meta->getTableName() !== $table) {
                 continue;
             }
+
             foreach ($meta->associationMappings as $fieldName => $association) {
                 if ($association instanceof ToOneOwningSideMapping && $this->findJoinColumn($association, $column) !== null) {
                     $hits[] = [$meta, $fieldName];

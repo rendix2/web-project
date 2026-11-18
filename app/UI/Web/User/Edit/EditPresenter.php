@@ -2,7 +2,9 @@
 
 namespace App\UI\Web\User\Edit;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
@@ -12,9 +14,7 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 /**
  * class EditPresenter
@@ -23,11 +23,11 @@ use App\Forms\Renderer\IconBootstrapRenderer;
  */
 class EditPresenter extends Presenter
 {
-
     public function __construct(
         private readonly EntityManagerDecorator $em,
         private readonly Translator             $translator,
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -55,31 +55,6 @@ class EditPresenter extends Presenter
                 'surname' => $userEntity->surname,
             ]
         );
-    }
-
-    protected function createComponentEditForm() : IconBootstrapForm
-    {
-        $form = new IconBootstrapForm();
-        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
-
-        $form->setTranslator($this->translator);
-
-        $form->addText('name', 'admin-user-edit.form.name.label')
-            ->setRequired('admin-user-edit.form.name.required')
-            ->setMaxLength(512)
-            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
-
-        $form->addText('surname', 'admin-user-edit.form.surname.label')
-            ->setRequired('admin-user-edit.form.surname.required')
-            ->setMaxLength(512)
-            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
-
-        $form->addSubmit('send', 'web-user-edit.form.submit.label')
-            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
-
-        $form->onSuccess[] = [$this, 'editFormSuccess'];
-
-        return $form;
     }
 
     public function editFormSuccess(Form $form) : void
@@ -125,4 +100,28 @@ class EditPresenter extends Presenter
         }
     }
 
+    protected function createComponentEditForm() : IconBootstrapForm
+    {
+        $form = new IconBootstrapForm();
+        BootstrapForm::switchBootstrapVersion(BootstrapVersion::V5);
+
+        $form->setTranslator($this->translator);
+
+        $form->addText('name', 'admin-user-edit.form.name.label')
+            ->setRequired('admin-user-edit.form.name.required')
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
+
+        $form->addText('surname', 'admin-user-edit.form.surname.label')
+            ->setRequired('admin-user-edit.form.surname.required')
+            ->setMaxLength(512)
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-id-card');
+
+        $form->addSubmit('send', 'web-user-edit.form.submit.label')
+            ->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
+
+        $form->onSuccess[] = [$this, 'editFormSuccess'];
+
+        return $form;
+    }
 }

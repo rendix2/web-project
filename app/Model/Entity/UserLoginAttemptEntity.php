@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'user_login_attempt')]
 class UserLoginAttemptEntity
 {
-
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::BIGINT, unique: true, options: ['comment' => 'ID'])]
@@ -43,5 +42,4 @@ class UserLoginAttemptEntity
 
         $this->createdAt = new DateTimeImmutable();
     }
-
 }

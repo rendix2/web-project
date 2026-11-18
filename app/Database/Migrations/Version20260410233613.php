@@ -15,12 +15,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20260410233613 extends AbstractMigration
 {
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return '';
     }
 
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         $table = $schema->createTable('public.geo_ip_cache');
 
@@ -54,7 +54,7 @@ final class Version20260410233613 extends AbstractMigration
             ->setComment('Geo IP Cache');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         $schema->dropTable('public.geo_ip_cache');
     }

@@ -2,6 +2,7 @@
 
 namespace App\PHPStan\Codeception;
 
+use Codeception\Actor;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -15,11 +16,10 @@ use PHPStan\Type\Type;
  */
 class GrabServiceReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {
-
     #[\Override]
     public function getClass() : string
     {
-        return \Codeception\Actor::class;
+        return Actor::class;
     }
 
     #[\Override]
@@ -45,5 +45,4 @@ class GrabServiceReturnTypeExtension implements DynamicMethodReturnTypeExtension
 
         return $classType;
     }
-
 }

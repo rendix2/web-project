@@ -67,7 +67,7 @@ class EmailChangeConfirmationCest
         $I->assertStringNotContainsString('confirm-email', $toOld->body, 'The warning to the old address must not hold the confirmation link.');
     }
 
-    public function theTokenIsStoredOnlyAsAHash(FunctionalTester $I) : void
+    public function theTokenIsStoredOnlyAsHash(FunctionalTester $I) : void
     {
         $user = $this->createUserAndLogin($I, 'echash');
         $newEmail = $this->newEmail($user);
@@ -162,7 +162,7 @@ class EmailChangeConfirmationCest
         $I->assertSame($user->email, $this->reload($I, $user)->email, 'The link of the replaced request still works.');
     }
 
-    public function aWrongPasswordDoesNotCreateARequest(FunctionalTester $I) : void
+    public function wrongPasswordDoesNotCreateRequest(FunctionalTester $I) : void
     {
         $user = $this->createUserAndLogin($I, 'ecpass');
         $newEmail = $this->newEmail($user);
@@ -304,5 +304,4 @@ class EmailChangeConfirmationCest
 
         return $em;
     }
-
 }

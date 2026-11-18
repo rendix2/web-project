@@ -13,7 +13,10 @@ namespace App\UI\Admin\User\List;
 final class UserInlineEditValues
 {
     public string $fullName;
+
     public string $username;
+
     public string $email;
+
     public int|string|bool|null $isActive;
 }

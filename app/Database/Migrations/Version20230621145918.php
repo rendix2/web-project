@@ -15,7 +15,6 @@ use Ramsey\Uuid\Doctrine\UuidType;
  */
 final class Version20230621145918 extends AbstractMigration
 {
-
     public function getDescription() : string
     {
         return 'create user table';
@@ -62,7 +61,6 @@ final class Version20230621145918 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Updated at');
 
-
         $primaryKey = new PrimaryKeyConstraintEditor();
         $primaryKey->setIsClustered(false);
         $primaryKey->setColumnNames(new UnqualifiedName(Identifier::unquoted('id')));
@@ -80,5 +78,4 @@ final class Version20230621145918 extends AbstractMigration
     {
         $schema->dropTable('public.users');
     }
-
 }

@@ -2,9 +2,10 @@
 
 namespace App\UI\Web\User\Registration;
 
-use stdClass;
 use App\Forms\EmailFormControlFactory;
+use App\Forms\IconBootstrapForm;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Facade\UserFacade;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -12,9 +13,8 @@ use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\Translation\Translator;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use stdClass;
 use Throwable;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 class RegistrationPresenter extends Presenter
 {
@@ -27,10 +27,6 @@ class RegistrationPresenter extends Presenter
     )
     {
         parent::__construct();
-    }
-
-    public function actionDefault() : void
-    {
     }
 
     public function createComponentRegistrationForm() : IconBootstrapForm
@@ -70,7 +66,7 @@ class RegistrationPresenter extends Presenter
             ->addRule(Form::MinLength, $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
             ->addConditionOn($passwordControl, Form::Filled, true)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
+            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addSubmit('send', 'web-user-registration.form.submit.label')
@@ -106,5 +102,4 @@ class RegistrationPresenter extends Presenter
             $this->redrawControl('flashes');
         }
     }
-
 }

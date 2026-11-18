@@ -52,5 +52,4 @@ class AutoLoginAuthenticator implements Authenticator
             ],
         );
     }
-
 }

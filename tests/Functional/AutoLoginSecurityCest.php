@@ -107,7 +107,7 @@ class AutoLoginSecurityCest
         $I->dontSeeElement('#admin-navigation');
     }
 
-    public function deactivatingAUserEndsHisSessionAtTheNextRequest(FunctionalTester $I) : void
+    public function deactivatingUserEndsHisSessionAtTheNextRequest(FunctionalTester $I) : void
     {
         $user = $this->createUser($I, 'session');
 
@@ -127,7 +127,7 @@ class AutoLoginSecurityCest
         $I->dontSeeElement('#frm-editForm');
     }
 
-    public function deactivatingAUserInTheAdminDeletesHisTokens(FunctionalTester $I) : void
+    public function deactivatingUserInTheAdminDeletesHisTokens(FunctionalTester $I) : void
     {
         $user = $this->createUser($I, 'facade');
         $this->loginAndStay($I, $user);
@@ -219,5 +219,4 @@ class AutoLoginSecurityCest
 
         return $em;
     }
-
 }

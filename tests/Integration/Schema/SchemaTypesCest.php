@@ -51,6 +51,7 @@ class SchemaTypesCest
                 if ($expected === null || $actual === null || in_array($actual, $expected, true)) {
                     continue;
                 }
+
                 $wrong[] = $this->schema->label($meta, $field, $mapping->columnName)
                     . ': expected ' . implode(' or ', $expected) . " ({$mapping->type}), got $actual";
             }
@@ -70,6 +71,7 @@ class SchemaTypesCest
                 if ($mapping->type !== Types::BIGINT) {
                     continue;
                 }
+
                 $type = $this->property($meta, $field)->getType();
                 if (!$type instanceof ReflectionNamedType || $type->getName() !== 'int') {
                     $wrong[] = $this->schema->label($meta, $field, $mapping->columnName)
@@ -96,6 +98,7 @@ class SchemaTypesCest
                 if ($type === null && $mapping->type === Types::BLOB) {
                     continue;
                 }
+
                 $problem = $this->nullabilityProblem($mapping->nullable ?? false, $type?->allowsNull(), (string) $type);
                 if ($problem !== null) {
                     $wrong[] = $this->schema->label($meta, $field, $mapping->columnName) . ': ' . $problem;
@@ -106,6 +109,7 @@ class SchemaTypesCest
                 if (!$association->isToOneOwningSide()) {
                     continue;
                 }
+
                 $nullable = false;
                 $columns = [];
                 foreach ($association->joinColumns as $joinColumn) {
@@ -113,6 +117,7 @@ class SchemaTypesCest
                     $nullable = $nullable || ($joinColumn->nullable ?? true);
                     $columns[] = $joinColumn->name;
                 }
+
                 $type = $this->property($meta, $field)->getType();
                 $problem = $this->nullabilityProblem($nullable, $type?->allowsNull(), (string) $type);
                 if ($problem !== null) {
@@ -129,6 +134,7 @@ class SchemaTypesCest
         if ($phpNullable === null) {
             return 'expected a typed property, got no type';
         }
+
         if ($mappedNullable === $phpNullable) {
             return null;
         }

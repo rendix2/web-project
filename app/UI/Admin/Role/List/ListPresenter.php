@@ -3,7 +3,6 @@
 namespace App\UI\Admin\Role\List;
 
 use App\UI\Admin\AdminBasePresenter;
-use App\UI\Admin\User\List\UserDataGrid;
 use Contributte\Datagrid\Datagrid;
 
 /**
@@ -13,7 +12,6 @@ use Contributte\Datagrid\Datagrid;
  */
 class ListPresenter extends AdminBasePresenter
 {
-
     public function __construct(
         private readonly RoleDataGrid         $roleDataGrid,
     )
@@ -21,14 +19,8 @@ class ListPresenter extends AdminBasePresenter
         parent::__construct();
     }
 
-    public function actionDefault() : void
-    {
-    }
-
-
     protected function createComponentGrid() : Datagrid
     {
         return $this->roleDataGrid->create();
     }
-
 }

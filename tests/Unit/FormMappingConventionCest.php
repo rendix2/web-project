@@ -10,7 +10,7 @@ use Tests\Support\UnitTester;
  */
 class FormMappingConventionCest
 {
-    public function everyMapperHasAUnitTest(UnitTester $I) : void
+    public function everyMapperHasUnitTest(UnitTester $I) : void
     {
         $missing = [];
 

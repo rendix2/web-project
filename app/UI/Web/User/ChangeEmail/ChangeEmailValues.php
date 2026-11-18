@@ -9,9 +9,7 @@ namespace App\UI\Web\User\ChangeEmail;
  */
 final class ChangeEmailValues
 {
-
     public string $currentPassword;
 
     public string $email;
-
 }

@@ -2,11 +2,12 @@
 
 namespace App\UI\Admin\User\Create;
 
-use stdClass;
-use App\Core\AutoLoginAuthenticator;
+use App\Database\EntityManagerDecorator;
 use App\Forms\EmailFormControlFactory;
+use App\Forms\IconBootstrapForm;
 use App\Forms\Mapper\UserFormMapper;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -17,13 +18,10 @@ use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
-use App\Database\EntityManagerDecorator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 class CreatePresenter extends AdminBasePresenter
 {
-
     public function __construct(
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
@@ -36,7 +34,6 @@ class CreatePresenter extends AdminBasePresenter
     {
         parent::__construct();
     }
-
 
     public function createComponentCreateForm() : IconBootstrapForm
     {
@@ -73,9 +70,9 @@ class CreatePresenter extends AdminBasePresenter
             ->setOmitted()
             ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock')
             ->addConditionOn($passwordControl, Form::Filled, true)
-                ->setRequired('admin-user-edit.form.password2.required')
-                ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
+            ->setRequired('admin-user-edit.form.password2.required')
+            ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
+            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
@@ -131,5 +128,4 @@ class CreatePresenter extends AdminBasePresenter
             $this->redrawControl('flashes');
         }
     }
-
 }

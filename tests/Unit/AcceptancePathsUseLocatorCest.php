@@ -12,7 +12,7 @@ use Tests\Support\UnitTester;
  */
 class AcceptancePathsUseLocatorCest
 {
-    public function noAcceptanceTestWritesARawXPath(UnitTester $I) : void
+    public function noAcceptanceTestWritesRawXpath(UnitTester $I) : void
     {
         $root = dirname(__DIR__);
         $violations = [];

@@ -36,5 +36,4 @@ class GridActionButtonsCest
         $I->assertGreaterThan(0, $checked, 'The scan did not find the grid buttons.');
         $I->assertSame([], $wrong, "Grid buttons that fill the whole cell:\n" . implode("\n", $wrong));
     }
-
 }

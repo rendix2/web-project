@@ -21,8 +21,6 @@ class WebPagesSmokeCest
 
     /**
      * url => expected answer per role (200 = rendered, otherwise the code it is refused with)
-     *
-     * @var array<string, array{anonymous: int, User: int, Admin: int}>
      */
     private const PAGES = [
         '/' => ['anonymous' => self::OK, 'User' => self::OK, 'Admin' => self::OK],
@@ -46,22 +44,6 @@ class WebPagesSmokeCest
     ];
 
     /**
-     * @return array<string, array{0: string, 1: string, 2: int}> url, role, expected answer
-     */
-    protected function pagesProvider() : array
-    {
-        $examples = [];
-
-        foreach (self::PAGES as $url => $answers) {
-            foreach ($answers as $role => $answer) {
-                $examples[$role . ' ' . $url] = [$url, $role, $answer];
-            }
-        }
-
-        return $examples;
-    }
-
-    /**
      * @param Example<int, string|int> $example
      */
     #[DataProvider('pagesProvider')]
@@ -80,6 +62,22 @@ class WebPagesSmokeCest
         } else {
             $I->seeRefused($answer, $role . ' ' . $page);
         }
+    }
+
+    /**
+     * @return array<string, array{0: string, 1: string, 2: int}> url, role, expected answer
+     */
+    protected function pagesProvider() : array
+    {
+        $examples = [];
+
+        foreach (self::PAGES as $url => $answers) {
+            foreach ($answers as $role => $answer) {
+                $examples[$role . ' ' . $url] = [$url, $role, $answer];
+            }
+        }
+
+        return $examples;
     }
 
     private function resolve(FunctionalTester $I, string $url) : string

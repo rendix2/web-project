@@ -2,13 +2,13 @@
 
 namespace App\UI\Web\User\Activation;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserActivationEntity;
 use App\Model\Entity\UserEntity;
 use DateTimeImmutable;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
+use stdClass;
 
 class ActivationPresenter extends Presenter
 {
@@ -67,5 +67,4 @@ class ActivationPresenter extends Presenter
 
         $this->redirect(':Web:User:Login:default');
     }
-
 }

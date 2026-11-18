@@ -3,14 +3,14 @@
 namespace Tests\Functional;
 
 use App\Database\EntityManagerDecorator;
-use Codeception\Attribute\Group;
-use Codeception\Attribute\DataProvider;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
+use Codeception\Attribute\DataProvider;
+use Codeception\Attribute\Group;
 use Codeception\Example;
 use PHPUnit\Framework\Assert;
-use Tests\Support\Grid\DatagridPage;
 use Tests\Support\FunctionalTester;
+use Tests\Support\Grid\DatagridPage;
 
 /**
  * Exercises EVERY datagrid of the admin like a user does - every sort link, every filter (with a value that matches nothing, with
@@ -53,47 +53,6 @@ class GridExerciserCest
     }
 
     /**
-     * @return array<string, int>
-     */
-    private function currentLogSizes() : array
-    {
-        clearstatcache();
-        $root = dirname(__DIR__, 2) . '/log';
-        $sizes = [];
-
-        $files = [];
-
-        foreach ([$root . '/exception.log', $root . '/error.log', $root . '/*/exception.log', $root . '/*/error.log'] as $pattern) {
-            $found = glob($pattern);
-            $files = [...$files, ...($found === false ? [] : $found)];
-        }
-
-        foreach ($files as $file) {
-            if (!str_contains($file, '/codeception/')) {
-                $sizes[$file] = (int) filesize($file);
-            }
-        }
-
-        return $sizes;
-    }
-
-    /**
-     * @return array<string, array{0: string}>
-     */
-    protected function pagesProvider() : array
-    {
-        $urls = ['/admin.user.list/', '/admin.role.list/', '/admin.user.edit/default/{user}', '/admin.role.edit/default/{role}'];
-
-        $examples = [];
-
-        foreach ($urls as $url) {
-            $examples[$url] = [$url];
-        }
-
-        return $examples;
-    }
-
-    /**
      * @param Example<int, string> $example
      */
     #[DataProvider('pagesProvider')]
@@ -122,6 +81,47 @@ class GridExerciserCest
             $this->exerciseColumns($I, $url, $grid);
             $this->exercisePerPage($I, $url, $grid);
         }
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    protected function pagesProvider() : array
+    {
+        $urls = ['/admin.user.list/', '/admin.role.list/', '/admin.user.edit/default/{user}', '/admin.role.edit/default/{role}'];
+
+        $examples = [];
+
+        foreach ($urls as $url) {
+            $examples[$url] = [$url];
+        }
+
+        return $examples;
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function currentLogSizes() : array
+    {
+        clearstatcache();
+        $root = dirname(__DIR__, 2) . '/log';
+        $sizes = [];
+
+        $files = [];
+
+        foreach ([$root . '/exception.log', $root . '/error.log', $root . '/*/exception.log', $root . '/*/error.log'] as $pattern) {
+            $found = glob($pattern);
+            $files = [...$files, ...($found === false ? [] : $found)];
+        }
+
+        foreach ($files as $file) {
+            if (!str_contains($file, '/codeception/')) {
+                $sizes[$file] = (int) filesize($file);
+            }
+        }
+
+        return $sizes;
     }
 
     private function mayHaveNoGrid(string $url) : bool

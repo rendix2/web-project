@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use App\Bootstrap;
 use Doctrine\ORM\EntityManagerInterface;

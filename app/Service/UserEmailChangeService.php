@@ -28,7 +28,8 @@ class UserEmailChangeService
         private readonly EntityManagerDecorator $em,
         private readonly IMailBuilderFactory    $mailBuilderFactory,
         private readonly Translator             $translator,
-    ) {
+    )
+    {
     }
 
     /**
@@ -177,5 +178,4 @@ class UserEmailChangeService
     {
         return mb_strtolower(trim($email));
     }
-
 }

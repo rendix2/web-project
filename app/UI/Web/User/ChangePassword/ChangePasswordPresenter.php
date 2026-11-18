@@ -2,8 +2,10 @@
 
 namespace App\UI\Web\User\ChangePassword;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserAutoLoginEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordEntity;
@@ -16,9 +18,7 @@ use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
-use App\Database\EntityManagerDecorator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 class ChangePasswordPresenter extends Presenter
 {
@@ -45,7 +45,7 @@ class ChangePasswordPresenter extends Presenter
             ->getRepository(UserEntity::class)
             ->findOneBy(
                 [
-                    'id' => $this->getUser()->getId()
+                    'id' => $this->getUser()->getId(),
                 ]
             );
     }
@@ -72,7 +72,7 @@ class ChangePasswordPresenter extends Presenter
             ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
 
             ->addConditionOn($passwordControl, Form::Filled, true)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
+            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addSubmit('send', 'web-user-changePassword.form.submit.name')
@@ -180,5 +180,4 @@ class ChangePasswordPresenter extends Presenter
             $this->redrawControl('flashes');
         }
     }
-
 }

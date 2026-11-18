@@ -16,7 +16,8 @@ class AutoLoginTokenService
 {
     public function __construct(
         private readonly EntityManagerDecorator $em,
-    ) {
+    )
+    {
     }
 
     /**
@@ -109,5 +110,4 @@ class AutoLoginTokenService
     {
         return bin2hex(random_bytes(32));
     }
-
 }

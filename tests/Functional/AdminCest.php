@@ -19,7 +19,7 @@ use Tests\Support\FunctionalTester;
  */
 class AdminCest
 {
-    public function deletingAUserDoesNotCascadeDeleteASharedRole(FunctionalTester $I) : void
+    public function deletingUserDoesNotCascadeDeleteSharedRole(FunctionalTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);
@@ -54,7 +54,7 @@ class AdminCest
         );
     }
 
-    public function deletingARoleDoesNotCascadeDeleteItsUsers(FunctionalTester $I) : void
+    public function deletingRoleDoesNotCascadeDeleteItsUsers(FunctionalTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);

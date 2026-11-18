@@ -42,6 +42,7 @@ class SchemaKeysAndIndexesCest
                         break;
                     }
                 }
+
                 if (!$covered) {
                     $missing[] = $tableName . '.' . implode(', ', $columns) . ' (' . $this->schema->foreignKeyName($foreignKey)
                         . '): expected an index starting with (' . implode(', ', $columns) . '), got none';

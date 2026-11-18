@@ -2,17 +2,17 @@
 
 namespace App\UI\Admin\Role\List;
 
-use stdClass;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
-use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use App\UI\Grid\IdFilterCondition;
 use App\UI\Grid\SecuredDatagrid;
+use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
+use stdClass;
 
 /**
  * class RoleGrid
@@ -21,7 +21,6 @@ use Nette\Localization\Translator;
  */
 class RoleDataGrid
 {
-
     private SecuredDatagrid $grid;
 
     public function __construct(
@@ -67,19 +66,17 @@ class RoleDataGrid
         $this->grid
             ->addColumnText('name', 'admin-role-list.name.name')
             ->setRenderer(
-                function(RoleEntity $roleEntity) : string {
-                    return $roleEntity->name;
-                }
+                fn (RoleEntity $roleEntity) : string => $roleEntity->name
             )
             ->setSortable(true)
             ->setSortableCallback(
-                function(QueryBuilder $queryBuilder, array $sort) : void {
+                function (QueryBuilder $queryBuilder, array $sort) : void {
                     $queryBuilder->orderBy('_role.name', $sort['name'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
             ->setCondition(
-                function(QueryBuilder $queryBuilder, $name) : void {
+                function (QueryBuilder $queryBuilder, $name) : void {
                     $queryBuilder->andWhere('REGEXP(_role.name, :roleName) = true')
                         ->setParameter('roleName', $name);
                 }
@@ -94,7 +91,7 @@ class RoleDataGrid
             ->setTitle('admin-role-list.edit.title')
             ->setIcon('edit');
 
-        $onClick = function(string $id) : void {
+        $onClick = function (string $id) : void {
             /**
              * @var ?RoleEntity $roleEntity
              */
@@ -139,9 +136,7 @@ class RoleDataGrid
             ->addActionCallback('delete', 'admin-role-list.delete.name')
             ->setConfirmation(
                 new CallbackConfirmation(
-                    function(RoleEntity $roleEntity) : string {
-                        return (string) $this->translator->translate('admin-role-list.delete.confirm', ['name' => $roleEntity->name]);
-                    }
+                    fn (RoleEntity $roleEntity) : string => (string) $this->translator->translate('admin-role-list.delete.confirm', ['name' => $roleEntity->name])
                 )
             )
             ->setClass('btn btn-sm btn-danger ajax')
@@ -156,15 +151,15 @@ class RoleDataGrid
             ->setText((string) $this->translator->translate('admin-role-list.edit.inline.name'))
             ->setTitle('admin-role-list.edit.inline.title');
 
-        $setDefaultsCallback = function(Container $container, RoleEntity $roleEntity) : void {
+        $setDefaultsCallback = function (Container $container, RoleEntity $roleEntity) : void {
             $container->setDefaults(
                 [
-                    'name' => $roleEntity->name
+                    'name' => $roleEntity->name,
                 ]
             );
         };
 
-        $onSubmitEdit = function(string $id, RoleInlineEditValues $values) : void {
+        $onSubmitEdit = function (string $id, RoleInlineEditValues $values) : void {
             /**
              * @var ?RoleEntity $roleEntity
              */
@@ -205,7 +200,7 @@ class RoleDataGrid
             }
         };
 
-        $inlineEdit->onControlAdd[] = function(Container $container) : void {
+        $inlineEdit->onControlAdd[] = function (Container $container) : void {
             $container->setMappedType(RoleInlineEditValues::class);
 
             $container->addText('name')
@@ -215,5 +210,4 @@ class RoleDataGrid
         $inlineEdit->onSetDefaults[] = $setDefaultsCallback;
         $inlineEdit->onSubmit[] = $onSubmitEdit;
     }
-
 }

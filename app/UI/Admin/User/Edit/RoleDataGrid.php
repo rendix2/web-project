@@ -2,7 +2,7 @@
 
 namespace App\UI\Admin\User\Edit;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
 use App\UI\Grid\IdFilterCondition;
@@ -12,7 +12,7 @@ use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
+use stdClass;
 
 class RoleDataGrid
 {
@@ -68,19 +68,17 @@ class RoleDataGrid
         $this->grid
             ->addColumnText('name', 'admin-user-edit.roleGrid.role.name')
             ->setRenderer(
-                function(RoleEntity $roleEntity) : string {
-                    return $roleEntity->name;
-                }
+                fn (RoleEntity $roleEntity) : string => $roleEntity->name
             )
             ->setSortable(true)
             ->setSortableCallback(
-                function(QueryBuilder $queryBuilder, array $sort) : void {
+                function (QueryBuilder $queryBuilder, array $sort) : void {
                     $queryBuilder->orderBy('_role.name', $sort['name'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
             ->setCondition(
-                function(QueryBuilder $queryBuilder, $role) : void {
+                function (QueryBuilder $queryBuilder, $role) : void {
                     $queryBuilder->andWhere('REGEXP(_role.name, :roleName) = true')
                         ->setParameter('roleName', $role);
                 }
@@ -90,7 +88,7 @@ class RoleDataGrid
 
     private function createActions() : void
     {
-        $addRole = function(string $roleId) {
+        $addRole = function (string $roleId) : void {
             /**
              * @var ?RoleEntity $roleEntity
              */
@@ -140,12 +138,10 @@ class RoleDataGrid
 
         $this->grid->allowRowsAction(
             'addRole',
-            function(RoleEntity $roleEntity) : bool {
-                return !$this->userEntity->roles->contains($roleEntity);
-            }
+            fn (RoleEntity $roleEntity) : bool => !$this->userEntity->roles->contains($roleEntity)
         );
 
-        $closure = function (string $roleId) {
+        $closure = function (string $roleId) : void {
             /**
              * @var ?RoleEntity $roleEntity
              */
@@ -197,10 +193,7 @@ class RoleDataGrid
 
         $this->grid->allowRowsAction(
             'deleteRole',
-            function(RoleEntity $roleEntity) : bool {
-                return $this->userEntity->roles->contains($roleEntity);
-            }
+            fn (RoleEntity $roleEntity) : bool => $this->userEntity->roles->contains($roleEntity)
         );
     }
-
 }

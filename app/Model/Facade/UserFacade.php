@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Model\Facade;
 
@@ -26,7 +26,6 @@ use Symfony\Contracts\Translation\LocaleAwareInterface;
  */
 class UserFacade
 {
-
     public function __construct(
         private readonly EntityManagerDecorator $em,
         private readonly UserFormMapper         $userFormMapper,
@@ -39,13 +38,96 @@ class UserFacade
 
     public function register(RegistrationValues $values) : void
     {
-        $registerFunction = function () use ($values) {
+        $registerFunction = function () use ($values) : void {
             $userEntity = $this->registerInternal($values);
 
             $this->sendRegistrationMail($userEntity);
         };
 
         $this->em->wrapInTransaction($registerFunction);
+    }
+
+    public function update(string $uuid, EditUserValues $values) : UserEntity
+    {
+        return $this->em->wrapInTransaction(
+            function () use ($uuid, $values) {
+                $userRepository = $this->em->getRepository(UserEntity::class);
+
+            /**
+             * @var ?UserEntity $userEntity
+             */
+                $userEntity = $userRepository
+                ->findOneByUuid($uuid);
+
+                if ($userEntity === null) {
+                    throw new Exception('User not found');
+                }
+
+            // known BEFORE the mapper overwrites the e-mail: a changed e-mail is remembered in the e-mail history
+                $emailChanged = $userEntity->email !== $values->email;
+
+                $this->userFormMapper->apply($values, $userEntity);
+
+                if ($emailChanged) {
+                    $userEmailEntity = new UserEmailEntity();
+                    $userEmailEntity->email = $values->email;
+                    $userEmailEntity->user = $userEntity;
+
+                    $userEntity->addUserEmailEntity($userEmailEntity);
+                }
+
+                if ($values->password !== '') {
+                    // Reuse is already rejected earlier, by PasswordFormControl's own validation rule
+                    // (setHistoryUser() + its 'admin-user-edit.form.password.alreadyUsed' rule) - the
+                    // form would not have reached onSuccess otherwise.
+                    $password = $this->passwords->hash($values->password);
+
+                    $userPasswordEntity = new UserPasswordEntity();
+                    $userPasswordEntity->user = $userEntity;
+                    $userPasswordEntity->password = $password;
+
+                    $userEntity->password = $password;
+                    $userEntity->addUserPasswordEntity($userPasswordEntity);
+
+                    $userEntity->autoLogins->clear();
+                }
+
+                if (!$values->isActive) {
+                    // a deactivated user keeps nothing that logs him in (his session ends at the next request, AutoLoginService)
+                    $userEntity->autoLogins->clear();
+                }
+
+                $userEntity->updatedAt = new DateTimeImmutable();
+
+                $this->em->persist($userEntity);
+                $this->em->flush();
+
+                return $userEntity;
+            }
+        );
+    }
+
+    public function activate(string $userId, string $key) : void
+    {
+        $activation = $this->em
+            ->getRepository(UserActivationEntity::class)
+            ->findOneBy(
+                [
+                    'activationKey' => $key,
+                    'user' => $userId,
+                ]
+            );
+
+        if ($activation === null || (new DateTimeImmutable()) > $activation->validUntil) {
+            throw new Exception('Invalid or expired activation key');
+        }
+
+        $user = $activation->user;
+        $user->isActive = true;
+        $user->updatedAt = new DateTimeImmutable();
+
+        $this->em->remove($activation);
+        $this->em->flush();
     }
 
     private function registerInternal(RegistrationValues $values) : UserEntity
@@ -84,94 +166,11 @@ class UserFacade
         return $userEntity;
     }
 
-
-    public function update(string $uuid, EditUserValues $values): UserEntity
-    {
-        return $this->em->wrapInTransaction(
-            function() use ($uuid, $values) {
-            $userRepository = $this->em->getRepository(UserEntity::class);
-
-            /**
-             * @var ?UserEntity $userEntity
-             */
-            $userEntity = $userRepository
-                ->findOneByUuid($uuid);
-
-            if ($userEntity === null) {
-                throw new Exception('User not found');
-            }
-
-            // known BEFORE the mapper overwrites the e-mail: a changed e-mail is remembered in the e-mail history
-            $emailChanged = $userEntity->email !== $values->email;
-
-            $this->userFormMapper->apply($values, $userEntity);
-
-            if ($emailChanged) {
-                $userEmailEntity = new UserEmailEntity();
-                $userEmailEntity->email = $values->email;
-                $userEmailEntity->user = $userEntity;
-
-                $userEntity->addUserEmailEntity($userEmailEntity);
-            }
-
-            if ($values->password !== '') {
-                // Reuse is already rejected earlier, by PasswordFormControl's own validation rule
-                // (setHistoryUser() + its 'admin-user-edit.form.password.alreadyUsed' rule) - the
-                // form would not have reached onSuccess otherwise.
-                $password = $this->passwords->hash($values->password);
-
-                $userPasswordEntity = new UserPasswordEntity();
-                $userPasswordEntity->user = $userEntity;
-                $userPasswordEntity->password = $password;
-
-                $userEntity->password = $password;
-                $userEntity->addUserPasswordEntity($userPasswordEntity);
-
-                $userEntity->autoLogins->clear();
-            }
-
-            if (!$values->isActive) {
-                // a deactivated user keeps nothing that logs him in (his session ends at the next request, AutoLoginService)
-                $userEntity->autoLogins->clear();
-            }
-
-            $userEntity->updatedAt = new DateTimeImmutable();
-
-            $this->em->persist($userEntity);
-            $this->em->flush();
-
-            return $userEntity;
-        });
-    }
-
-    public function activate(string $userId, string $key): void
-    {
-        $activation = $this->em
-            ->getRepository(UserActivationEntity::class)
-            ->findOneBy(
-                [
-                    'activationKey' => $key,
-                    'user' => $userId,
-                ]
-            );
-
-        if ($activation === null || (new DateTimeImmutable()) > $activation->validUntil) {
-            throw new Exception('Invalid or expired activation key');
-        }
-
-        $user = $activation->user;
-        $user->isActive = true;
-        $user->updatedAt = new DateTimeImmutable();
-
-        $this->em->remove($activation);
-        $this->em->flush();
-    }
-
     private function sendRegistrationMail(UserEntity $userEntity) : void
     {
         $mail = $this->mailBuilderFactory->create();
 
-        $subject = $this->translator->translate('web-user-registration.mail.subject');
+        $subject = (string) $this->translator->translate('web-user-registration.mail.subject');
 
         $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
         $mail->setSubject($subject);
@@ -200,5 +199,4 @@ class UserFacade
 
         $this->em->persist($mailEntity);
     }
-
 }

@@ -93,6 +93,7 @@ class SchemaInSyncCest
         if (!is_string($asset)) {
             return false;
         }
+
         $parts = explode('.', strtolower($asset));
 
         return in_array(end($parts), self::TABLES_WITHOUT_ENTITY, true);

@@ -1,8 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Web\User\ForgetPassword\Request;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\MailEntity;
 use App\Model\Entity\UserEntity;
 use App\Model\Entity\UserPasswordRequestEntity;
@@ -15,11 +17,9 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Utils\Random;
-use App\Database\EntityManagerDecorator;
+use stdClass;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Throwable;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 class RequestPresenter extends Presenter
 {
@@ -31,10 +31,6 @@ class RequestPresenter extends Presenter
     )
     {
         parent::__construct();
-    }
-
-    public function renderDefault() : void
-    {
     }
 
     public function createComponentRequestForm() : IconBootstrapForm
@@ -142,7 +138,7 @@ class RequestPresenter extends Presenter
         $mail = $this->mailBuilderFactory->create();
 
         $mail->addTo($userEntity->email, $userEntity->name . ' ' . $userEntity->surname);
-        $mail->setSubject($this->translator->translate('web-user-forgetPassword-request.subject'));
+        $mail->setSubject((string) $this->translator->translate('web-user-forgetPassword-request.subject'));
 
         if ($this->translator instanceof LocaleAwareInterface) {
             $mail->setTemplateFile(__DIR__ . '/Mailing/request.' . $this->translator->getLocale() . '.latte');
@@ -174,7 +170,7 @@ class RequestPresenter extends Presenter
         $mailEntity = new MailEntity();
         $mailEntity->emailTo = $userEntity->email;
         $mailEntity->body = $mail->getMessage()->getHtmlBody();
-        $mailEntity->subject = $this->translator->translate('web-user-forgetPassword-request.subject');
+        $mailEntity->subject = (string) $this->translator->translate('web-user-forgetPassword-request.subject');
 
         try {
             $this->em->persist($mailEntity);

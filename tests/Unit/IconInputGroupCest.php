@@ -4,8 +4,8 @@ namespace Tests\Unit;
 
 use App\Forms\IconBootstrapForm;
 use App\Forms\Renderer\IconBootstrapRenderer;
-use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Tests\Support\UnitTester;
 
 /**
@@ -61,11 +61,11 @@ class IconInputGroupCest
 
         $html = (string) $form;
 
-        $I->assertStringNotContainsString('input-group-' . 'prepend', $html);
-        $I->assertStringNotContainsString('input-group-' . 'append', $html);
+        $I->assertStringNotContainsString('input-group-prepend', $html);
+        $I->assertStringNotContainsString('input-group-append', $html);
     }
 
-    public function aSubmitWithTheIconIsAButtonWithTheIconInFrontOfTheCaption(UnitTester $I) : void
+    public function submitWithTheIconIsButtonWithTheIconInFrontOfTheCaption(UnitTester $I) : void
     {
         $form = new IconBootstrapForm();
         $form->addSubmit('save', 'Uložit')->setOption(IconBootstrapRenderer::ICON, 'fas fa-save');
@@ -134,7 +134,7 @@ class IconInputGroupCest
         $I->assertMatchesRegularExpression('~<div class="input-group"><span class="input-group-text">.*?</span><input class="form-control"|<div class="input-group"><span class="input-group-text">.*?</span><input [^>]*class="form-control"~', $html);
     }
 
-    public function theErrorOfAControlInAnInputGroupIsVisible(UnitTester $I) : void
+    public function theErrorOfControlInAnInputGroupIsVisible(UnitTester $I) : void
     {
         // `.is-invalid ~ .invalid-feedback` needs the message to be the control's sibling; in a group it is not, so it is shown explicitly
         $form = new IconBootstrapForm();
@@ -189,5 +189,4 @@ class IconInputGroupCest
             }
         }
     }
-
 }

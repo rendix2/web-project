@@ -12,9 +12,6 @@ use Tests\Support\UnitTester;
  */
 class UnitTestsStayIsolatedCest
 {
-    /**
-     * @var array<string, string> pattern => what it reaches
-     */
     private const array FORBIDDEN = [
         '~->grabService\s*\(~' => 'the DI container (grabService)',
         '~\bNette\\\\(?:DI\\\\Container|Bootstrap\\\\Configurator)\b~' => 'the DI container',

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Admin\User\Edit;
 
@@ -74,12 +74,10 @@ class PasswordHistoryGrid
         $this->grid
             ->addColumnDateTime('createdAt', 'admin-user-edit.passwordHistoryGrid.createdAt')
             ->setRenderer(
-                function(UserPasswordEntity $userPasswordEntity) : string {
-                    return $userPasswordEntity->createdAt->format('d.m.Y');
-                }
+                fn (UserPasswordEntity $userPasswordEntity) : string => $userPasswordEntity->createdAt->format('d.m.Y')
             );
 
-        $this->grid->setRowCallback(function(UserPasswordEntity $item, Html $tr) {
+        $this->grid->setRowCallback(function (UserPasswordEntity $item, Html $tr) : void {
             if ($item === $this->userEntity->passwords->last()) {
                 $tr->addClass('table-primary');
             }

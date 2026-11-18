@@ -25,7 +25,8 @@ class UserPasswordRequestAttemptCheckService
 
     public function __construct(
         private readonly EntityManagerDecorator $em,
-    ) {
+    )
+    {
         $this->maxAttempts = 5;
         $this->lockTimeSeconds = 900;
     }

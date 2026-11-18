@@ -2,9 +2,11 @@
 
 namespace App\UI\Web\User\Login;
 
-use stdClass;
 use App\Core\AutoLoginService;
 use App\Core\UsernameAndPasswordAuthenticator;
+use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserEntity;
 use App\Service\GeoIpService;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -14,13 +16,10 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
-use App\Database\EntityManagerDecorator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 class LoginPresenter extends Presenter
 {
-
     public function __construct(
         private readonly Translator                       $translator,
         private readonly EntityManagerDecorator           $em,
@@ -150,5 +149,4 @@ class LoginPresenter extends Presenter
             $this->redrawControl('flashes');
         }
     }
-
 }

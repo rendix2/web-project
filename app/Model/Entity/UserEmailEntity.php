@@ -18,7 +18,6 @@ use Doctrine\ORM\Mapping\Table;
 #[Index(name: 'K__User_email__Email', columns: ['email'])]
 class UserEmailEntity
 {
-
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
@@ -42,5 +41,4 @@ class UserEmailEntity
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
-
 }

@@ -41,6 +41,18 @@ class IconBootstrapRenderer extends BootstrapRenderer
             ->addHtml($controlHtml);
     }
 
+    protected function renderFeedback(?BaseControl $control = null) : ?Html
+    {
+        $feedback = parent::renderFeedback($control);
+
+        // `.is-invalid ~ .invalid-feedback` needs the message to be a sibling of the control, inside the input group it is not
+        if ($feedback !== null && $control !== null && is_string($control->getOption(self::ICON))) {
+            $feedback->addClass('d-block');
+        }
+
+        return $feedback;
+    }
+
     private function renderIconButton(Button $control, string $icon) : string
     {
         $element = $control->getControl();
@@ -62,17 +74,4 @@ class IconBootstrapRenderer extends BootstrapRenderer
 
         return (string) $this->configElem(Cnf::INPUT, $element);
     }
-
-    protected function renderFeedback(?BaseControl $control = null) : ?Html
-    {
-        $feedback = parent::renderFeedback($control);
-
-        // `.is-invalid ~ .invalid-feedback` needs the message to be a sibling of the control, inside the input group it is not
-        if ($feedback !== null && $control !== null && is_string($control->getOption(self::ICON))) {
-            $feedback->addClass('d-block');
-        }
-
-        return $feedback;
-    }
-
 }

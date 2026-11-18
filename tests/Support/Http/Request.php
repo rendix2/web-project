@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\Support\Http;
 
@@ -19,7 +17,7 @@ class Request extends \Contributte\Codeception\Http\Request
      * @param FetchSite|array<mixed> $site
      * @param FetchDest|array<mixed>|null $dest
      */
-    public function isFrom(FetchSite|array $site, FetchDest|array|null $dest = null, ?bool $user = null): bool
+    public function isFrom(FetchSite|array $site, FetchDest|array|null $dest = null, ?bool $user = null) : bool
     {
         return true;
     }

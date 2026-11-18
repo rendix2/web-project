@@ -42,6 +42,7 @@ class ContainerServicesCest
                 $service = $container->getByName($name);
             } catch (Throwable $e) {
                 $failures[$name] = $e::class . ': ' . $e->getMessage();
+
                 continue;
             }
 
@@ -71,26 +72,32 @@ class ContainerServicesCest
                 continue;
             }
 
-            $this->collect($property->getValue($service), $strings);
+            $strings = [...$strings, ...$this->collect($property->getValue($service))];
         }
 
         return $strings;
     }
 
     /**
-     * @param list<string> $strings
+     * @return list<string>
      */
-    private function collect(mixed $value, array &$strings) : void
+    private function collect(mixed $value) : array
     {
         if (is_string($value)) {
-            $strings[] = $value;
-        } elseif (is_array($value)) {
+            return [$value];
+        }
+
+        $strings = [];
+
+        if (is_array($value)) {
             foreach ($value as $item) {
                 if (!$item instanceof Container && !$item instanceof Closure) {
-                    $this->collect($item, $strings);
+                    $strings = [...$strings, ...$this->collect($item)];
                 }
             }
         }
+
+        return $strings;
     }
 
     private function dump(mixed $value) : string

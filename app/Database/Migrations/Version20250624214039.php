@@ -15,12 +15,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20250624214039 extends AbstractMigration
 {
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return '';
     }
 
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         $table = $schema->createTable('public.user_login_attempt');
 
@@ -57,9 +57,8 @@ final class Version20250624214039 extends AbstractMigration
             ->setComment('User login attempts');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         $schema->dropTable('public.user_login_attempt');
     }
-
 }

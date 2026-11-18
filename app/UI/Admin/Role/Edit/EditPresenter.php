@@ -1,9 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\UI\Admin\Role\Edit;
 
 use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
 use App\Forms\Mapper\RoleFormMapper;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\RoleEntity;
 use App\UI\Admin\AdminBasePresenter;
 use Contributte\FormsBootstrap\BootstrapForm;
@@ -13,8 +15,6 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
 use Throwable;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 /**
  * class EditPresenter
@@ -23,7 +23,6 @@ use App\Forms\Renderer\IconBootstrapRenderer;
  */
 class EditPresenter extends AdminBasePresenter
 {
-
     private RoleEntity $roleEntity;
 
     public function __construct(
@@ -34,7 +33,6 @@ class EditPresenter extends AdminBasePresenter
     {
         parent::__construct();
     }
-
 
     public function actionDefault(string $id) : void
     {
@@ -59,7 +57,6 @@ class EditPresenter extends AdminBasePresenter
     {
         $this->getTemplate()->roleEntity = $this->roleEntity;
     }
-
 
     public function createComponentEditForm() : IconBootstrapForm
     {
@@ -125,5 +122,4 @@ class EditPresenter extends AdminBasePresenter
             $this->redrawControl('flashes');
         }
     }
-
 }

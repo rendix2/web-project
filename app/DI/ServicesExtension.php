@@ -2,7 +2,6 @@
 
 namespace App\DI;
 
-
 use App\ConsoleModule\Commands\CreateDatabaseCommand;
 use App\UI\Web\User\Login\UserLoginAttemptCheckService;
 use Nette\DI\CompilerExtension;
@@ -10,14 +9,12 @@ use Nette\DI\Definitions\ServiceDefinition;
 
 class ServicesExtension extends CompilerExtension
 {
-
-    public function loadConfiguration()
+    public function loadConfiguration() : void
     {
         $this->registerCommands();
 
         $this->registerServices();
     }
-
 
     private function registerCommands() : void
     {
@@ -32,5 +29,4 @@ class ServicesExtension extends CompilerExtension
 
         $builder->addDefinition($this->prefix('LoginAttemptCheckService'), (new ServiceDefinition())->setType(UserLoginAttemptCheckService::class));
     }
-
 }

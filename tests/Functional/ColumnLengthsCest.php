@@ -56,5 +56,4 @@ class ColumnLengthsCest
         $em->remove($attempt);
         $em->flush();
     }
-
 }

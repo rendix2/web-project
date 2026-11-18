@@ -39,7 +39,7 @@ class UserAccountCest
         $I->see('403');
     }
 
-    public function activatingWithAValidKeyActivatesTheAccountAndShowsTheTranslatedMessage(FunctionalTester $I) : void
+    public function activatingWithValidKeyActivatesTheAccountAndShowsTheTranslatedMessage(FunctionalTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);

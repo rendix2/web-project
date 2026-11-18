@@ -29,5 +29,4 @@ final class ErrorPresenter extends Presenter
 
         $template->httpCode = $code;
     }
-
 }

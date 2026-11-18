@@ -92,6 +92,7 @@ class CleanupTestData extends Module
             $this->em?->clear();
             $this->em?->getConnection()->close();
         } catch (Throwable) {
+            // a connection that cannot be closed is gone already: nothing to release
         }
 
         $this->em = null;

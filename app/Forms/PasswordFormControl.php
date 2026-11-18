@@ -2,13 +2,13 @@
 
 namespace App\Forms;
 
-use Nette\Forms\Control;
 use App\Model\Entity\UserEntity;
+use Contributte\FormsBootstrap\Inputs\TextInput;
 use Jgxvx\Cilician\Service\Cilician;
 use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
+use Nette\Forms\Control;
 use Nette\Localization\Translator;
-use Contributte\FormsBootstrap\Inputs\TextInput;
 use Nette\Security\Passwords;
 use Nette\Utils\Html;
 
@@ -40,7 +40,7 @@ class PasswordFormControl extends TextInput
             ->setRequired('admin-user-edit.form.password.required')
             ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password.ruleMinLength', ['minChars' => self::MIN_LENGTH]), self::MIN_LENGTH)
             ->addRule(
-                function (Control $control): bool {
+                function (Control $control) : bool {
                     $password = $control->getValue();
 
                     if (!is_string($password) || $password === '') {
@@ -51,15 +51,14 @@ class PasswordFormControl extends TextInput
                         $result = $this->cilician->checkPassword($password);
 
                         return !$result->isPwned();
-                    } catch (\Exception $e) {
+                    } catch (\Throwable $e) {
                         return true;
                     }
-
                 },
                 'admin-user-edit.form.password.pwnedError'
             )
             ->addRule(
-                function (Control $control): bool {
+                function (Control $control) : bool {
                     $password = $control->getValue();
 
                     if ($this->historyUser === null || !is_string($password) || $password === '') {
@@ -73,6 +72,7 @@ class PasswordFormControl extends TextInput
                             if ($presenter instanceof Presenter) {
                                 $presenter->redrawControl();
                             }
+
                             return false;
                         }
                     }
@@ -82,24 +82,25 @@ class PasswordFormControl extends TextInput
                 'admin-user-edit.form.password.alreadyUsed'
             )
             ->addCondition(Form::MinLength, self::MIN_LENGTH)
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
-                ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
+            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastNumber', '.*[0-9].*')
+            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastLowerChar', '.*[a-z].*')
+            ->addRule(Form::Pattern, 'admin-user-edit.form.password.ruleAtLeastUpperChar', '.*[A-Z].*')
             ->endCondition();
     }
 
-    public function setShowPasswordEnabled(bool $showPasswordEnabled): void
+    public function setShowPasswordEnabled(bool $showPasswordEnabled) : void
     {
         $this->showPasswordEnabled = $showPasswordEnabled;
     }
 
-    public function setHistoryUser(UserEntity $user): self
+    public function setHistoryUser(UserEntity $user) : self
     {
         $this->historyUser = $user;
+
         return $this;
     }
 
-    public function getControl(): Html
+    public function getControl() : Html
     {
         $control = parent::getControl();
         $control->addClass('form-control');
@@ -118,7 +119,7 @@ class PasswordFormControl extends TextInput
                 ->type('button')
                 ->addAttributes([
                     'data-password-toggle' => 'password',
-                    'data-password-target' => $control->id
+                    'data-password-target' => $control->id,
                 ]);
 
             $icon = Html::el('i')->addClass('fa fa-eye');
@@ -130,7 +131,7 @@ class PasswordFormControl extends TextInput
         return $wrapper;
     }
 
-    public function getControlPart(): Html
+    public function getControlPart() : Html
     {
         return parent::getControl();
     }
@@ -138,13 +139,8 @@ class PasswordFormControl extends TextInput
     /**
      * Generates current control HTML.
      */
-    public function generate(Html $control): Html
+    public function generate(Html $control) : Html
     {
         return $control;
     }
-}
-
-interface PasswordFormControlFactory
-{
-    public function create(string $label): PasswordFormControl;
 }

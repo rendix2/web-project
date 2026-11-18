@@ -2,13 +2,12 @@
 
 namespace App\Forms;
 
-use Nette\Forms\Control;
 use App\Database\EntityManagerDecorator;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\Inputs\TextInput;
-use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Control;
 use Nette\Localization\Translator;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 class UsernameFormControl extends TextInput
 {
@@ -18,7 +17,8 @@ class UsernameFormControl extends TextInput
         string                                  $label,
         private readonly Translator             $translator,
         private readonly EntityManagerDecorator $em
-    ) {
+    )
+    {
         parent::__construct($label);
 
         $this->setOption(IconBootstrapRenderer::ICON, 'fas fa-user');
@@ -27,8 +27,7 @@ class UsernameFormControl extends TextInput
             ->setRequired('admin-user-edit.form.username.required')
             ->setMaxLength(512)
             ->addRule(
-                function (Control $control): bool
-                {
+                function (Control $control) : bool {
                     $value = $control->getValue();
                     $username = is_string($value) ? $value : '';
 
@@ -50,13 +49,14 @@ class UsernameFormControl extends TextInput
             );
     }
 
-    public function setExcludeUserId(string|int|null $userId): self
+    public function setExcludeUserId(string|int|null $userId) : self
     {
         $this->excludeUserId = $userId;
+
         return $this;
     }
 
-    private function checkUsernameExists(string $username): bool
+    private function checkUsernameExists(string $username) : bool
     {
         $qb = $this->em
             ->getRepository(UserEntity::class)
@@ -74,10 +74,4 @@ class UsernameFormControl extends TextInput
 
         return (int) $qb->getQuery()->getSingleScalarResult() > 0;
     }
-
-}
-
-interface UsernameFormControlFactory
-{
-    public function create(string $label): UsernameFormControl;
 }

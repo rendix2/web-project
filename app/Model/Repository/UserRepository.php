@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Model\Repository;
 
@@ -13,7 +13,6 @@ use Doctrine\ORM\EntityRepository;
  */
 class UserRepository extends EntityRepository
 {
-
     public function findOneById(string $id) : ?UserEntity
     {
         return $this
@@ -65,5 +64,4 @@ class UserRepository extends EntityRepository
 
         return $user;
     }
-
 }

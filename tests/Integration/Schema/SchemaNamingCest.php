@@ -35,6 +35,7 @@ class SchemaNamingCest
             if (preg_match(self::SNAKE_CASE, $tableName) !== 1) {
                 $wrong[] = "$tableName: expected a snake_case table name, got \"$tableName\"";
             }
+
             foreach ($this->schema->columnNames($table) as $column) {
                 if (preg_match(self::SNAKE_CASE, $column) !== 1) {
                     $wrong[] = "$tableName.$column: expected a snake_case column name, got \"$column\"";
@@ -72,6 +73,7 @@ class SchemaNamingCest
                     $names[$name] = $index->getType() === IndexType::UNIQUE ? 'uk_' : 'k_';
                 }
             }
+
             foreach ($table->getForeignKeys() as $foreignKey) {
                 $names[$this->schema->foreignKeyName($foreignKey)] = 'fk_';
             }
@@ -80,6 +82,7 @@ class SchemaNamingCest
                 if (str_starts_with(strtolower($name), $prefix)) {
                     continue;
                 }
+
                 $wrong[] = "$tableName.$name: expected the prefix " . strtoupper($prefix) . ", got \"$name\"";
             }
         }

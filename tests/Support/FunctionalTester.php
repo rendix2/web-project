@@ -1,16 +1,16 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\Support;
 
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
+use Codeception\Actor;
 use Nette\Security\Passwords;
 
 /**
  * Inherited Methods
+ *
  * @method void wantTo($text)
  * @method void wantToTest($text)
  * @method void execute($callable)
@@ -21,10 +21,9 @@ use Nette\Security\Passwords;
  * @method void lookForwardTo($achieveValue)
  * @method void comment($description)
  * @method void pause($vars = [])
- *
  * @SuppressWarnings(PHPMD)
-*/
-class FunctionalTester extends \Codeception\Actor
+ */
+class FunctionalTester extends Actor
 {
     use _generated\FunctionalTesterActions;
 

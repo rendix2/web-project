@@ -15,7 +15,7 @@ use Tests\Support\AcceptanceTester;
  */
 class CardLookCest
 {
-    public function everyCardHasTheSameCornersAndAShadow(AcceptanceTester $I) : void
+    public function everyCardHasTheSameCornersAndShadow(AcceptanceTester $I) : void
     {
         /** @var EntityManagerDecorator $em */
         $em = $I->grabService(EntityManagerDecorator::class);
@@ -28,12 +28,7 @@ class CardLookCest
 
         $I->resizeWindow(1500, 1200);
 
-        $radii = [];
-        $shadows = [];
-        $cards = 0;
-        $problems = [];
-
-        $measure = function (string $page) use ($I, &$radii, &$shadows, &$cards, &$problems) : void {
+        $measure = static function (string $page) use ($I) : array {
             $I->amOnPage($page);
             $I->wait(1);
 
@@ -52,19 +47,13 @@ class CardLookCest
                 });
 JS);
 
-            foreach ($found as $card) {
-                $cards++;
-                $radii[$card['radius']][] = $page . ' ' . $card['cls'];
-                $shadows[$card['shadow']][] = $page . ' ' . $card['cls'];
-
-                if ($card['shadow'] === 'none') {
-                    $problems[] = $page . ': a card without a shadow (' . $card['cls'] . ')';
-                }
-            }
+            return $found;
         };
 
+        $found = [];
+
         foreach (['/', '/web.user.login/', '/web.user.registration/', '/web.user.forget-password.request/'] as $page) {
-            $measure($page);
+            $found[$page] = $measure($page);
         }
 
         $I->amOnPage('/web.user.login/');
@@ -73,12 +62,38 @@ JS);
         $I->click('#frm-loginForm [type=submit]');
         $I->wait(1);
 
-        foreach ([
-            '/admin.user.list/', '/admin.user.create/', '/admin.user.edit/default/' . $user->uuid, '/admin.role.list/',
-            '/admin.role.create/', '/admin.role.edit/default/' . $role->id, '/web.user.view/default/' . $user->uuid,
-            '/web.user.edit/', '/web.user.change-password/', '/web.user.change-email/',
-        ] as $page) {
-            $measure($page);
+        $adminPages = [
+            '/admin.user.list/',
+            '/admin.user.create/',
+            '/admin.user.edit/default/' . $user->uuid,
+            '/admin.role.list/',
+            '/admin.role.create/',
+            '/admin.role.edit/default/' . $role->id,
+            '/web.user.view/default/' . $user->uuid,
+            '/web.user.edit/',
+            '/web.user.change-password/',
+            '/web.user.change-email/',
+        ];
+
+        foreach ($adminPages as $page) {
+            $found[$page] = $measure($page);
+        }
+
+        $radii = [];
+        $shadows = [];
+        $cards = 0;
+        $problems = [];
+
+        foreach ($found as $page => $pageCards) {
+            foreach ($pageCards as $card) {
+                $cards++;
+                $radii[$card['radius']][] = $page . ' ' . $card['cls'];
+                $shadows[$card['shadow']][] = $page . ' ' . $card['cls'];
+
+                if ($card['shadow'] === 'none') {
+                    $problems[] = $page . ': a card without a shadow (' . $card['cls'] . ')';
+                }
+            }
         }
 
         Assert::assertGreaterThan(8, $cards, 'The scan did not find the cards.');

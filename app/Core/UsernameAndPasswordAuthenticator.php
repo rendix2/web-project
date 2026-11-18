@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEntity;
 use App\UI\Web\User\Login\UserLoginAttemptCheckService;
 use Nette\Http\IRequest;
@@ -10,7 +11,6 @@ use Nette\Security\Authenticator;
 use Nette\Security\IIdentity;
 use Nette\Security\Passwords;
 use Nette\Security\SimpleIdentity;
-use App\Database\EntityManagerDecorator;
 
 /**
  * The login by username and password. It does not reveal which accounts exist (account enumeration): an unknown username and
@@ -77,9 +77,8 @@ class UsernameAndPasswordAuthenticator implements Authenticator
             $userEntity->id,
             $roles,
             [
-                'username' => $userEntity->username
+                'username' => $userEntity->username,
             ],
         );
     }
-
 }

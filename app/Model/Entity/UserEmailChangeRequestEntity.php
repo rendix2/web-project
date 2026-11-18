@@ -48,5 +48,4 @@ class UserEmailChangeRequestEntity
         $this->validUntil = new DateTimeImmutable('+' . self::LIFETIME_HOURS . ' hours');
         $this->createdAt = new DateTimeImmutable();
     }
-
 }

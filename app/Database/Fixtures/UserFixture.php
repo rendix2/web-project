@@ -16,7 +16,6 @@ use Nettrine\Fixtures\Fixture\ContainerAwareInterface;
 
 class UserFixture implements FixtureInterface, OrderedFixtureInterface, ContainerAwareInterface
 {
-
     private Passwords $passwords;
 
     public function load(ObjectManager $manager) : void
@@ -67,5 +66,4 @@ class UserFixture implements FixtureInterface, OrderedFixtureInterface, Containe
     {
         $this->passwords = $container->getByType(Passwords::class);
     }
-
 }

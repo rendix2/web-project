@@ -33,21 +33,10 @@ class GridIdFilterCest
     }
 
     /**
-     * @return array<string, array{0: string}>
-     */
-    protected function pagesProvider() : array
-    {
-        return [
-            '/admin.user.list/' => ['/admin.user.list/'],
-            '/admin.role.list/' => ['/admin.role.list/'],
-        ];
-    }
-
-    /**
      * @param Example<int, string> $example
      */
     #[DataProvider('pagesProvider')]
-    public function aValueThatIsNotANumberMatchesNothing(FunctionalTester $I, Example $example) : void
+    public function valueThatIsNotNumberMatchesNothing(FunctionalTester $I, Example $example) : void
     {
         $url = $example[0];
         assert(is_string($url));
@@ -75,6 +64,17 @@ class GridIdFilterCest
         $this->assertPageIsFine($I, 'role id = ' . $role->id);
 
         $I->assertSame([(string) $role->id], (new DatagridPage($I->grabPageSource()))->rowIds('grid'));
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    protected function pagesProvider() : array
+    {
+        return [
+            '/admin.user.list/' => ['/admin.user.list/'],
+            '/admin.role.list/' => ['/admin.role.list/'],
+        ];
     }
 
     private function assertPageIsFine(FunctionalTester $I, string $what) : void

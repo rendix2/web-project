@@ -17,8 +17,20 @@ class TestsUseAttributesCest
 {
     /** the annotations Codeception has an attribute for (Codeception\Attribute\*) */
     private const array ANNOTATIONS = [
-        'after', 'before', 'dataProvider', 'depends', 'env', 'example', 'examples', 'given', 'group', 'incomplete', 'prepare',
-        'skip', 'then', 'when',
+        'after',
+        'before',
+        'dataProvider',
+        'depends',
+        'env',
+        'example',
+        'examples',
+        'given',
+        'group',
+        'incomplete',
+        'prepare',
+        'skip',
+        'then',
+        'when',
     ];
 
     /** generated or produced by the runs, not written by hand */

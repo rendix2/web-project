@@ -1,9 +1,8 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\Support\DI;
 
+use Nette\DI\Definitions\ServiceDefinition;
 use Nette\Http\IRequest;
 use Tests\Support\Http\Request;
 
@@ -13,7 +12,7 @@ use Tests\Support\Http\Request;
  */
 class HttpExtension extends \Contributte\Codeception\DI\HttpExtension
 {
-    public function beforeCompile(): void
+    public function beforeCompile() : void
     {
         parent::beforeCompile();
 
@@ -23,7 +22,7 @@ class HttpExtension extends \Contributte\Codeception\DI\HttpExtension
         if ($builder->hasDefinition($request)) {
             $definition = $builder->getDefinition($request);
 
-            if ($definition instanceof \Nette\DI\Definitions\ServiceDefinition) {
+            if ($definition instanceof ServiceDefinition) {
                 $definition->setFactory(Request::class);
             }
         }

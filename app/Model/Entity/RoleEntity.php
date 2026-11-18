@@ -19,7 +19,6 @@ use Doctrine\ORM\Mapping\Table;
 #[Table(name: 'role')]
 class RoleEntity
 {
-
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
@@ -37,12 +36,10 @@ class RoleEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
-    /**
-     * @var Collection<int, UserEntity> $users
-     */
     // cascade: 'remove' on a ManyToMany cascades an actual ENTITY remove, not just a join-table
     // row delete - it made deleting one Role delete every User who had it assigned. Removing a
     // role/user must only drop the user_role join row, which Doctrine already does on its own.
+    /** @var Collection<int, UserEntity> $users */
     #[ManyToMany(targetEntity: UserEntity::class, inversedBy: 'roles', cascade: ['persist'])]
     #[JoinTable(
         name: 'user_role',
@@ -64,5 +61,4 @@ class RoleEntity
 
         $this->users = new ArrayCollection();
     }
-
 }

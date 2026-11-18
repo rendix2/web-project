@@ -52,14 +52,10 @@ final class Version20241106003834 extends AbstractMigration
             ->setComment('User forgotten passwords requests')
             ->addUniqueIndex(['user_id'], 'UK__User_password_request__User_id')
             ->addForeignKeyConstraint('users', ['user_id'], ['id'], ['onDelete' => 'CASCADE'], name: 'FK__User_password_request__User_id');
-
     }
 
     public function down(Schema $schema) : void
     {
         $schema->dropTable('public.user_password_request');
     }
-
 }
-
-

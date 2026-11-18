@@ -59,43 +59,31 @@ class UserEntity
     #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
-    /**
-     * @var Collection<int, UserPasswordEntity> $passwords
-     */
+    /** @var Collection<int, UserPasswordEntity> $passwords */
     #[OneToMany(targetEntity: UserPasswordEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwords;
 
-    /**
-     * @var Collection<int, UserPasswordRequestEntity> $passwordRequests
-     */
+    /** @var Collection<int, UserPasswordRequestEntity> $passwordRequests */
     #[OneToMany(targetEntity: UserPasswordRequestEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $passwordRequests;
 
-    /**
-     * @var Collection<int, UserActivationEntity> $activationKeys
-     */
+    /** @var Collection<int, UserActivationEntity> $activationKeys */
     #[OneToMany(targetEntity: UserActivationEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $activationKeys;
 
-    /**
-     * @var Collection<int, UserAutoLoginEntity> $autoLogins
-     */
+    /** @var Collection<int, UserAutoLoginEntity> $autoLogins */
     #[OneToMany(targetEntity: UserAutoLoginEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'], orphanRemoval: true)]
     public Collection $autoLogins;
 
-    /**
-     * @var Collection<int, UserEmailEntity> $emails
-     */
+    /** @var Collection<int, UserEmailEntity> $emails */
     #[OneToMany(targetEntity: UserEmailEntity::class, mappedBy: 'user', cascade: ['persist', 'remove'])]
     public Collection $emails;
 
-    /**
-     * @var Collection<int, RoleEntity> $roles
-     */
     // cascade: 'remove' on a ManyToMany cascades an actual ENTITY remove, not just a join-table
     // row delete - it made deleting one User delete every RoleEntity they had assigned (which then
     // transitively deleted every OTHER user who shared that role). Removing a role/user must only
     // drop the user_role join row, which Doctrine already does on its own.
+    /** @var Collection<int, RoleEntity> $roles */
     #[ManyToMany(targetEntity: RoleEntity::class, mappedBy: 'users', cascade: ['persist'])]
     public Collection $roles;
 
@@ -172,6 +160,4 @@ class UserEntity
 
         $this->addUserEmailEntity($userEmail);
     }
-
-
 }

@@ -1,6 +1,4 @@
-<?php
-
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace App\Database\Migrations;
 
@@ -16,12 +14,12 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20261009103000 extends AbstractMigration
 {
-    public function getDescription(): string
+    public function getDescription() : string
     {
         return 'user_email_change_request';
     }
 
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         $table = $schema->createTable('user_email_change_request');
 
@@ -59,7 +57,7 @@ final class Version20261009103000 extends AbstractMigration
             ->setComment('Pending changes of the e-mail of an account');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         $schema->dropTable('user_email_change_request');
     }

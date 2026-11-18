@@ -2,17 +2,17 @@
 
 namespace App\UI\Admin\Role\Create;
 
-use stdClass;
 use App\Database\EntityManagerDecorator;
+use App\Forms\IconBootstrapForm;
 use App\Forms\Mapper\RoleFormMapper;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\UI\Admin\AdminBasePresenter;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
+use stdClass;
 
 /**
  * class CreatePresenter
@@ -29,7 +29,6 @@ class CreatePresenter extends AdminBasePresenter
     {
         parent::__construct();
     }
-
 
     public function createComponentCreateForm() : IconBootstrapForm
     {

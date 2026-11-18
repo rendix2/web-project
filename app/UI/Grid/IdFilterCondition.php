@@ -35,5 +35,4 @@ final class IdFilterCondition
         $queryBuilder->andWhere($this->field . ' = :' . $parameter)
             ->setParameter($parameter, (int) $value);
     }
-
 }

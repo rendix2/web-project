@@ -48,13 +48,13 @@ class LoginDoesNotRevealAccountsCest
         $this->cleanupAttempts($I);
     }
 
-    public function anUnknownUsernameAndAWrongPasswordGetTheSameMessage(IntegrationTester $I) : void
+    public function anUnknownUsernameAndWrongPasswordGetTheSameMessage(IntegrationTester $I) : void
     {
         $I->assertSame('web-user-login.error.invalidCredentials', $this->failure($I, 'enum-nobody', self::PASSWORD));
         $I->assertSame('web-user-login.error.invalidCredentials', $this->failure($I, 'TestUsername', 'definitely-wrong'));
     }
 
-    public function anInactiveAccountWithAWrongPasswordLooksLikeAWrongPassword(IntegrationTester $I) : void
+    public function anInactiveAccountWithWrongPasswordLooksLikeWrongPassword(IntegrationTester $I) : void
     {
         $I->assertSame('web-user-login.error.invalidCredentials', $this->failure($I, self::INACTIVE, 'definitely-wrong'));
     }

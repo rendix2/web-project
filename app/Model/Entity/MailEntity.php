@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping\Table;
 #[Index(name: 'K__Mail__Email_to', columns: ['email_to'])]
 class MailEntity
 {
-
     #[Id()]
     #[GeneratedValue()]
     #[Column(type: Types::BIGINT, options: ['comment' => 'ID'])]
@@ -24,10 +23,6 @@ class MailEntity
 
     #[Column(type: Types::STRING, length: 512, nullable: false, options: ['comment' => 'Email to'])]
     public string $emailTo;
-
-    //#[ManyToOne(targetEntity: UserEmailEntity::class)]
-    //#[JoinColumn('emailTo', unique: true, nullable: false)]
-    //public UserEmailEntity $userEmail;
 
     #[Column(type: Types::STRING, length: 1024, nullable: false, options: ['comment' => 'Subject'])]
     public string $subject;
@@ -46,5 +41,4 @@ class MailEntity
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
-
 }

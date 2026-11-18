@@ -201,5 +201,4 @@ class SecuredDatagrid extends Datagrid
 
         return [$queryBuilder->getEntityManager(), $entityClass];
     }
-
 }

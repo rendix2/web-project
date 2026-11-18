@@ -2,9 +2,12 @@
 
 namespace App\UI\Admin\User\Edit;
 
+use App\Database\EntityManagerDecorator;
 use App\Forms\EmailFormControlFactory;
+use App\Forms\IconBootstrapForm;
 use App\Forms\Mapper\UserFormMapper;
 use App\Forms\PasswordFormControlFactory;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEntity;
 use App\Model\Facade\UserFacade;
@@ -15,11 +18,8 @@ use Contributte\FormsBootstrap\Enums\BootstrapVersion;
 use Nette\Application\UI\Form;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
-use App\Database\EntityManagerDecorator;
 use stdClass;
 use Throwable;
-use App\Forms\IconBootstrapForm;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 class EditPresenter extends AdminBasePresenter
 {
@@ -65,28 +65,6 @@ class EditPresenter extends AdminBasePresenter
         $this->getTemplate()->userEntity = $this->userEntity;
     }
 
-    protected function createComponentRolesGrid() : Datagrid
-    {
-        return $this->roleDataGrid
-            ->setUserEntity($this->userEntity)
-            ->create();
-    }
-
-    protected function createComponentEmailsGrid() : Datagrid
-    {
-        return $this->emailDataGrid
-            ->setUserEntity($this->userEntity)
-            ->create();
-    }
-
-    protected function createComponentPasswordHistoryGrid() : Datagrid
-    {
-        return $this->passwordHistoryGrid
-            ->setUserEntity($this->userEntity)
-            ->create();
-    }
-
-
     public function createComponentEditForm() : IconBootstrapForm
     {
         $form = new IconBootstrapForm();
@@ -127,9 +105,9 @@ class EditPresenter extends AdminBasePresenter
             ->setOmitted()
             ->setOption(IconBootstrapRenderer::ICON, 'fas fa-lock')
             ->addConditionOn($passwordControl, Form::Filled, true)
-                ->setRequired('admin-user-edit.form.password2.required')
-                ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
-                ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
+            ->setRequired('admin-user-edit.form.password2.required')
+            ->addRule(Form::MinLength, (string) $this->translator->translate('admin-user-edit.form.password2.ruleMinLength', ['minChars' => 8]), 8)
+            ->addRule(Form::Equal, 'admin-user-edit.form.password2.ruleEqual', $passwordControl)
             ->endCondition();
 
         $form->addCheckbox('isActive', 'admin-user-edit.form.isActive.label');
@@ -179,4 +157,24 @@ class EditPresenter extends AdminBasePresenter
         }
     }
 
+    protected function createComponentRolesGrid() : Datagrid
+    {
+        return $this->roleDataGrid
+            ->setUserEntity($this->userEntity)
+            ->create();
+    }
+
+    protected function createComponentEmailsGrid() : Datagrid
+    {
+        return $this->emailDataGrid
+            ->setUserEntity($this->userEntity)
+            ->create();
+    }
+
+    protected function createComponentPasswordHistoryGrid() : Datagrid
+    {
+        return $this->passwordHistoryGrid
+            ->setUserEntity($this->userEntity)
+            ->create();
+    }
 }

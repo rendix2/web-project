@@ -62,6 +62,4 @@ class UserAutoLoginEntity
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = null;
     }
-
-
 }

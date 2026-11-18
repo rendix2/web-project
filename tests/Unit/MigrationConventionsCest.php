@@ -39,19 +39,12 @@ class MigrationConventionsCest
     private const string RULE_DOWN = 'down';
     private const string RULE_ONE_TABLE = 'one-table';
 
-    /**
-     * @var array<string, string> Table method that adds an index / a key => prefix of its name
-     */
     private const array NAMED_METHODS = [
         'addIndex' => 'K',
         'addUniqueIndex' => 'UK',
         'addForeignKeyConstraint' => 'FK',
     ];
 
-    /**
-     * @var array<string, array{int, string, int, string}> method => [position, name of the columns argument, position,
-     * name of the name argument] (DBAL 4 signatures)
-     */
     private const array NAMED_ARGUMENTS = [
         'addIndex' => [0, 'columnNames', 1, 'indexName'],
         'addUniqueIndex' => [0, 'columnNames', 1, 'indexName'],
@@ -64,6 +57,9 @@ class MigrationConventionsCest
     private const array SCHEMA_TABLE_METHODS = ['createTable', 'getTable', 'dropTable', 'renameTable'];
 
     private const string NAME_PATTERN = '~^(?:K|UK|FK)__[A-Z][a-z0-9_]*?(?:__[A-Z][a-z0-9_]*?)+$~';
+
+    /** @var array<string, list<string>> rule => violations of the migration checkMigration() is checking */
+    private array $migrationViolations;
 
     public function migrationsChangeTheStructureThroughTheSchemaApi(UnitTester $I) : void
     {
@@ -140,36 +136,36 @@ class MigrationConventionsCest
             $methods[$method->name->toString()] = $method;
         }
 
-        $violations = [self::RULE_SCHEMA_API => [], self::RULE_NAMING => [], self::RULE_DOWN => [], self::RULE_ONE_TABLE => []];
+        $this->migrationViolations = [self::RULE_SCHEMA_API => [], self::RULE_NAMING => [], self::RULE_DOWN => [], self::RULE_ONE_TABLE => []];
         $tables = ['up' => [], 'down' => []];
 
         foreach (['up', 'down'] as $name) {
             if (!isset($methods[$name])) {
-                $violations[self::RULE_DOWN][] = $name . '() is missing';
+                $this->migrationViolations[self::RULE_DOWN][] = $name . '() is missing';
+
                 continue;
             }
 
-            $tables[$name] = $this->checkMethod($methods[$name], $violations);
+            $tables[$name] = $this->checkMethod($methods[$name]);
         }
 
         if (isset($methods['down'])) {
-            $this->checkDown($methods['down'], $tables['up'], $tables['down'], $violations);
+            $this->checkDown($methods['down'], $tables['up'], $tables['down']);
         }
 
         $changed = array_values(array_unique([...$tables['up'], ...$tables['down']]));
 
         if (count($changed) > 1 || in_array('?', $changed, true)) {
-            $violations[self::RULE_ONE_TABLE][] = 'changes the tables ' . implode(', ', $changed) . ' (? = a name that is not a literal)';
+            $this->migrationViolations[self::RULE_ONE_TABLE][] = 'changes the tables ' . implode(', ', $changed) . ' (? = a name that is not a literal)';
         }
 
-        return $violations;
+        return $this->migrationViolations;
     }
 
     /**
-     * @param array<string, list<string>> $violations
      * @return list<string> the tables whose structure the method changes, '?' for a name that is not a literal
      */
-    private function checkMethod(ClassMethod $method, array &$violations) : array
+    private function checkMethod(ClassMethod $method) : array
     {
         $finder = new NodeFinder();
         $where = $method->name->toString() . '() line ';
@@ -193,43 +189,40 @@ class MigrationConventionsCest
             }
 
             if (isset(self::NAMED_METHODS[$name])) {
-                $this->checkName($call, $name, $this->tableOf($call->var, $variables), $line, $violations);
+                $this->checkName($call, $name, $this->tableOf($call->var, $variables), $line);
             }
 
             if ($name === 'renameIndex') {
                 $newName = $this->stringValue($this->argument($call, 1, 'newIndexName'));
 
                 if ($newName !== null && preg_match(self::NAME_PATTERN, $newName) !== 1) {
-                    $violations[self::RULE_NAMING][] = $line . ': renameIndex() to ' . $newName;
+                    $this->migrationViolations[self::RULE_NAMING][] = $line . ': renameIndex() to ' . $newName;
                 }
             }
 
             if ($this->isSqlCall($call, $name)) {
-                $tables = [...$tables, ...$this->checkSql($call, $method, $line, $violations)];
+                $tables = [...$tables, ...$this->checkSql($call, $method, $line)];
             }
         }
 
         return array_values(array_unique($tables));
     }
 
-    /**
-     * @param array<string, list<string>> $violations
-     */
-    private function checkName(MethodCall $call, string $method, ?string $table, string $line, array &$violations) : void
+    private function checkName(MethodCall $call, string $method, ?string $table, string $line) : void
     {
         [$columnsPosition, $columnsName, $namePosition, $nameName] = self::NAMED_ARGUMENTS[$method];
         $name = $this->stringValue($this->argument($call, $namePosition, $nameName));
         $columns = $this->stringList($this->argument($call, $columnsPosition, $columnsName));
 
         if ($name === null) {
-            $violations[self::RULE_NAMING][] = $line . ': ' . $method . '() without an explicit (literal) name';
+            $this->migrationViolations[self::RULE_NAMING][] = $line . ': ' . $method . '() without an explicit (literal) name';
 
             return;
         }
 
         if ($table === null || $columns === null) {
             if (preg_match(self::NAME_PATTERN, $name) !== 1 || !str_starts_with($name, self::NAMED_METHODS[$method] . '__')) {
-                $violations[self::RULE_NAMING][] = $line . ': ' . $method . '() named ' . $name;
+                $this->migrationViolations[self::RULE_NAMING][] = $line . ': ' . $method . '() named ' . $name;
             }
 
             return;
@@ -242,20 +235,19 @@ class MigrationConventionsCest
         $expected = self::NAMED_METHODS[$method] . '__' . ucfirst($table) . '__' . ucfirst(implode('_', $columns));
 
         if ($name !== $expected) {
-            $violations[self::RULE_NAMING][] = $line . ': ' . $method . '() named ' . $name . ', expected ' . $expected;
+            $this->migrationViolations[self::RULE_NAMING][] = $line . ': ' . $method . '() named ' . $name . ', expected ' . $expected;
         }
     }
 
     /**
-     * @param array<string, list<string>> $violations
      * @return list<string> the tables the statement changes the structure of
      */
-    private function checkSql(MethodCall $call, ClassMethod $method, string $line, array &$violations) : array
+    private function checkSql(MethodCall $call, ClassMethod $method, string $line) : array
     {
         $sql = $this->sqlValue($this->argument($call, 0, 'sql'));
 
         if ($sql === null) {
-            $violations[self::RULE_SCHEMA_API][] = $line . ': the SQL is not a literal, it cannot be checked';
+            $this->migrationViolations[self::RULE_SCHEMA_API][] = $line . ': the SQL is not a literal, it cannot be checked';
 
             return ['?'];
         }
@@ -274,18 +266,18 @@ class MigrationConventionsCest
         }
 
         if (!$this->isSpecialSql($statement)) {
-            $violations[self::RULE_SCHEMA_API][] = $line . ': raw DDL ' . $firstLine;
+            $this->migrationViolations[self::RULE_SCHEMA_API][] = $line . ': raw DDL ' . $firstLine;
 
             return $tables;
         }
 
         if (!$this->hasComment($call, $method)) {
-            $violations[self::RULE_SCHEMA_API][] = $line . ': ' . $firstLine . ' needs a comment saying why the Schema API cannot do it';
+            $this->migrationViolations[self::RULE_SCHEMA_API][] = $line . ': ' . $firstLine . ' needs a comment saying why the Schema API cannot do it';
         }
 
         if (preg_match('~^CREATE\s+(?:UNIQUE\s+)?INDEX\s+(?:CONCURRENTLY\s+)?(?:IF\s+NOT\s+EXISTS\s+)?"?(\w+)~', $statement, $match) === 1
             && preg_match('~^(?:K|UK)__~i', $match[1]) !== 1) {
-            $violations[self::RULE_NAMING][] = $line . ': index ' . $match[1] . ' (K__<Table>__... / UK__<Table>__...)';
+            $this->migrationViolations[self::RULE_NAMING][] = $line . ': index ' . $match[1] . ' (K__<Table>__... / UK__<Table>__...)';
         }
 
         return $tables;
@@ -325,14 +317,13 @@ class MigrationConventionsCest
     /**
      * @param list<string> $upTables
      * @param list<string> $downTables
-     * @param array<string, list<string>> $violations
      */
-    private function checkDown(ClassMethod $down, array $upTables, array $downTables, array &$violations) : void
+    private function checkDown(ClassMethod $down, array $upTables, array $downTables) : void
     {
         $statements = array_filter($down->stmts ?? [], fn (Node\Stmt $statement) : bool => !$statement instanceof Node\Stmt\Nop);
 
         if ($statements === []) {
-            $violations[self::RULE_DOWN][] = 'down() is empty (a comment is not enough: revert, or throwIrreversibleMigrationException())';
+            $this->migrationViolations[self::RULE_DOWN][] = 'down() is empty (a comment is not enough: revert, or throwIrreversibleMigrationException())';
 
             return;
         }
@@ -347,7 +338,7 @@ class MigrationConventionsCest
         $missing = array_diff($upTables, $downTables, ['?']);
 
         if ($missing !== []) {
-            $violations[self::RULE_DOWN][] = 'down() does not touch ' . implode(', ', $missing) . ' changed by up()';
+            $this->migrationViolations[self::RULE_DOWN][] = 'down() does not touch ' . implode(', ', $missing) . ' changed by up()';
         }
     }
 

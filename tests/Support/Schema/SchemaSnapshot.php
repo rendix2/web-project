@@ -18,24 +18,16 @@ use ReflectionClass;
  */
 class SchemaSnapshot
 {
-    /**
-     * @var list<ClassMetadata<object>>
-     */
+    /** @var list<ClassMetadata<object>> */
     private array $entities;
 
-    /**
-     * @var array<string, Table> by table name
-     */
+    /** @var array<string, Table> by table name */
     private array $tables;
 
-    /**
-     * @var array<string, list<Index>> by table name: the indexes that really exist in the database
-     */
+    /** @var array<string, list<Index>> by table name: the indexes that really exist in the database */
     private array $indexes;
 
-    /**
-     * @var array<string, string> "table.column" => the native PostgreSQL type (`information_schema.columns.udt_name`)
-     */
+    /** @var array<string, string> "table.column" => the native PostgreSQL type (`information_schema.columns.udt_name`) */
     private array $nativeTypes;
 
     public function __construct(EntityManagerInterface $em)
@@ -58,6 +50,7 @@ class SchemaSnapshot
             // not $table->getIndexes(): a DBAL Table invents an index (IDX_<hash>) for every foreign key no index covers
             $this->indexes[$name] = $schemaManager->introspectTableIndexes($table->getObjectName());
         }
+
         ksort($this->tables);
 
         // the catalogue is read on purpose (AGENTS.md: the QueryBuilder rule exempts tests of the database catalogue)

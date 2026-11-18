@@ -117,7 +117,7 @@ class CardHeaderTitleIconCest
         }
 
         // tags are blanked out so a `{_key}` inside an attribute (title="...") is not taken for the title
-        $text = (string) preg_replace_callback('/<[^>]*>/', static fn (array $m): string => str_repeat(' ', strlen($m[0])), $html);
+        $text = (string) preg_replace_callback('/<[^>]*>/', static fn (array $m) : string => str_repeat(' ', strlen($m[0])), $html);
 
         if (preg_match('/\{(_|\$|include\s)/', $text, $titleMatch, PREG_OFFSET_CAPTURE) !== 1) {
             return true;
@@ -141,7 +141,7 @@ class CardHeaderTitleIconCest
 
             $content = (string) file_get_contents($file->getPathname());
             // comments may contain HTML; blank them out but keep the line numbers
-            $content = (string) preg_replace_callback('/\{\*.*?\*\}/s', static fn (array $m): string => str_repeat("\n", substr_count($m[0], "\n")), $content);
+            $content = (string) preg_replace_callback('/\{\*.*?\*\}/s', static fn (array $m) : string => str_repeat("\n", substr_count($m[0], "\n")), $content);
             $templates[substr($file->getPathname(), strlen($root) + 1)] = $content;
         }
 

@@ -20,7 +20,7 @@ class GridsAreSecuredCest
 {
     private const array LIBRARY_CLASSES = ['contributte\datagrid\datagrid', 'ublaboo\datagrid\datagrid'];
 
-    public function noGridIsAPlainDatagrid(UnitTester $I) : void
+    public function noGridIsPlainDatagrid(UnitTester $I) : void
     {
         $offenders = [];
         $scanned = 0;
@@ -69,6 +69,7 @@ class GridsAreSecuredCest
             foreach ($news[1] as $name) {
                 if (str_starts_with($name, '\\')) {
                     $classes[] = substr($name, 1);
+
                     continue;
                 }
 

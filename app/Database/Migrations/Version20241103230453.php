@@ -75,5 +75,4 @@ final class Version20241103230453 extends AbstractMigration
     {
         $schema->dropTable('public.user_auto_login');
     }
-
 }

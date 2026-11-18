@@ -9,7 +9,6 @@ use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\Configuration\Connection\ExistingConnection;
 use Doctrine\Migrations\Configuration\Migration\ConfigurationArray;
 use Doctrine\Migrations\DependencyFactory;
-use Doctrine\Migrations\Metadata\MigrationPlanList;
 use Doctrine\Migrations\MigratorConfiguration;
 use Doctrine\Migrations\Version\Version;
 use Tests\Support\IntegrationTester;
@@ -86,6 +85,7 @@ class MigrationsDownUpCest
         while ($connection->isTransactionActive()) {
             $connection->rollBack();
         }
+
         $I->assertTrue(
             $connection->createSchemaManager()->createComparator()->compareSchemas($before, $this->schema($connection))->isEmpty(),
             'The schema is not the original one after the rollback.',

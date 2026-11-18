@@ -37,7 +37,8 @@ class AutoLoginService
         private readonly AutoLoginTokenService  $tokens,
         private readonly EntityManagerDecorator $em,
         private readonly BrowserNameService     $browserName,
-    ) {
+    )
+    {
     }
 
     /**
@@ -145,5 +146,4 @@ class AutoLoginService
     {
         return UserAutoLoginEntity::LIFETIME_DAYS . ' days';
     }
-
 }

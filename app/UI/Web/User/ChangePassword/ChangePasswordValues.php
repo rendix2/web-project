@@ -9,11 +9,9 @@ namespace App\UI\Web\User\ChangePassword;
  */
 final class ChangePasswordValues
 {
-
     public string $currentPassword;
 
     public string $password;
 
     public string $password2;
-
 }

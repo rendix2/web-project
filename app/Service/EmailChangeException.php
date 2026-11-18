@@ -12,8 +12,8 @@ final class EmailChangeException extends RuntimeException
 {
     public function __construct(
         public readonly string $reason,
-    ) {
+    )
+    {
         parent::__construct('E-mail change refused: ' . $reason);
     }
-
 }

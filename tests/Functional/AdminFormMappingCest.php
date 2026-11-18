@@ -47,7 +47,7 @@ class AdminFormMappingCest
     /**
      * Found by this test: the create form has no description, the column is NOT NULL, so every create ended in "Operace se nezdařila".
      */
-    public function theRoleCreateFormCreatesARole(FunctionalTester $I) : void
+    public function theRoleCreateFormCreatesRole(FunctionalTester $I) : void
     {
         $this->login($I);
         $name = 'MapRole' . random_int(100000, 999999);
@@ -115,7 +115,7 @@ class AdminFormMappingCest
 
         // a changed e-mail is remembered in the e-mail history
         $emails = array_map(
-            static fn(UserEmailEntity $e): string => $e->email,
+            static fn (UserEmailEntity $e) : string => $e->email,
             $em->getRepository(UserEmailEntity::class)->findBy(['user' => $saved->id]),
         );
         $I->assertContains('mapnew' . $tag . '@example.com', $emails);
@@ -156,13 +156,13 @@ class AdminFormMappingCest
 
         // the password history keeps both
         $hashes = array_map(
-            static fn(UserPasswordEntity $p): string => $p->password,
+            static fn (UserPasswordEntity $p) : string => $p->password,
             $em->getRepository(UserPasswordEntity::class)->findBy(['user' => $saved->id]),
         );
         $I->assertContains($saved->password, $hashes);
     }
 
-    public function theUserCreateFormCreatesAUser(FunctionalTester $I) : void
+    public function theUserCreateFormCreatesUser(FunctionalTester $I) : void
     {
         $this->login($I);
         $tag = (string) random_int(100000, 999999);

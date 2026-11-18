@@ -11,12 +11,17 @@ final class IpAddressType extends Type
 {
     public const string NAME = 'ip_address';
 
-    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
+    /**
+     * @param array<string, mixed> $column
+     */
+    // phpcs:ignore Generic.NamingConventions.CamelCapsFunctionName
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform) : string
     {
         return 'INET';
     }
 
-    public function convertToPHPValue($value, AbstractPlatform $platform): ?string
+    // phpcs:ignore Generic.NamingConventions.CamelCapsFunctionName
+    public function convertToPHPValue(mixed $value, AbstractPlatform $platform) : ?string
     {
         if ($value === null || $value === '') {
             return null;
@@ -29,7 +34,7 @@ final class IpAddressType extends Type
         return $value;
     }
 
-    public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
+    public function convertToDatabaseValue(mixed $value, AbstractPlatform $platform) : ?string
     {
         if ($value === null) {
             return null;
@@ -42,7 +47,8 @@ final class IpAddressType extends Type
         return $value;
     }
 
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
+    // phpcs:ignore Generic.NamingConventions.CamelCapsFunctionName
+    public function requiresSQLCommentHint(AbstractPlatform $platform) : bool
     {
         return false;
     }

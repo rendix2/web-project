@@ -15,20 +15,6 @@ use Tests\Support\FunctionalTester;
 class DatagridTranslationsCest
 {
     /**
-     * @return array<string, array{0: string}>
-     */
-    protected function pagesProvider() : array
-    {
-        $examples = [];
-
-        foreach (['/admin.user.list/', '/admin.role.list/'] as $url) {
-            $examples[$url] = [$url];
-        }
-
-        return $examples;
-    }
-
-    /**
      * @param Example<int, string> $example
      */
     #[DataProvider('pagesProvider')]
@@ -52,5 +38,19 @@ class DatagridTranslationsCest
 
         $I->assertDoesNotMatchRegularExpression('~\b(?:contributte|ublaboo)_datagrid\.\w+~', $text, $url . ': a datagrid text is not translated.');
         $I->assertStringContainsString('Položky', $text, $url . ': the footer is not in Czech.');
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    protected function pagesProvider() : array
+    {
+        $examples = [];
+
+        foreach (['/admin.user.list/', '/admin.role.list/'] as $url) {
+            $examples[$url] = [$url];
+        }
+
+        return $examples;
     }
 }

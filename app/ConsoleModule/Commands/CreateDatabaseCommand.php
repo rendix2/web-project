@@ -16,10 +16,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class CreateDatabaseCommand extends Command
 {
-
     public function __construct(
         private readonly Container $container,
-    ) {
+    )
+    {
         parent::__construct();
     }
 
@@ -40,22 +40,21 @@ class CreateDatabaseCommand extends Command
             $pdo = new PDO($dsn, $user, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                $pdo = new PDO('pgsql:host=' . $host . ';dbname=postgres', $user, $password);
-                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $pdo = new PDO('pgsql:host=' . $host . ';dbname=postgres', $user, $password);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                $stmt = $pdo->prepare("SELECT 1 FROM pg_database WHERE datname = ?");
-                $stmt->execute([$database]);
-                $exists = $stmt->fetchColumn();
+            $stmt = $pdo->prepare('SELECT 1 FROM pg_database WHERE datname = ?');
+            $stmt->execute([$database]);
+            $exists = $stmt->fetchColumn();
 
-                if ($exists === false) {
-                    $pdo->exec('CREATE DATABASE "' . $database . '" WITH ENCODING ' . ($charset === 'utf8mb4' ? "'UTF8'" : "'" . $charset . "'") . ';');
-                    $output->writeln('Database "' . $database . '" created.');
-                } else {
-                    $output->writeln('Database "' . $database . '" already exists.');
-                }
+            if ($exists === false) {
+                $pdo->exec('CREATE DATABASE "' . $database . '" WITH ENCODING ' . ($charset === 'utf8mb4' ? "'UTF8'" : "'" . $charset . "'") . ';');
+                $output->writeln('Database "' . $database . '" created.');
+            } else {
+                $output->writeln('Database "' . $database . '" already exists.');
+            }
 
             $output->writeln('Database "' . $database . '" created (if it did not exist).');
-            $pdo = null;
 
             return 0;
         } catch (PDOException $e) {

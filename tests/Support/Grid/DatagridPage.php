@@ -27,25 +27,25 @@ final class DatagridPage
      */
     public function gridNames() : array
     {
-        $names = [];
-
-        $this->crawler->filterXPath('//div[contains(concat(" ", normalize-space(@class), " "), " datagrid ")]')->each(
-            static function (Crawler $grid) use (&$names) : void {
+        $names = $this->crawler->filterXPath('//div[contains(concat(" ", normalize-space(@class), " "), " datagrid ")]')->each(
+            static function (Crawler $grid) : array {
                 if ($grid->attr('data-datagrid-name') !== null) { // contributte/datagrid 7
-                    $names[] = $grid->attr('data-datagrid-name');
-
-                    return;
+                    return [$grid->attr('data-datagrid-name')];
                 }
+
+                $names = [];
 
                 foreach (explode(' ', (string) $grid->attr('class')) as $class) { // ublaboo/datagrid 6
                     if (str_starts_with($class, 'datagrid-')) {
                         $names[] = substr($class, strlen('datagrid-'));
                     }
                 }
+
+                return $names;
             },
         );
 
-        return array_values(array_unique($names));
+        return array_values(array_unique(array_merge(...$names)));
     }
 
     public function filterFormId(string $grid) : string
@@ -58,19 +58,11 @@ final class DatagridPage
      */
     public function columns(string $grid) : array
     {
-        $keys = [];
-
-        $this->grid($grid)->filterXPath('.//thead//th[contains(@class, "col-")]')->each(
-            function (Crawler $th) use (&$keys) : void {
-                $key = $this->columnKey($th);
-
-                if ($key !== null && $key !== 'action') {
-                    $keys[] = $key;
-                }
-            },
+        $keys = $this->grid($grid)->filterXPath('.//thead//th[contains(@class, "col-")]')->each(
+            fn (Crawler $th) : ?string => $this->columnKey($th),
         );
 
-        return array_values(array_unique($keys));
+        return array_values(array_unique(array_filter($keys, static fn (?string $key) : bool => $key !== null && $key !== 'action')));
     }
 
     /**
@@ -78,15 +70,11 @@ final class DatagridPage
      */
     public function sortUrls(string $grid) : array
     {
-        $urls = [];
-
-        $this->grid($grid)->filterXPath('.//thead//a[starts-with(@id, "datagrid-sort-")]')->each(
-            static function (Crawler $link) use (&$urls) : void {
-                $urls[substr((string) $link->attr('id'), strlen('datagrid-sort-'))] = (string) $link->attr('href');
-            },
+        $links = $this->grid($grid)->filterXPath('.//thead//a[starts-with(@id, "datagrid-sort-")]')->each(
+            static fn (Crawler $link) : array => [substr((string) $link->attr('id'), strlen('datagrid-sort-')), (string) $link->attr('href')],
         );
 
-        return $urls;
+        return array_column($links, 1, 0);
     }
 
     /**
@@ -94,42 +82,48 @@ final class DatagridPage
      */
     public function filters(string $grid) : array
     {
-        $filters = [];
-
-        $this->grid($grid)->filterXPath('.//thead//*[(self::input or self::select) and starts-with(@name, "filter[")]')->each(
-            static function (Crawler $field) use (&$filters) : void {
+        $fields = $this->grid($grid)->filterXPath('.//thead//*[(self::input or self::select) and starts-with(@name, "filter[")]')->each(
+            static function (Crawler $field) : ?array {
                 $name = (string) $field->attr('name');
                 if (preg_match('~^filter\[([^\]]+)\]~', $name, $m) !== 1) {
-                    return;
+                    return null;
                 }
 
                 $options = [];
                 $kind = 'text';
 
                 if (preg_match('~^filter\[[^\]]+\]\[(from|to)\]$~', $name) === 1) {
-                    foreach ($filters as $known) {
-                        if ($known['key'] === $m[1] && $known['kind'] === 'range') {
-                            return; // the "to" half of a range already listed
-                        }
-                    }
-
                     $kind = 'range';
                 } elseif ($field->nodeName() === 'select') {
                     $kind = $field->attr('multiple') !== null ? 'multiselect' : 'select';
-                    $field->filter('option')->each(static function (Crawler $option) use (&$options) : void {
-                        $value = (string) $option->attr('value');
-
-                        if ($value !== '') {
-                            $options[] = $value;
-                        }
-                    });
+                    $values = $field->filter('option')->each(static fn (Crawler $option) : string => (string) $option->attr('value'));
+                    $options = array_values(array_filter($values, static fn (string $value) : bool => $value !== ''));
                 } elseif ($field->attr('data-provide') === 'datepicker' || $field->attr('data-datagrid-datepicker') !== null || str_contains((string) $field->attr('class'), 'datepicker')) {
                     $kind = 'date';
                 }
 
-                $filters[] = ['key' => $m[1], 'name' => $name, 'kind' => $kind, 'options' => $options];
+                return ['key' => $m[1], 'name' => $name, 'kind' => $kind, 'options' => $options];
             },
         );
+
+        $filters = [];
+        $ranges = [];
+
+        foreach ($fields as $filter) {
+            if ($filter === null) {
+                continue;
+            }
+
+            if ($filter['kind'] === 'range') {
+                if (isset($ranges[$filter['key']])) {
+                    continue; // the "to" half of a range already listed
+                }
+
+                $ranges[$filter['key']] = true;
+            }
+
+            $filters[] = $filter;
+        }
 
         return $filters;
     }
@@ -139,15 +133,9 @@ final class DatagridPage
      */
     public function rowIds(string $grid) : array
     {
-        $ids = [];
-
-        $this->grid($grid)->filterXPath('.//tbody/tr[@data-id]')->each(
-            static function (Crawler $row) use (&$ids) : void {
-                $ids[] = (string) $row->attr('data-id');
-            },
+        return $this->grid($grid)->filterXPath('.//tbody/tr[@data-id]')->each(
+            static fn (Crawler $row) : string => (string) $row->attr('data-id'),
         );
-
-        return $ids;
     }
 
     /**
@@ -155,16 +143,13 @@ final class DatagridPage
      */
     public function cells(string $grid, string $column) : array
     {
-        $cells = [];
-
-        $this->grid($grid)->filterXPath('.//tbody/tr[@data-id]')->each(
-            static function (Crawler $row) use (&$cells, $column) : void {
+        return $this->grid($grid)->filterXPath('.//tbody/tr[@data-id]')->each(
+            static function (Crawler $row) use ($column) : string {
                 $cell = $row->filterXPath('.//td[contains(concat(" ", normalize-space(@class), " "), " col-' . $column . ' ")]');
-                $cells[] = $cell->count() === 0 ? '' : trim((string) preg_replace('~\s+~u', ' ', $cell->text()));
+
+                return $cell->count() === 0 ? '' : trim((string) preg_replace('~\s+~u', ' ', $cell->text()));
             },
         );
-
-        return $cells;
     }
 
     /**
@@ -202,15 +187,9 @@ final class DatagridPage
      */
     public function perPageOptions(string $grid) : array
     {
-        $options = [];
-
-        $this->grid($grid)->filterXPath('.//select[@name="perPage"]/option')->each(
-            static function (Crawler $option) use (&$options) : void {
-                $options[] = (string) $option->attr('value');
-            },
+        return $this->grid($grid)->filterXPath('.//select[@name="perPage"]/option')->each(
+            static fn (Crawler $option) : string => (string) $option->attr('value'),
         );
-
-        return $options;
     }
 
     /**
@@ -247,17 +226,17 @@ final class DatagridPage
      */
     public function summary(string $grid) : array
     {
+        $cells = $this->grid($grid)->filterXPath('.//tr[contains(@class, "datagrid-row-columns-summary")]/td')->each(
+            fn (Crawler $td) : array => [$this->columnKey($td), trim((string) preg_replace('~\s+~u', ' ', $td->text()))],
+        );
+
         $summary = [];
 
-        $this->grid($grid)->filterXPath('.//tr[contains(@class, "datagrid-row-columns-summary")]/td')->each(
-            function (Crawler $td) use (&$summary) : void {
-                $key = $this->columnKey($td);
-
-                if ($key !== null) {
-                    $summary[$key] = trim((string) preg_replace('~\s+~u', ' ', $td->text()));
-                }
-            },
-        );
+        foreach ($cells as [$key, $text]) {
+            if ($key !== null) {
+                $summary[$key] = $text;
+            }
+        }
 
         return $summary;
     }
@@ -267,15 +246,9 @@ final class DatagridPage
      */
     public function rowActionTitles(string $grid) : array
     {
-        $titles = [];
-
-        $this->grid($grid)->filterXPath('(.//tbody/tr[@data-id])[1]//td[contains(@class, "col-action")]//a')->each(
-            static function (Crawler $a) use (&$titles) : void {
-                $titles[] = trim($a->attr('title') ?? $a->text());
-            },
+        return $this->grid($grid)->filterXPath('(.//tbody/tr[@data-id])[1]//td[contains(@class, "col-action")]//a')->each(
+            static fn (Crawler $a) : string => trim($a->attr('title') ?? $a->text()),
         );
-
-        return $titles;
     }
 
     private function grid(string $name) : Crawler
@@ -309,17 +282,17 @@ final class DatagridPage
      */
     private function columnLinks(string $grid, string $signal) : array
     {
+        $hrefs = $this->grid($grid)->filterXPath('.//a[contains(@href, "do=' . $grid . '-' . $signal . '")]')->each(
+            static fn (Crawler $link) : string => (string) $link->attr('href'),
+        );
+
         $urls = [];
 
-        $this->grid($grid)->filterXPath('.//a[contains(@href, "do=' . $grid . '-' . $signal . '")]')->each(
-            static function (Crawler $link) use (&$urls) : void {
-                $href = (string) $link->attr('href');
-
-                if (preg_match('~-column=([^&]+)~', $href, $m) === 1) {
-                    $urls[urldecode($m[1])] = $href;
-                }
-            },
-        );
+        foreach ($hrefs as $href) {
+            if (preg_match('~-column=([^&]+)~', $href, $m) === 1) {
+                $urls[urldecode($m[1])] = $href;
+            }
+        }
 
         return $urls;
     }

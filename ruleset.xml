@@ -1,8 +1,103 @@
 <?xml version="1.0"?>
-<ruleset name="Acme">
-    <rule ref="./vendor/ninjify/coding-standard/ruleset.xml"/>
+<ruleset name="Rendix2">
+    <description>contributte/qa (PHP 8.4) adjusted to the code style of alfred, web-project and family-tree. The same file in all three projects.</description>
+
+    <rule ref="./vendor/contributte/qa/ruleset-8.4.xml">
+        <!-- indentation: 4 spaces, not tabs -->
+        <exclude name="Generic.WhiteSpace.DisallowSpaceIndent"/>
+        <!-- line endings: git (core.autocrlf) decides them, not the sniffer -->
+        <exclude name="Generic.Files.LineEndings"/>
+        <!-- aligned constructor parameters and assignments are allowed -->
+        <exclude name="SlevomatCodingStandard.Whitespaces.DuplicateSpaces"/>
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing.MultipleSpacesBetweenTypeHintAndParameter"/>
+        <!-- class docblocks with @package are allowed -->
+        <exclude name="SlevomatCodingStandard.Commenting.ForbiddenAnnotations"/>
+        <!-- Codeception hooks _before() / _after() -->
+        <exclude name="PSR2.Methods.MethodDeclaration.Underscore"/>
+        <!-- "Connected to database '$database'." -->
+        <exclude name="Squiz.Strings.DoubleQuoteUsage.ContainsVar"/>
+        <!-- family-tree: public const FatherGenus = 'Father'; -->
+        <exclude name="Generic.NamingConventions.UpperCaseConstantName"/>
+        <!--
+        one-line doc comments with a description (/** a BIGINT holds at most 19 digits */) are allowed (ContentAfterOpen is
+        excluded by contributte/qa), but this check flags them anyway and its fixer cannot change them: phpcbf loops and
+        leaves the whole file unfixed. A blank line before the description is still caught by
+        SlevomatCodingStandard.Commenting.DocCommentSpacing.
+        -->
+        <exclude name="Generic.Commenting.DocComment.SpacingBeforeShort"/>
+        <!--
+        alfred: section dividers between the methods of a class (// - - - helpers - - -, // load()) are not doc comments
+        of the method below them, but this check takes any // comment in front of a function for its wrong-style doc comment
+        -->
+        <exclude name="Squiz.Commenting.FunctionComment.WrongStyle"/>
+    </rule>
+
     <!--
-    Exclude folders
-    <exclude-pattern>/tests/tmp</exclude-pattern>
+    alfred: Nette Tester (tests/Tester, tests/TesterKnownBugs) runs every test file as a script - the class and then
+    (new FooTest())->run() - so declaring a symbol and running it in one file is how Tester works
     -->
+    <rule ref="PSR1.Files.SideEffects">
+        <exclude-pattern>*/tests/Tester*/*</exclude-pattern>
+    </rule>
+    <!-- strict camelCase; methods overriding a library API (Doctrine Type::convertToPHPValue()) carry "phpcs:ignore" -->
+
+    <!-- no empty line after "{" / before "}" of a class applies to a trait use too (contributte/qa wants 1: phpcbf loops) -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
+        <properties>
+            <property name="linesCountBeforeFirstUse" value="0"/>
+            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- indentation: 4 spaces -->
+    <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
+    <rule ref="Generic.WhiteSpace.ScopeIndent">
+        <properties>
+            <property name="indent" value="4"/>
+            <property name="tabIndent" value="false"/>
+        </properties>
+    </rule>
+
+    <!-- <?php declare(strict_types=1); -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="declareOnFirstLine" value="1"/>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- public function foo() : void -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing">
+        <properties>
+            <property name="spacesCountBeforeColon" value="1"/>
+        </properties>
+    </rule>
+
+    <!--
+    class Foo
+    {
+        public function bar() : void
+        {
+        }
+    }
+    no empty line after the opening and before the closing brace of a class
+    -->
+    <rule ref="SlevomatCodingStandard.Classes.EmptyLinesAroundClassBraces">
+        <properties>
+            <property name="linesCountAfterOpeningBrace" value="0"/>
+            <property name="linesCountBeforeClosingBrace" value="0"/>
+        </properties>
+    </rule>
+    <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+        <properties>
+            <property name="spacing" value="1"/>
+            <property name="spacingBeforeFirst" value="0"/>
+            <property name="spacingAfterLast" value="0"/>
+        </properties>
+    </rule>
+
+    <exclude-pattern>*/tests/Support/_generated/*</exclude-pattern>
+    <exclude-pattern>*/tests/_output/*</exclude-pattern>
+    <exclude-pattern>*/temp/*</exclude-pattern>
+    <exclude-pattern>*/tmp/*</exclude-pattern>
 </ruleset>

@@ -2,9 +2,9 @@
 
 namespace App\UI\Web\User\View;
 
+use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserEntity;
 use Nette\Application\UI\Presenter;
-use App\Database\EntityManagerDecorator;
 
 /**
  * class ViewPresenter
@@ -13,7 +13,6 @@ use App\Database\EntityManagerDecorator;
  */
 class ViewPresenter extends Presenter
 {
-
     public function __construct(
         private readonly EntityManagerDecorator $em,
     )
@@ -36,5 +35,4 @@ class ViewPresenter extends Presenter
 
         $this->getTemplate()->userEntity = $userEntity;
     }
-
 }

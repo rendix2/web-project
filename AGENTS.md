@@ -28,6 +28,10 @@ docker compose exec web-project-web php bin/console
 docker compose exec web-project-web php vendor/bin/phpstan analyse
 docker compose exec web-project-web make phpstan   # NB: the `dirs-build` prerequisite deletes temp/, vendor/, node_modules/!
 
+# Coding standard (ruleset.xml, contributte/qa adjusted; see "Coding standard (phpcs)")
+docker compose exec web-project-web make qa       # parallel-lint + phpcs
+docker compose exec web-project-web make cs-fix   # phpcbf
+
 # Build frontend (Vite, source in assets/, output www/assets - git-ignored)
 docker compose exec web-project-web npm run build
 
@@ -145,6 +149,13 @@ nothing needs `orm:generate-proxies`.
 - **Queries go through the QueryBuilder, never hand-written DQL/SQL:** `$em->createQueryBuilder()` or `$repository->createQueryBuilder('_alias')` (aliases start with `_`), also for bulk `delete()` / `update()`. No `createQuery('...')`, `createNativeQuery()`, `$connection->executeQuery()/executeStatement()/fetch*()`. Exempt: migrations. Guarded by `tests/Unit/QueriesUseTheQueryBuilderCest` (same rule as alfred).
 - **Login never reveals whether an account exists:** an unknown username, a wrong password and a wrong password of an inactive account all throw the same `web-user-login.error.invalidCredentials` (an unknown username still hashes the password, so the timing is the same); "not active" is said only after the correct password. Pinned by `tests/Integration/LoginDoesNotRevealAccountsCest`.
 - **The "stay logged in" cookie is handled in ONE place:** `Core/AutoLoginService::remember()` (login: issue the token, set the cookie) and `::forget()` (logout: revoke the token, delete the cookie). Presenters never touch the cookie or `AutoLoginTokenService` directly.
+
+### Coding standard (phpcs)
+- `ruleset.xml` = `contributte/qa` (PHP 8.4) adjusted to our style. It is ONE file shared by alfred, web-project and family-tree; the master copy is the one in the root of web-project - change it here and copy it to the other two.
+- `make qa` (= `composer qa`: `parallel-lint app tests` + `phpcs --standard=ruleset.xml app tests`) must be clean (0 errors, 0 warnings); CI runs it (job `checks`, step "Coding standard"). `make cs-fix` (= `composer cs-fix`, phpcbf) fixes what it can, the rest is fixed by hand. Run both in the container: `docker compose exec web-project-web make qa`.
+- The style: 4 spaces, never tabs; the first line of every PHP file is exactly `<?php declare(strict_types=1);`; a space before the colon of a return type (`) : void`); the `{` of a class on its own line, no empty line after it and none before the closing `}`.
+- Method names are strict camelCase, no two capitals in a row (`everyCardHasTheSameCornersAndShadow`, not `...AndAShadow`; `Xpath`, not `XPath`): rename the method. Only a method that overrides a library API and cannot be renamed (Doctrine `Type::convertToPHPValue()`, `getSQLDeclaration()`, `requiresSQLCommentHint()`) gets `// phpcs:ignore Generic.NamingConventions.CamelCapsFunctionName` on the line above it.
+- No references (`use (&$x)` in a closure, `array &$x` parameters): a closure returns its value (`Crawler::each()` returns the list of what the closure returned), a method returns what it collected. No superglobals (`$_SERVER`, ...), no empty function bodies (an empty `actionDefault()` / `renderDefault()` of a presenter is not needed at all), no empty `catch` without a comment why, one class / interface per file.
 
 ## Dependencies held back (`composer.json` `conflict`)
 - `latte/latte >=3.1.8`: 3.1.8 deprecates "positional argument after named" and ublaboo/datagrid's `datagrid.latte` (line 302) does exactly that; under `tracy.strictMode` every admin grid was a 500. Remove the conflict once datagrid is fixed.

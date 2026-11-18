@@ -3,8 +3,8 @@
 namespace Tests\Functional;
 
 use App\Database\EntityManagerDecorator;
-use Codeception\Attribute\DataProvider;
 use App\Model\Entity\UserEntity;
+use Codeception\Attribute\DataProvider;
 use Codeception\Example;
 use PHPUnit\Framework\Assert;
 use Tests\Support\FunctionalTester;
@@ -16,21 +16,6 @@ use Tests\Support\FunctionalTester;
  */
 class InlineEditAjaxCest
 {
-    /**
-     * @return array<string, array{0: string}>
-     */
-    protected function pagesProvider() : array
-    {
-        $urls = ['/admin.user.list/', '/admin.role.list/', '/admin.user.edit/default/{user}'];
-        $examples = [];
-
-        foreach ($urls as $url) {
-            $examples[$url] = [$url];
-        }
-
-        return $examples;
-    }
-
     /**
      * @param Example<int, string> $example
      */
@@ -53,7 +38,7 @@ class InlineEditAjaxCest
 
         preg_match_all('~<a\b[^>]*\bdatagrid-inline-edit-trigger\b[^>]*>~', $I->grabPageSource(), $links);
 
-        $plain = array_values(array_filter($links[0], static fn (string $link): bool => preg_match('~\bclass="[^"]*\bajax\b~', $link) !== 1));
+        $plain = array_values(array_filter($links[0], static fn (string $link) : bool => preg_match('~\bclass="[^"]*\bajax\b~', $link) !== 1));
 
         Assert::assertSame([], $plain, 'Inline edit links of ' . $page . ' are not AJAX links (add "ajax" to setClass()).');
     }
@@ -65,5 +50,20 @@ class InlineEditAjaxCest
         $I->amOnPage('/admin.user.list/');
 
         $I->seeInSource('datagrid-inline-edit-trigger');
+    }
+
+    /**
+     * @return array<string, array{0: string}>
+     */
+    protected function pagesProvider() : array
+    {
+        $urls = ['/admin.user.list/', '/admin.role.list/', '/admin.user.edit/default/{user}'];
+        $examples = [];
+
+        foreach ($urls as $url) {
+            $examples[$url] = [$url];
+        }
+
+        return $examples;
     }
 }

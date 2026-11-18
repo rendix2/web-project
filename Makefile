@@ -98,6 +98,13 @@ phpstan: dirs-build git php
 	php vendor/bin/codecept build
 	php vendor/bin/phpstan analyse -vvv
 
+# coding standard: ruleset.xml (contributte/qa adjusted; the same file in alfred, web-project and family-tree)
+qa:
+	composer qa
+
+# phpcbf fixes what it can, the rest of `make qa` is fixed by hand
+cs-fix:
+	composer cs-fix
 
 # --- tests (Codeception; Functional/Acceptance need the running web container, Acceptance also selenium-chrome) ---
 test-build:

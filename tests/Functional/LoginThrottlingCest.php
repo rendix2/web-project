@@ -18,9 +18,7 @@ class LoginThrottlingCest
 
     public function _before(FunctionalTester $I) : void
     {
-        // logAttempt() reads the user agent of the current request
-        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
-
+        // logAttempt() records the browser of the current request; a request without a User-Agent (this test) records none
         $this->cleanup($I);
     }
 
@@ -92,5 +90,4 @@ class LoginThrottlingCest
         $em->createQuery('DELETE FROM ' . UserLoginAttemptEntity::class . " a WHERE a.username LIKE 'ghost-%' OR LOWER(a.username) LIKE 'throttle-%'")->execute();
         $em->getConnection()->executeStatement("DELETE FROM user_login_attempt WHERE ip_address <<= '10.77.77.0/24'::inet");
     }
-
 }

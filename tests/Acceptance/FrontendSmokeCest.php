@@ -5,6 +5,7 @@ namespace Tests\Acceptance;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\RoleEntity;
 use App\Model\Entity\UserEntity;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Tests\Support\AcceptanceTester;
 
 /**
@@ -26,15 +27,15 @@ class FrontendSmokeCest
 
         $I->resizeWindow(1400, 1000);
 
-        $problems = [];
-        $check = function (string $page) use ($I, &$problems) : void {
+        $check = static function (string $page) use ($I) : array {
             $I->amOnPage($page);
             $I->wait(1);
 
-            $logs = [];
-            $I->executeInSelenium(static function (\Facebook\WebDriver\Remote\RemoteWebDriver $webDriver) use (&$logs) : void {
-                $logs = $webDriver->manage()->getLog('browser');
-            });
+            $problems = [];
+            /** @var list<mixed> $logs */
+            $logs = $I->executeInSelenium(
+                static fn (RemoteWebDriver $webDriver) : array => $webDriver->manage()->getLog('browser'),
+            );
 
             foreach ($logs as $entry) {
                 $message = is_array($entry) ? ($entry['message'] ?? null) : null;
@@ -47,10 +48,14 @@ class FrontendSmokeCest
             if ($I->executeJS('return document.getElementById("tracy-bs") !== null;') === true) {
                 $problems[] = $page . ': Tracy exception screen';
             }
+
+            return $problems;
         };
 
+        $problems = [];
+
         foreach (['/', '/web.user.login/', '/web.user.registration/', '/web.user.forget-password.request/'] as $page) {
-            $check($page);
+            $problems = array_merge($problems, $check($page));
         }
 
         $I->amOnPage('/web.user.login/');
@@ -59,12 +64,21 @@ class FrontendSmokeCest
         $I->click('#frm-loginForm [type=submit]');
         $I->wait(1);
 
-        foreach ([
-            '/admin.user.list/', '/admin.user.create/', '/admin.user.edit/default/' . $user->uuid,
-            '/admin.role.list/', '/admin.role.create/', '/admin.role.edit/default/' . $role->id,
-            '/web.user.view/default/' . $user->uuid, '/web.user.edit/', '/web.user.change-password/', '/web.user.change-email/',
-        ] as $page) {
-            $check($page);
+        $adminPages = [
+            '/admin.user.list/',
+            '/admin.user.create/',
+            '/admin.user.edit/default/' . $user->uuid,
+            '/admin.role.list/',
+            '/admin.role.create/',
+            '/admin.role.edit/default/' . $role->id,
+            '/web.user.view/default/' . $user->uuid,
+            '/web.user.edit/',
+            '/web.user.change-password/',
+            '/web.user.change-email/',
+        ];
+
+        foreach ($adminPages as $page) {
+            $problems = array_merge($problems, $check($page));
         }
 
         $I->assertSame([], $problems, "JavaScript errors:\n" . implode("\n", $problems));

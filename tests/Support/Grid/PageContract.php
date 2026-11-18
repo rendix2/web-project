@@ -95,32 +95,23 @@ final class PageContract
      */
     private function forms() : array
     {
-        $forms = [];
-
-        $this->crawler->filterXPath('//form[not(ancestor::*[contains(@class, "datagrid")])][not(contains(@id, "-filter"))]')->each(
-            function (Crawler $form) use (&$forms) : void {
-                $fields = [];
-
-                $form->filterXPath('.//input[@name and not(@type="hidden")]|.//select[@name]|.//textarea[@name]')->each(
-                    static function (Crawler $field) use (&$fields) : void {
-                        $name = (string) $field->attr('name');
-
-                        if (str_starts_with($name, '_') || str_starts_with($name, 'perPage')) {
-                            return;
-                        }
-
-                        $fields[] = [
-                            'name' => $name,
-                            'tag' => $field->nodeName(),
-                            'type' => $field->attr('type') ?? '',
-                            'required' => $field->attr('required') !== null,
-                        ];
-                    },
+        return $this->crawler->filterXPath('//form[not(ancestor::*[contains(@class, "datagrid")])][not(contains(@id, "-filter"))]')->each(
+            function (Crawler $form) : array {
+                $fields = $form->filterXPath('.//input[@name and not(@type="hidden")]|.//select[@name]|.//textarea[@name]')->each(
+                    static fn (Crawler $field) : array => [
+                        'name' => (string) $field->attr('name'),
+                        'tag' => $field->nodeName(),
+                        'type' => $field->attr('type') ?? '',
+                        'required' => $field->attr('required') !== null,
+                    ],
                 );
 
-                $forms[] = [
+                return [
                     'id' => (string) $form->attr('id'),
-                    'fields' => $fields,
+                    'fields' => array_values(array_filter(
+                        $fields,
+                        static fn (array $field) : bool => !str_starts_with($field['name'], '_') && !str_starts_with($field['name'], 'perPage'),
+                    )),
                     'labels' => $this->texts($form->filter('label')),
                     'submit' => $form->filterXPath('.//input[@type="submit"]|.//button[@type="submit"]')->each(
                         static fn (Crawler $button) : string => trim($button->attr('value') ?? $button->text()),
@@ -128,7 +119,5 @@ final class PageContract
                 ];
             },
         );
-
-        return $forms;
     }
 }

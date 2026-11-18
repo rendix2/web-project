@@ -2,17 +2,16 @@
 
 namespace App\UI\Admin\User\List;
 
-use stdClass;
+use App\Database\EntityManagerDecorator;
 use App\Forms\EmailFormControl;
 use App\Forms\EmailFormControlFactory;
 use App\Forms\UsernameFormControl;
 use App\Forms\UsernameFormControlFactory;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
-use App\Model\Facade\UserFacade;
-use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use App\UI\Grid\IdFilterCondition;
 use App\UI\Grid\SecuredDatagrid;
+use Contributte\Datagrid\Column\Action\Confirmation\CallbackConfirmation;
 use Contributte\Datagrid\Datagrid;
 use DateTimeImmutable;
 use Doctrine\DBAL\Exception as DbalException;
@@ -20,7 +19,7 @@ use Doctrine\ORM\QueryBuilder;
 use Nette\Forms\Container;
 use Nette\Localization\Translator;
 use Ramsey\Uuid\Uuid;
-use App\Database\EntityManagerDecorator;
+use stdClass;
 
 class UserDataGrid
 {
@@ -71,20 +70,18 @@ class UserDataGrid
         $this->grid
             ->addColumnText('fullName', 'admin-user-list.fullName.name')
             ->setRenderer(
-                function(UserEntity $userEntity) : string {
-                    return $userEntity->name . ' ' . $userEntity->surname;
-                }
+                fn (UserEntity $userEntity) : string => $userEntity->name . ' ' . $userEntity->surname
             )
             ->setSortable(true)
             ->setSortableCallback(
-                function(QueryBuilder $queryBuilder, array $sort) : void {
+                function (QueryBuilder $queryBuilder, array $sort) : void {
                     $queryBuilder->orderBy('_user.surname', $sort['fullName'] === 'DESC' ? 'DESC' : 'ASC')
                         ->addOrderBy('_user.name', $sort['fullName'] === 'DESC' ? 'DESC' : 'ASC');
                 }
             )
             ->setFilterText()
             ->setCondition(
-                function(QueryBuilder $queryBuilder, $fullName) : void {
+                function (QueryBuilder $queryBuilder, $fullName) : void {
                     $queryBuilder->andWhere(
                         $queryBuilder->expr()
                             ->orX(
@@ -136,7 +133,7 @@ class UserDataGrid
             ->setTitle('admin-user-list.edit.title')
             ->setIcon('edit');
 
-        $onClick = function(string $uuid) : void {
+        $onClick = function (string $uuid) : void {
             /**
              * @var ?UserEntity $userEntity
              */
@@ -181,9 +178,7 @@ class UserDataGrid
             ->addActionCallback('delete', 'admin-user-list.delete.name')
             ->setConfirmation(
                 new CallbackConfirmation(
-                    function(UserEntity $userEntity) : string {
-                        return (string) $this->translator->translate('admin-user-list.delete.confirm', ['username' => $userEntity->username]);
-                    }
+                    fn (UserEntity $userEntity) : string => (string) $this->translator->translate('admin-user-list.delete.confirm', ['username' => $userEntity->username])
                 )
             )
             ->setClass('btn btn-sm btn-danger ajax')
@@ -191,10 +186,7 @@ class UserDataGrid
             ->setIcon('trash')
             ->onClick[] = $onClick;
 
-        $allowDelete = function(UserEntity $userEntity) : bool {
-            // the identity id may come back from the session as int or string
-            return (string) $userEntity->id !== (string) $this->grid->getPresenter()->getUser()->getId();
-        };
+        $allowDelete = fn (UserEntity $userEntity) : bool => (string) $userEntity->id !== (string) $this->grid->getPresenter()->getUser()->getId();
 
         $this->grid->allowRowsAction('delete', $allowDelete);
     }
@@ -205,7 +197,7 @@ class UserDataGrid
             ->setText((string) $this->translator->translate('admin-user-list.edit.inline.name'))
             ->setTitle('admin-user-list.edit.inline.title');
 
-        $setDefaultsCallback = function(Container $container, UserEntity $userEntity) : void {
+        $setDefaultsCallback = function (Container $container, UserEntity $userEntity) : void {
             $usernameControl = $container->getComponent('username');
             $emailControl = $container->getComponent('email');
 
@@ -224,7 +216,7 @@ class UserDataGrid
             );
         };
 
-        $onSubmitEdit = function(string $uuid, UserInlineEditValues $values) : void {
+        $onSubmitEdit = function (string $uuid, UserInlineEditValues $values) : void {
             if (substr_count($values->fullName, ' ') === 0) {
                 $flash = new stdClass();
                 $flash->place = 'general';
@@ -272,6 +264,7 @@ class UserDataGrid
                 // a deactivated user keeps nothing that logs him in (his session ends at the next request, AutoLoginService)
                 $userEntity->autoLogins->clear();
             }
+
             $userEntity->updatedAt = new DateTimeImmutable();
 
             try {
@@ -298,7 +291,7 @@ class UserDataGrid
             }
         };
 
-        $inlineEdit->onControlAdd[] = function(Container $container) : void {
+        $inlineEdit->onControlAdd[] = function (Container $container) : void {
             $container->setMappedType(UserInlineEditValues::class);
 
             $inlineEditPost = $this->grid->getPresenter()->getHttpRequest()->getPost('inline_edit');
@@ -312,7 +305,7 @@ class UserDataGrid
                     ->getRepository(UserEntity::class)
                     ->findOneBy(
                         [
-                            'uuid' => $uuid
+                            'uuid' => $uuid,
                         ]
                     );
 
@@ -351,5 +344,4 @@ class UserDataGrid
         $inlineEdit->onSetDefaults[] = $setDefaultsCallback;
         $inlineEdit->onSubmit[] = $onSubmitEdit;
     }
-
 }

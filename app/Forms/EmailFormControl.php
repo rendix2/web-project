@@ -2,16 +2,15 @@
 
 namespace App\Forms;
 
-use Nette\Forms\Control;
 use App\Database\EntityManagerDecorator;
+use App\Forms\Renderer\IconBootstrapRenderer;
 use App\Model\Entity\UserEmailEntity;
 use App\Model\Entity\UserEntity;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Contributte\FormsBootstrap\Inputs\TextInput;
 use Nette\Application\UI\Form;
-use Nette\Forms\Controls\BaseControl;
+use Nette\Forms\Control;
 use Nette\Localization\Translator;
-use App\Forms\Renderer\IconBootstrapRenderer;
 
 /**
  * class EmailFormControl
@@ -39,7 +38,7 @@ class EmailFormControl extends TextInput
             ->addFilter(static fn (mixed $value) : mixed => is_string($value) ? mb_strtolower(trim($value)) : $value)
 
             ->addRule(
-                function (Control $control): bool {
+                function (Control $control) : bool {
                     $value = $control->getValue();
                     $email = is_string($value) ? $value : '';
 
@@ -58,14 +57,14 @@ class EmailFormControl extends TextInput
             );
     }
 
-    public function setExcludeUserId(string|int|null $userId): self
+    public function setExcludeUserId(string|int|null $userId) : self
     {
         $this->excludeUserId = $userId;
 
         return $this;
     }
 
-    private function checkEmailExists(string $email): bool
+    private function checkEmailExists(string $email) : bool
     {
         $qbUser = $this
             ->em
@@ -102,10 +101,4 @@ class EmailFormControl extends TextInput
 
         return (int) $qbHistory->getQuery()->getSingleScalarResult() > 0;
     }
-
-}
-
-interface EmailFormControlFactory
-{
-    public function create(string $label): EmailFormControl;
 }

@@ -15,9 +15,6 @@ use Tests\Support\UnitTester;
  */
 class QueriesUseTheQueryBuilderCest
 {
-    /**
-     * @var array<string, string> pattern => what it is
-     */
     private const array FORBIDDEN = [
         '~->createQuery\s*\((?!\s*\$\w+->getDQL\(\)\s*\))\s*[^)\s]~' => 'hand-written DQL (createQuery)',
         '~->createNativeQuery\s*\(~' => 'hand-written SQL (createNativeQuery)',

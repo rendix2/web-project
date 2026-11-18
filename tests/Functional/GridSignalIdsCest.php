@@ -95,7 +95,6 @@ class GridSignalIdsCest
         $I->haveHttpHeader('X-Requested-With', 'XMLHttpRequest');
     }
 
-
     private function roleExists(FunctionalTester $I, int $id) : bool
     {
         return $this->roleName($I, $id) !== null;

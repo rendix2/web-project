@@ -9,7 +9,7 @@ use Tests\Support\UnitTester;
  */
 class NoMenuPackageCest
 {
-    public function composerDoesNotRequireAMenuPackage(UnitTester $I) : void
+    public function composerDoesNotRequireMenuPackage(UnitTester $I) : void
     {
         $composer = (string) file_get_contents(dirname(__DIR__, 2) . '/composer.json');
 
@@ -19,7 +19,7 @@ class NoMenuPackageCest
     public function nothingReferencesTheMenuPackage(UnitTester $I) : void
     {
         $found = [];
-        $needle = 'MenuC' . 'ontrol';
+        $needle = 'MenuControl';
 
         foreach (['app', 'config'] as $dir) {
             foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(dirname(__DIR__, 2) . '/' . $dir, \FilesystemIterator::SKIP_DOTS)) as $file) {
@@ -31,5 +31,4 @@ class NoMenuPackageCest
 
         $I->assertSame([], $found, "The menu package is still referenced:\n" . implode("\n", $found));
     }
-
 }

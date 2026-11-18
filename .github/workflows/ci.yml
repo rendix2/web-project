@@ -40,10 +40,70 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
 
+      # no package-lock.json in the repository (never committed): `npm ci` and `cache: npm` need one
       - name: NPM install
-        run: npm ci
+        run: npm install
 
       - name: NPM build
         run: npm run build
+
+  # Codeception in the same containers as the dev environment. It is a job of CI, so docker-publish.yml (workflow_run on a
+  # successful CI) builds and publishes the image only when the tests passed as well.
+  tests:
+    name: Codeception tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # the layers of .docker/web/Dockerfile (apt + PHP extensions) come from the GitHub Actions cache; docker compose alone
+      # would rebuild them from scratch on every run
+      - name: Build the web image (cached layers)
+        uses: docker/bake-action@v6
+        with:
+          source: .
+          files: |
+            docker-compose.yml
+            .github/docker-compose.codeception.yml
+          targets: web-project-web
+          load: true
+          set: |
+            web-project-web.cache-from=type=gha,scope=web-project-web
+            web-project-web.cache-to=type=gha,scope=web-project-web,mode=max
+
+      # Composer and npm downloads (mounted into the container as /var/cache/ci, see .github/docker-compose.codeception.yml)
+      - name: Composer and npm download cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/web-project-ci
+          # the lock files are not in the repository: the manifests are the key
+          key: web-project-ci-${{ hashFiles('composer.json', 'package.json') }}
+          restore-keys: web-project-ci-
+
+      - name: Start test containers
+        run: |
+          mkdir -p ~/.cache/web-project-ci
+          docker compose -f docker-compose.yml -f .github/docker-compose.codeception.yml up -d --wait --no-build web-project-web web-project-postgres web-project-redis selenium-chrome
+
+      # make all = fresh temp/log dirs, composer install, npm install + build, database (migrations + fixtures)
+      - name: Install and prepare the database
+        run: docker compose exec -T web-project-web make all
+
+      # make test runs the suites one after another and stops at the first failing one: Unit, Integration, Functional,
+      # Acceptance (the order lives in the Makefile)
+      - name: Run Codeception tests
+        run: docker compose exec -T web-project-web make test
+
+      - name: Log of the containers (on failure)
+        if: failure()
+        run: |
+          docker compose -f docker-compose.yml -f .github/docker-compose.codeception.yml logs --no-color --tail=200 web-project-web web-project-postgres
+          docker compose exec -T web-project-web sh -c 'tail -n 100 log/*.log log/*/*.log 2>/dev/null' || true
+
+      # the container writes the download cache as root; the post step of actions/cache saves it as the runner user
+      - name: Hand the download cache back to the runner user
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" ~/.cache/web-project-ci || true

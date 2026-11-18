@@ -1,0 +1,21 @@
+# .github/docker-compose.codeception.yml - the CI override of docker-compose.yml for the "tests" job of .github/workflows/ci.yml
+# (the same idea as alfred).
+services:
+  web-project-web:
+    # the image is built (and cached in the GitHub Actions cache) by docker/bake-action under this name; compose then only
+    # runs it (up --no-build)
+    image: web-project-web:ci
+    environment:
+      # download caches on the runner, restored/saved by actions/cache (keys: composer.json, package.json)
+      - COMPOSER_CACHE_DIR=/var/cache/ci/composer
+      - npm_config_cache=/var/cache/ci/npm
+    volumes:
+      - ${HOME}/.cache/web-project-ci:/var/cache/ci
+
+  web-project-postgres:
+    # `docker compose up --wait` waits for this, so `make db` never meets a database that is still starting
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U web-project -d web-project" ]
+      interval: 2s
+      timeout: 5s
+      retries: 30

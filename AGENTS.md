@@ -77,7 +77,8 @@ nothing needs `orm:generate-proxies`.
   - `Model/Entity/` - Doctrine entities (`UserEntity`, `RoleEntity`, `User*Entity`, `GeoIpCacheEntity`, `MailEntity`),
     `Model/Repository/`, `Model/Facade/UserFacade` (user use-cases, wrapped in transactions).
   - `Database/` - `EntityManagerDecorator`, custom DBAL type `IpAddressType`, `Migrations/`, `Fixtures/`.
-  - `Service/GeoIpService` - IP geolocation (ip-api.com via Guzzle, cached in DB for 7 days).
+  - `Service/GeoIpService` - IP geolocation (`https://ipwho.is/` via Guzzle, no key, cached in DB for 7 days; private/loopback/reserved addresses are never sent out). Until 2026-11-18 it was ip-api.com, whose free plan has no HTTPS - do not go back to it. `GeoIpServiceCest` (Integration) pins the HTTPS base URI.
+  - `Service/BrowserNameService` - the browser name of the current request (`null` without a `User-Agent`; `UserAgentParser` throws on an empty one, which used to be a 500 of the login).
   - `Forms/` - reusable form controls (`UsernameFormControl`, `PasswordFormControl`, `EmailFormControl`).
   - Auth hardening (2026-10-09): the "stay logged in" cookie holds a token, the DB only its SHA-256 hash (`UserAutoLoginEntity::$tokenHash`, unique, `validUntil` 30 days, rotated on every use - `Core/AutoLoginTokenService`); `Core/AutoLoginService` (on `Application::onPresenter`) logs out a user that was deactivated/deleted at the very next request and deletes his tokens. Failed-login limits are case-insensitive per username; a successful login clears only the attempts of that username, never of the IP. Usernames and e-mails are case-insensitive (`UserRepository::findOneByUsername/findOneByEmail`, e-mails stored lower case; no DB index on lower(username)). The e-mail of an account changes in two steps (`Service/UserEmailChangeService`: confirmation link to the NEW address, hashed token, warning to the old one, `ConfirmEmail` presenter).
   - `Forms/IconBootstrapForm` + `Forms/Renderer/IconBootstrapRenderer` - every form is an `IconBootstrapForm`; an icon is added with `->setOption(IconBootstrapRenderer::ICON, 'fas fa-user')` on any control (input -> Bootstrap 5 input group with the icon addon, submit/button -> `<button>` with the icon before the caption). Do not write `getControl()` wrappers or an `IconSubmit` class. `IconInputGroupCest` (Unit) and `FormIconsCest` (Functional) guard it.
@@ -89,7 +90,9 @@ nothing needs `orm:generate-proxies`.
   `config/ext/*.neon` (per package) and `app/DI/ServicesExtension.php`.
   Environment configs: `config/env/{dev,test,prod}.neon`; `config/local.neon` is git-ignored.
 - **Persistence:** entities use attribute mapping, public typed properties, `Collection<int, X>` PHPDoc on associations.
-  `UserEntity::$id` is a `BIGINT` exposed as `string`; users are also addressed by `uuid`.
+  Every id is a `BIGINT` read into an `int` property (DBAL 4 returns int; until 2026-11-18 `UserEntity`/`MailEntity`/`GeoIpCacheEntity` had `string`); users are also addressed by `uuid`.
+- **The entities describe the database completely** (ported from alfred 2026-11-18): column comments (`options: ['comment' => ...]`, the same text the migration sets), indexes the migrations create (`#[Index(name: 'K__...')]`), lengths, the primary key order of join tables. Every `#[ManyToOne]` has `#[JoinColumn]` and `cascade: ['persist']`. Guarded by `tests/Integration/Schema/*` (`SchemaInSyncCest` = `orm:schema-tool:update --dump-sql` must be empty, `SchemaNamingCest`, `SchemaKeysAndIndexesCest`, `SchemaTypesCest`, `SchemaAssociationsCest`) and `tests/Integration/ForeignKeyOnDeleteCest` (ON DELETE CASCADE of everything a user owns). `config/ext/nettrine.neon` maps `inet: ip_address`, otherwise every diff proposes `ALTER ... TYPE INET`.
+- **Migrations are checked:** `tests/Unit/MigrationConventionsCest` (nikic/php-parser, reads the source: Schema API, `K__/UK__/FK__` names, `down()` not empty and reverting the same tables, one table per migration; no exceptions - web-project is not deployed, a broken migration is fixed) and `tests/Integration/MigrationsDownUpCest` (inside one rolled-back transaction: all migrations after the first go down and up again, the schema must be identical).
 - **Security features to keep intact when touching auth code:** login attempt throttling
   (`UserLoginAttemptCheckService`: 5 attempts / 900 s per IP and per username), password history
   (`UserPasswordEntity`), pwned-password check (Cilician), account activation keys, auto-login tokens.
@@ -135,25 +138,27 @@ nothing needs `orm:generate-proxies`.
 - Form values are typed: one `final` value class per form next to its presenter (`LoginValues`, `RegistrationValues`, ...), read with `$form->getValues(XValues::class)`; facades take the value class, not `ArrayHash`. Nette writes EVERY non-omitted control into the property of the same name (text inputs return `string`, selects `int|string|null`, checkboxes `bool`). Datagrid inline edit rows use a value class too (`setMappedType(XInlineEditValues::class)` in `onControlAdd`, `#[\AllowDynamicProperties]` because the datagrid adds `_id` and the submit buttons to the same container); a row with validation errors is silently treated as *cancel*.
 - PHPStan runs at level 10 with strict rules; keep it green and prefer fixing the code over adding `ignoreErrors`.
 
-## Testing
-- `nette/tester` is required in `composer.json` (script `composer tester` -> `tester tests -s`), but there is **no `tests/` directory yet**.
-  Add tests for behaviour before refactoring anything security-related (login, registration, password reset).
+- **Queries go through the QueryBuilder, never hand-written DQL/SQL:** `$em->createQueryBuilder()` or `$repository->createQueryBuilder('_alias')` (aliases start with `_`), also for bulk `delete()` / `update()`. No `createQuery('...')`, `createNativeQuery()`, `$connection->executeQuery()/executeStatement()/fetch*()`. Exempt: migrations. Guarded by `tests/Unit/QueriesUseTheQueryBuilderCest` (same rule as alfred).
+- **Login never reveals whether an account exists:** an unknown username, a wrong password and a wrong password of an inactive account all throw the same `web-user-login.error.invalidCredentials` (an unknown username still hashes the password, so the timing is the same); "not active" is said only after the correct password. Pinned by `tests/Integration/LoginDoesNotRevealAccountsCest`.
+- **The "stay logged in" cookie is handled in ONE place:** `Core/AutoLoginService::remember()` (login: issue the token, set the cookie) and `::forget()` (logout: revoke the token, delete the cookie). Presenters never touch the cookie or `AutoLoginTokenService` directly.
 
-## Known caveats (observed, not fixed)
-- `Bootstrap::boot()` calls `$configurator->setDebugMode(true)` unconditionally, after the IP/secret based mode was set,
-  so Tracy and debug mode are always on. The `test.` environment branch (`REQUEST_URI` starting with `https://test.`) can never match.
-- Login returns different messages for unknown user / inactive user / wrong password (account enumeration).
-- `GeoIpService` calls `http://ip-api.com` (plain HTTP).
-- `composer.lock` and `package-lock.json` are untracked; `composer.lock` is owned by `root` (created inside the container).
-- The autologin cookie handling is duplicated in `AdminBasePresenter` and `LoginPresenter`.
+## Dependencies held back (`composer.json` `conflict`)
+- `latte/latte >=3.1.8`: 3.1.8 deprecates "positional argument after named" and ublaboo/datagrid's `datagrid.latte` (line 302) does exactly that; under `tracy.strictMode` every admin grid was a 500. Remove the conflict once datagrid is fixed.
+- `contributte/codeception 1.6.1`: its `isFrom()` signature is incompatible with our `tests/Support/Http/Request` (`ErrorException` in every test). 1.6.0 works.
+- `composer.lock` and `package-lock.json` are **never committed** in web-project (both in `.gitignore`): every install takes the newest versions the constraints allow, so a version that breaks something is excluded here with `conflict` (composer) and CI uses `npm install`, not `npm ci`.
 
-## Tests (Codeception, same setup as family-tree)
+## Tests (Codeception, same setup as family-tree and alfred)
 
-- Suites: `tests/Unit` (NetteDIModule + NetteApplicationModule), `tests/Functional` (PhpBrowser against `http://web-project-web`), `tests/Acceptance` (WebDriver -> `selenium-chrome`, Chrome; VNC 5901, noVNC 7901, Selenium 4544). Config `codeception.yml`, `tests/*.suite.yml`, container config `config/codeception/{common,local}.neon`.
-- Run inside the web container: `docker compose exec web-project-web vendor/bin/codecept run Unit|Functional|Acceptance` (or `make unit|functional|acceptance|test`).
+- Suites:
+  - `tests/Unit` - **isolated**: only `Asserts`, no DI container, no database, no network (source scans and pure classes). `UnitTestsStayIsolatedCest` fails when a Unit test uses `NetteDIModule`, `grabService`, the EntityManager or a `*Tester` of another suite.
+  - `tests/Integration` - the DI container (`NetteDIModule`, `newContainerForEachTest`) + `CleanupTestData`, runs against the dev database (services, facades, repositories).
+  - `tests/Functional` (PhpBrowser against `http://web-project-web`), `tests/Acceptance` (WebDriver -> `selenium-chrome`, Chrome; VNC 5901, noVNC 7901, Selenium 4544).
+  - Config `codeception.yml`, `tests/*.suite.yml`, container config `config/codeception/{common,local}.neon`.
+- Run inside the web container: `docker compose exec web-project-web php vendor/bin/codecept run Unit|Integration|Functional|Acceptance` (or `make unit|integration|functional|acceptance|test`; `make test` runs them one after another).
+- Write tests for behaviour before refactoring anything security-related (login, registration, password reset).
 - `tests/Support/Helper/CleanupTestData.php` deletes what a test created (entities persisted through the test's EntityManager are recorded automatically; rows created by the web server are registered with `$I->trackCreatedEntity(UserEntity::class, $id)`). It must be listed AFTER `NetteDIModule` in the suite yml. The tests run against the dev database and use the fixture admin `TestUsername` / `secret`.
 - `tests/Support/DI/HttpExtension` + `Http/Request` add `isFrom()` (nette/application 3.3) to the Codeception request. Ajax requests need the headers `Sec-Fetch-Site: same-origin` and `X-Requested-With: XMLHttpRequest`.
 - `config/services.neon` includes the `ext/*.neon` files relative (not via `%configDir%`) so the test container can load it.
 - Datagrid inline edit is submitted as `?do=grid-filter-submit` with `inline_edit[...]` fields; a row with validation errors is silently treated as cancel, so assert the saved value.
 
-- **Lint:** `docker compose exec web-project-web make lint` (latte-lint, neon-lint, `php -l`, `composer validate`); CI (`.github/workflows/ci.yml`) runs it together with PHPStan and the front-end build.
+- **Lint:** `docker compose exec web-project-web make lint` (latte-lint, neon-lint, `php -l`, `composer validate`); CI (`.github/workflows/ci.yml`) runs it together with PHPStan and the front-end build (job `checks`), and all Codeception suites in the docker compose containers (job `tests`: `.github/docker-compose.codeception.yml`, `make all` + `make test`). `docker-publish.yml` builds and publishes the image only after the whole CI passed on main (`workflow_run`).

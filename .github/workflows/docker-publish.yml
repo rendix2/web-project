@@ -1,7 +1,7 @@
 name: Build and publish Docker image
 
-# Runs after the "CI" workflow (lint + PHPStan + front-end build) finishes on main, and only if it
-# passed - this workflow does not repeat those checks itself.
+# Runs after the "CI" workflow (job "checks": lint + PHPStan + front-end build, job "tests": all Codeception suites) finishes
+# on main, and only if ALL its jobs passed - this workflow does not repeat those checks itself.
 on:
   workflow_run:
     workflows: [ "CI" ]

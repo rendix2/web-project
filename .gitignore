@@ -11,6 +11,8 @@ config/env/prod.neon
 
 # npm
 node_modules
+# lock files are never committed in web-project (composer.json `conflict` pins what must not be installed)
+package-lock.json
 
 # assets
 www/assets
@@ -18,6 +20,7 @@ www/dist
 
 # composer
 vendor
+composer.lock
 
 # docker
 .docker/postgres

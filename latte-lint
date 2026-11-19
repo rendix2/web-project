@@ -1,0 +1,31 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+// Latte linter that knows the filters, functions and extensions of this application - it takes the Latte engine from
+// the application's TemplateFactory - and checks strictly. The generic vendor/bin/latte-lint knows none of them.
+// Used by "make lint", CI and the nette-lint hook of Claude Code, which runs "latte-lint <edited file>".
+// Usage: php latte-lint [file or directory, default app]
+
+use App\Bootstrap;
+use Latte\Tools\Linter;
+use Latte\Tools\LinterExtension;
+use Nette\Bridges\ApplicationLatte\TemplateFactory;
+
+require __DIR__ . '/vendor/autoload.php';
+
+$path = $argv[1] ?? __DIR__ . '/app';
+
+// its own context "lint" (temp/lint, log/lint): the directories of web and console belong to the container's user
+foreach ([__DIR__ . '/temp/lint', __DIR__ . '/log/lint'] as $dir) {
+    if (!is_dir($dir)) {
+        mkdir($dir, 0777, true);
+    }
+}
+
+$container = (new Bootstrap())->boot('lint')->createContainer();
+$latte = $container->getByType(TemplateFactory::class)->createTemplate()->getLatte();
+$latte->addExtension(new LinterExtension());
+
+$linter = new Linter($latte, strict: true);
+
+exit($linter->scanDirectory($path) ? 0 : 1);

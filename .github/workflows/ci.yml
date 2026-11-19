@@ -23,7 +23,7 @@ jobs:
         run: composer install --prefer-dist --no-progress
 
       - name: Latte lint
-        run: php vendor/bin/latte-lint app
+        run: php latte-lint
 
       - name: Neon lint
         run: php vendor/bin/neon-lint config

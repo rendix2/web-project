@@ -5,3 +5,4 @@
 tests/          export-ignore
 
 *.sh            eol=lf
+latte-lint      text eol=lf

@@ -37,7 +37,7 @@ docker compose exec web-project-web npm run build
 
 # Validate
 docker compose exec web-project-web composer validate
-docker compose exec web-project-web vendor/bin/latte-lint app/   # if installed
+docker compose exec web-project-web php latte-lint   # knows the app filters/functions, strict; also: ./latte-lint <file> on the WSL host
 docker compose exec web-project-web find app/ bin/ -name "*.php" -exec php -l {} +
 ```
 

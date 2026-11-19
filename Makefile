@@ -88,7 +88,7 @@ update:
 	npm run build
 
 lint:
-	php vendor/bin/latte-lint app
+	php latte-lint
 	php vendor/bin/neon-lint config
 	find app -name "*.php" -print0 | xargs -0 -n1 -P4 php -l > /dev/null
 	composer validate

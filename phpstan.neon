@@ -1,5 +1,7 @@
 parameters:
     level: 10
+    # the result cache next to the container of PHPStan's own context (temp/phpstan, see app/PHPStan/object-manager.php)
+    tmpDir: %rootDir%/../../../temp/phpstan/cache/phpstan
     paths:
         - app
         - tests

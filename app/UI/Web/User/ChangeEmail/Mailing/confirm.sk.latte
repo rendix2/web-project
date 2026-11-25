@@ -1,0 +1,18 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Potvrdenie zmeny e-mailu</title>
+</head>
+<body>
+<p>Dobrý deň,</p>
+
+<p>
+    pre túto adresu bola požadovaná zmena e-mailu účtu <strong>{$userEntity->username}</strong>. Ak ste to boli vy, potvrďte ju týmto odkazom
+    <a href="{link //:Web:User:ConfirmEmail:default, $userEntity->id, $token}">tu</a>. Odkaz platí 24 hodín.
+</p>
+
+<p>
+    Ak ste o zmenu nežiadali, tento e-mail môžete pokojne ignorovať, nič sa nezmení.
+</p>
+</body>
+</html>

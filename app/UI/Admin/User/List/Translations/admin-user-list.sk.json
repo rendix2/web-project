@@ -1,0 +1,34 @@
+{
+  "header": "Používatelia",
+  "title": "Používatelia",
+  "list.header": "Zoznam používateľov",
+
+  "id.name": "ID",
+  "id.search": "Hľadať podľa ID",
+
+  "fullName.name" : "Celé meno",
+  "fullName.search": "Hľadať podľa celého mena",
+  "form.fullName.noSpace": "V celom mene musí byť medzera",
+
+  "userName.name" : "Používateľské meno",
+  "userName.search": "Hľadať podľa používateľského mena",
+
+  "email.name" : "E-mail",
+  "email.search": "Hľadať podľa e-mailu",
+
+  "isActive.name" : "Aktívny",
+
+  "edit.name": "Detail",
+  "edit.title": "Detail používateľa",
+  "edit.success": "Používateľ %username% bol upravený",
+
+  "edit.inline.name": "Upraviť v riadku",
+  "edit.inline.title": "Upraviť používateľa v riadku",
+
+  "delete.name": "Zmazať",
+  "delete.title": "Zmazať používateľa",
+  "delete.confirm": "Naozaj chcete zmazať používateľa %username%?",
+  "delete.success": "Používateľ %username% bol zmazaný",
+
+  "add-user": "Pridať používateľa"
+}

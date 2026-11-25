@@ -1,0 +1,11 @@
+{
+  "select": "Vyberte",
+
+  "yes": "Áno",
+  "no": "Nie",
+
+  "operationFailed": "Operácia sa nepodarila.",
+
+  "Please enter a valid email address." : "Zadajte prosím platnú e-mailovú adresu.",
+  "This field is required.": "Táto položka je povinná."
+}

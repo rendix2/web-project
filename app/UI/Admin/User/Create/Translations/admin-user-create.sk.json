@@ -1,0 +1,7 @@
+{
+  "header": "Vytvorenie používateľa",
+  "title": "Vytvorenie používateľa",
+
+  "form.submit.label": "Vytvoriť používateľa",
+  "form.submit.success": "Používateľ %username% bol úspešne vytvorený"
+}

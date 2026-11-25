@@ -1,0 +1,7 @@
+{
+  "title": "Úprava roly",
+
+  "form.name.label": "Rola",
+  "form.name.required": "Rola je povinná",
+  "form.name.exists": "Rola už existuje"
+}

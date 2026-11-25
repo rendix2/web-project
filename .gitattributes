@@ -1,3 +1,6 @@
+# LF everywhere, in git and in the working copy (core.autocrlf=true is set globally on WSL and Windows); binaries are left alone
+* text=auto eol=lf
+
 .gitattributes  export-ignore
 .github         export-ignore
 .gitignore      export-ignore

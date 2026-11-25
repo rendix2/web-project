@@ -30,10 +30,10 @@ class MailEntity
     #[Column(type: Types::TEXT, nullable: false, options: ['comment' => 'Body'])]
     public string $body;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

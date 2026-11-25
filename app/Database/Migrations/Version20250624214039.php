@@ -46,7 +46,7 @@ final class Version20250624214039 extends AbstractMigration
             ->setNotnull(false)
             ->setComment('Country code');
 
-        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIMETZ_IMMUTABLE)
             ->setComment('Created at');
 
         $primaryKey = new PrimaryKeyConstraintEditor();

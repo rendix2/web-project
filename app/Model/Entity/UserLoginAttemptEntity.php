@@ -32,7 +32,7 @@ class UserLoginAttemptEntity
     #[Column(length: 16, nullable: true, options: ['comment' => 'Country code'])]
     public ?string $countryCode;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

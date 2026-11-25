@@ -35,10 +35,10 @@ final class Version20261009103000 extends AbstractMigration
             ->setLength(64)
             ->setComment('SHA-256 of the token in the link');
 
-        $table->addColumn('valid_until', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('valid_until', Types::DATETIMETZ_IMMUTABLE)
             ->setComment('Link is valid until');
 
-        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIMETZ_IMMUTABLE)
             ->setComment('Created at');
 
         $table->addColumn('user_id', Types::BIGINT)

@@ -37,10 +37,10 @@ class UserEmailChangeRequestEntity
     #[Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => 'SHA-256 of the token in the link'])]
     public string $tokenHash;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Link is valid until'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Link is valid until'])]
     public DateTimeImmutable $validUntil;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

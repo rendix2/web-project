@@ -38,7 +38,7 @@ class UserPasswordRequestAttemptEntity
     #[Column(type: IpAddressType::NAME, nullable: false, options: ['comment' => 'IP Address'])]
     public string $ipAddress;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
     public function __construct()

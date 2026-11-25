@@ -101,6 +101,16 @@ class SchemaSnapshot
         return $this->nativeTypes[$table . '.' . $column] ?? null;
     }
 
+    /**
+     * Every column of the database (the current schema, tables without an entity included) with its native type.
+     *
+     * @return array<string, string> "table.column" => `information_schema.columns.udt_name`
+     */
+    public function nativeTypes() : array
+    {
+        return $this->nativeTypes;
+    }
+
     public function tableName(Table $table) : string
     {
         return $table->getObjectName()->getUnqualifiedName()->getValue();

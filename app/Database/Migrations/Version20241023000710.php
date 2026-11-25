@@ -29,10 +29,10 @@ final class Version20241023000710 extends AbstractMigration
             ->setComment('Password')
             ->setLength(1024);
 
-        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIMETZ_IMMUTABLE)
             ->setComment('Created at');
 
-        $table->addColumn('updated_at', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('updated_at', Types::DATETIMETZ_IMMUTABLE)
             ->setNotnull(false)
             ->setComment('Updated at');
 

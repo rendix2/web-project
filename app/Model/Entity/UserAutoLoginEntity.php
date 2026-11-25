@@ -34,7 +34,7 @@ class UserAutoLoginEntity
     #[Column(type: Types::STRING, length: 64, unique: true, options: ['comment' => 'SHA-256 of the token saved in the cookie'])]
     public string $tokenHash;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Token is valid until'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Token is valid until'])]
     public DateTimeImmutable $validUntil;
 
     #[Column(type: IpAddressType::NAME, nullable: false, options: ['comment' => 'IP address'])]
@@ -46,10 +46,10 @@ class UserAutoLoginEntity
     #[Column(length: 16, nullable: true, options: ['comment' => 'Country code'])]
     public ?string $countryCode;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

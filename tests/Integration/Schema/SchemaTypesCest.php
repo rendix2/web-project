@@ -31,6 +31,22 @@ class SchemaTypesCest
         Types::JSON => ['json', 'jsonb'],
     ];
 
+    /**
+     * Doctrine types of a time without a time zone (the mutable ones are deprecated; a column of any of them is a
+     * `timestamp` / `time` in the database, which the second half of the test finds).
+     */
+    private const array TYPES_WITHOUT_ZONE = [Types::DATETIME_IMMUTABLE, Types::TIME_IMMUTABLE];
+
+    /**
+     * Native PostgreSQL types (`udt_name`) of a time without a time zone.
+     */
+    private const array NATIVE_TYPES_WITHOUT_ZONE = ['timestamp', 'time'];
+
+    /**
+     * Columns of tables that are not ours: `migrations` is created by doctrine/migrations (DATETIME_MUTABLE, not configurable).
+     */
+    private const array FOREIGN_COLUMNS_WITHOUT_ZONE = ['migrations.executed_at'];
+
     private SchemaSnapshot $schema;
 
     public function _before(IntegrationTester $I) : void
@@ -58,6 +74,32 @@ class SchemaTypesCest
         }
 
         $I->assertSame([], $wrong, 'Columns of these Doctrine types do not have the native database type.');
+    }
+
+    /**
+     * A time without a zone is right only while PHP and the database run in the same zone (a moved server, a changed
+     * zone, the switch to summer time shift or double it). Every time column is `timestamptz` (DATETIMETZ_IMMUTABLE),
+     * checked in the mapping and in the database - every table, the ones without an entity too.
+     */
+    public function everyTimeHasItsZone(IntegrationTester $I) : void
+    {
+        $wrong = [];
+        foreach ($this->schema->entities() as $meta) {
+            foreach ($meta->fieldMappings as $field => $mapping) {
+                if (in_array($mapping->type, self::TYPES_WITHOUT_ZONE, true)) {
+                    $wrong[] = $this->schema->label($meta, $field, $mapping->columnName)
+                        . ": expected a type with a time zone (Types::DATETIMETZ_IMMUTABLE), got {$mapping->type}";
+                }
+            }
+        }
+
+        foreach ($this->schema->nativeTypes() as $column => $nativeType) {
+            if (in_array($nativeType, self::NATIVE_TYPES_WITHOUT_ZONE, true) && !in_array($column, self::FOREIGN_COLUMNS_WITHOUT_ZONE, true)) {
+                $wrong[] = "$column: expected timestamptz, got $nativeType";
+            }
+        }
+
+        $I->assertSame([], $wrong, 'Times without a time zone.');
     }
 
     /**

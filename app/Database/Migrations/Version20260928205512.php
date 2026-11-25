@@ -36,7 +36,7 @@ final class Version20260928205512 extends AbstractMigration
         $table->addColumn('ip_address', IpAddressType::NAME)
             ->setComment('IP Address');
 
-        $table->addColumn('created_at', Types::DATETIME_IMMUTABLE)
+        $table->addColumn('created_at', Types::DATETIMETZ_IMMUTABLE)
             ->setComment('Created at');
 
         $table->addIndex(['email', 'created_at'], 'K__User_password_request_attempt__Email_created_at');

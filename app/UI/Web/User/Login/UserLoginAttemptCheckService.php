@@ -7,6 +7,7 @@ use App\Model\Entity\UserLoginAttemptEntity;
 use App\Service\BrowserNameService;
 use App\Service\GeoIpService;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
 
 class UserLoginAttemptCheckService
@@ -61,7 +62,7 @@ class UserLoginAttemptCheckService
             ->setParameter('ipAddress', $ipAddress)
 
             ->andWhere('_attempt.createdAt >= :since')
-            ->setParameter('since', $since)
+            ->setParameter('since', $since, Types::DATETIMETZ_IMMUTABLE)
 
             ->getQuery()
             ->getSingleScalarResult();
@@ -83,7 +84,7 @@ class UserLoginAttemptCheckService
             ->setParameter('username', $this->normalize($username))
 
             ->andWhere('_attempt.createdAt >= :since')
-            ->setParameter('since', $since)
+            ->setParameter('since', $since, Types::DATETIMETZ_IMMUTABLE)
 
             ->getQuery()
             ->getSingleScalarResult();

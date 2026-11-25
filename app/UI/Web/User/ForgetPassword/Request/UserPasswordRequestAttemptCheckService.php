@@ -5,6 +5,7 @@ namespace App\UI\Web\User\ForgetPassword\Request;
 use App\Database\EntityManagerDecorator;
 use App\Model\Entity\UserPasswordRequestAttemptEntity;
 use DateTimeImmutable;
+use Doctrine\DBAL\Types\Types;
 use InvalidArgumentException;
 
 /**
@@ -63,7 +64,7 @@ class UserPasswordRequestAttemptCheckService
             ->setParameter('ipAddress', $ipAddress)
 
             ->andWhere('_attempt.createdAt >= :since')
-            ->setParameter('since', $since)
+            ->setParameter('since', $since, Types::DATETIMETZ_IMMUTABLE)
 
             ->getQuery()
             ->getSingleScalarResult();
@@ -85,7 +86,7 @@ class UserPasswordRequestAttemptCheckService
             ->setParameter('email', mb_strtolower($email))
 
             ->andWhere('_attempt.createdAt >= :since')
-            ->setParameter('since', $since)
+            ->setParameter('since', $since, Types::DATETIMETZ_IMMUTABLE)
 
             ->getQuery()
             ->getSingleScalarResult();

@@ -28,13 +28,13 @@ class UserActivationEntity
     #[Column(type: Types::STRING, length: 1024, options: ['comment' => 'Activation key'])]
     public string $activationKey;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Key is valid until'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Key is valid until'])]
     public DateTimeImmutable $validUntil;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, options: ['comment' => 'Created at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => 'Created at'])]
     public DateTimeImmutable $createdAt;
 
-    #[Column(type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
+    #[Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true, options: ['comment' => 'Updated at'])]
     public ?DateTimeImmutable $updatedAt;
 
     public function __construct()

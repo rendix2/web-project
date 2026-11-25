@@ -17,12 +17,31 @@ use Tests\Support\FunctionalTester;
  *
  * The request form is rate limited per email/IP (UserPasswordRequestAttemptCheckService) and its
  * attempt rows are created by the web server, not this test's own EntityManager, so
- * CleanupTestData cannot auto-track them - every test that submits the request form cleans its
- * own attempt rows up via cleanupAttempts().
+ * CleanupTestData cannot auto-track them. Every address a test submits goes through attemptsOf()
+ * and its attempts are deleted in _after() AND _failed(): a test that failed half way used to leave
+ * them behind, and as all Functional tests come from one IP, the next run was blocked for 15 minutes.
  */
 class ForgetPasswordCest
 {
     private const NEW_PASSWORD = 'Abcdefgh1234!x';
+
+    /** @var list<string> the addresses whose attempts the test leaves behind */
+    private array $attemptEmails;
+
+    public function _before() : void
+    {
+        $this->attemptEmails = [];
+    }
+
+    public function _after(FunctionalTester $I) : void
+    {
+        $this->deleteAttempts($I);
+    }
+
+    public function _failed(FunctionalTester $I) : void
+    {
+        $this->deleteAttempts($I);
+    }
 
     public function requestingResetForAnExistingEmailShowsTheGenericMessage(FunctionalTester $I) : void
     {
@@ -31,7 +50,7 @@ class ForgetPasswordCest
         $userEntity = $this->createActiveUser($I, $em, 'existing');
 
         $I->amOnPage('/web.user.forget-password.request/');
-        $I->submitForm('#frm-requestForm', ['email' => $userEntity->email]);
+        $I->submitForm('#frm-requestForm', ['email' => $this->attemptsOf($userEntity->email)]);
         $I->seeResponseCodeIs(200);
         $I->dontSeeInSource('id="tracy-bs"');
         $I->see('Pokud tento e-mail existuje v naší databázi');
@@ -39,8 +58,6 @@ class ForgetPasswordCest
         $em->clear();
         $request = $em->getRepository(UserPasswordRequestEntity::class)->findOneBy(['user' => $userEntity->id]);
         $I->assertNotNull($request, 'No UserPasswordRequestEntity was created for a known email.');
-
-        $this->cleanupAttempts($I, $userEntity->email);
     }
 
     /**
@@ -52,12 +69,10 @@ class ForgetPasswordCest
         $email = 'definitely-not-a-real-user-' . random_int(100000, 999999) . '@example.com';
 
         $I->amOnPage('/web.user.forget-password.request/');
-        $I->submitForm('#frm-requestForm', ['email' => $email]);
+        $I->submitForm('#frm-requestForm', ['email' => $this->attemptsOf($email)]);
         $I->seeResponseCodeIs(200);
         $I->dontSeeInSource('id="tracy-bs"');
         $I->see('Pokud tento e-mail existuje v naší databázi');
-
-        $this->cleanupAttempts($I, $email);
     }
 
     public function repeatedRequestsForTheSameEmailAreRateLimited(FunctionalTester $I) : void
@@ -66,7 +81,7 @@ class ForgetPasswordCest
 
         for ($i = 0; $i < 7; $i++) {
             $I->amOnPage('/web.user.forget-password.request/');
-            $I->submitForm('#frm-requestForm', ['email' => $email]);
+            $I->submitForm('#frm-requestForm', ['email' => $this->attemptsOf($email)]);
             $I->seeResponseCodeIs(200);
         }
 
@@ -78,8 +93,6 @@ class ForgetPasswordCest
             ->count(['email' => $email]);
 
         $I->assertSame(5, $count, 'More than the configured 5 attempts/900s were logged - rate limiting is not capping requests.');
-
-        $this->cleanupAttempts($I, $email);
     }
 
     public function completingTheResetFlowLetsTheUserLoginWithTheNewPassword(FunctionalTester $I) : void
@@ -158,16 +171,35 @@ class ForgetPasswordCest
     }
 
     /**
+     * Registers the address BEFORE the form is submitted, so its attempts are deleted however the test ends.
+     */
+    private function attemptsOf(string $email) : string
+    {
+        if (!in_array($email, $this->attemptEmails, true)) {
+            $this->attemptEmails[] = $email;
+        }
+
+        return $email;
+    }
+
+    /**
      * UserPasswordRequestAttemptEntity rows come from the web server (form submits), not this
      * test's own EntityManager, so CleanupTestData cannot auto-track/delete them.
      */
-    private function cleanupAttempts(FunctionalTester $I, string $email) : void
+    private function deleteAttempts(FunctionalTester $I) : void
     {
-        /** @var EntityManagerDecorator $em */
-        $em = $I->grabService(EntityManagerDecorator::class);
+        if ($this->attemptEmails === []) {
+            return;
+        }
 
-        $em->createQuery('DELETE FROM ' . UserPasswordRequestAttemptEntity::class . ' e WHERE e.email = :email')
-            ->setParameter('email', $email)
+        $I->grabService(EntityManagerDecorator::class)
+            ->createQueryBuilder()
+            ->delete(UserPasswordRequestAttemptEntity::class, '_attempt')
+            ->where('_attempt.email IN (:emails)')
+            ->setParameter('emails', $this->attemptEmails)
+            ->getQuery()
             ->execute();
+
+        $this->attemptEmails = [];
     }
 }

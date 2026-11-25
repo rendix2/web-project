@@ -1,0 +1,8 @@
+{
+  "form.header": "Registrácia",
+
+  "form.submit.label": "Registrovať",
+  "form.submit.success": "Používateľ %username% bol vytvorený",
+
+  "mail.subject": "Registrácia"
+}

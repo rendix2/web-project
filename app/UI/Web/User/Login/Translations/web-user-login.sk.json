@@ -1,0 +1,24 @@
+{
+  "form.username.label": "Používateľské meno",
+  "form.username.required": "Používateľské meno je povinné.",
+
+  "form.password.label": "Heslo",
+  "form.password.required": "Heslo je povinné.",
+
+  "form.stayLoggedIn": "Zostať prihlásený",
+
+  "form.submit.name": "Prihlásiť sa",
+  "form.submit.success": "Úspešne prihlásený",
+  "form.submit.autoLoginError": "Prihlásenie prebehlo, ale voľbu \"zostať prihlásený\" sa nepodarilo uložiť.",
+
+  "alreadyLoggedIn": "Už ste prihlásený.",
+
+  "no_account_yet": "Ešte nemáš účet?",
+  "registration": "Registrácia",
+  "login": "Prihlásenie",
+  "error.ipBlocked": "Z tejto IP adresy je príliš veľa pokusov. Skúste to prosím neskôr.",
+  "error.userBlocked": "Tento účet je dočasne zablokovaný. Skúste to prosím neskôr.",
+  "error.invalidCredentials": "Nesprávne používateľské meno alebo heslo.",
+  "error.userNotActive": "Účet nie je aktívny.",
+  "error.userNotFoundAfterLogin": "Používateľ sa po prihlásení nenašiel."
+}

@@ -1,0 +1,58 @@
+{
+  "title": "Úprava používateľa",
+
+  "form.username.label": "Používateľské meno",
+  "form.username.required": "Používateľské meno je povinné",
+  "form.username.exists": "Používateľské meno %username% už existuje",
+
+  "form.email.label": "E-mail",
+  "form.email.required": "E-mail je povinný",
+  "form.email.exists": "E-mail %email% už existuje",
+  "form.email.invalidFormat": "Nesprávny formát e-mailu",
+
+  "form.password.label": "Heslo",
+  "form.password.required": "Heslo je povinné",
+  "form.password.ruleMinLength": "Heslo musí mať aspoň %minChars% znakov",
+  "form.password.ruleAtLeastNumber": "Heslo musí obsahovať číslicu",
+  "form.password.ruleNotStartNumber": "Heslo nesmie začínať číslicou",
+  "form.password.ruleNotFinishNumber": "Heslo nesmie končiť číslicou",
+  "form.password.ruleAtLeastLowerChar": "Heslo musí obsahovať malé písmeno",
+  "form.password.ruleAtLeastUpperChar": "Heslo musí obsahovať veľké písmeno",
+  "form.password.ruleNotStartUpperChar": "Heslo nesmie začínať veľkým písmenom",
+  "form.password.ruleNotFinishUpperChar": "Heslo nesmie končiť veľkým písmenom",
+  "form.password.alreadyUsed": "Heslo už bolo použité, použite iné",
+
+  "form.password2.label": "Heslo na kontrolu",
+  "form.password2.required": "Heslo na kontrolu je povinné",
+  "form.password2.ruleMinLength": "Heslo na kontrolu musí mať aspoň %minChars% znakov",
+  "form.password2.ruleEqual": "Heslo na kontrolu sa musí zhodovať s heslom",
+
+  "form.name.label": "Meno",
+  "form.name.required": "Meno je povinné.",
+
+  "form.surname.label": "Priezvisko",
+  "form.surname.required": "Priezvisko je povinné.",
+
+  "form.isActive.label" : "Aktívny",
+
+  "form.submit.label": "Uložiť",
+  "form.submit.success": "Používateľ %username% bol uložený",
+
+  "role.header": "Roly",
+  "email.header": "E-maily",
+
+  "emailGrid.createdAt": "Vytvorené",
+
+  "passwordHistory.header": "História hesiel",
+
+  "passwordHistoryGrid.id": "ID",
+  "passwordHistoryGrid.createdAt": "Vytvorené",
+
+  "roleGrid.addRole": "Pridať rolu",
+  "roleGrid.removeRole": "Odobrať rolu",
+  "roleGrid.role.id": "ID",
+  "roleGrid.role.name": "Rola",
+  "roleGrid.role.search": "Hľadať podľa názvu roly",
+  "roleGrid.role.added": "Rola bola pridaná",
+  "roleGrid.role.removed": "Rola bola odobraná"
+}

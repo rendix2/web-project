@@ -1,0 +1,7 @@
+{
+  "header": "Vytvorenie roly",
+  "title": "Vytvorenie roly",
+
+  "form.submit.label": "Vytvoriť rolu",
+  "form.submit.success": "Rola %name% bola úspešne vytvorená"
+}

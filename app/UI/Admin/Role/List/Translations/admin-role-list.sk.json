@@ -1,0 +1,24 @@
+{
+  "title": "Roly",
+  "list.header": "Zoznam rolí",
+
+  "id.name": "ID",
+  "id.search": "Hľadať podľa ID",
+
+  "name.name": "Názov",
+  "name.search": "Hľadať podľa názvu roly",
+
+  "edit.name": "Detail",
+  "edit.title": "Detail roly",
+  "edit.success": "Rola %name% bola upravená",
+
+  "edit.inline.name": "Upraviť v riadku",
+  "edit.inline.title": "Upraviť rolu v riadku",
+
+  "delete.name": "Zmazať",
+  "delete.title": "Zmazať rolu",
+  "delete.confirm": "Naozaj chcete zmazať rolu %name%?",
+  "delete.success": "Rola %name% bola zmazaná",
+
+  "add-role": "Pridať rolu"
+}

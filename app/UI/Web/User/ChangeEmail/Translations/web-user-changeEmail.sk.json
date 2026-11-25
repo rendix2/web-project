@@ -1,0 +1,10 @@
+{
+  "form.header": "Zmena e-mailu",
+  "form.submit.name": "Zmeniť e-mail",
+  "form.submit.success": "Na novú adresu sme poslali odkaz na potvrdenie. E-mail sa zmení, keď ho otvoríte. Na súčasnú adresu sme poslali upozornenie.",
+  "form.submit.error": "Potvrdzovací e-mail sa nepodarilo odoslať. Skúste to prosím neskôr.",
+  "mail.confirm.subject": "Potvrdenie zmeny e-mailu",
+  "mail.requested.subject": "Žiadosť o zmenu e-mailu",
+  "mail.changed.subject": "E-mail účtu bol zmenený",
+  "form.same": "Tento e-mail už váš účet používa."
+}

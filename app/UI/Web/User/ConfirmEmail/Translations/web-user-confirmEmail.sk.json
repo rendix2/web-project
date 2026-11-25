@@ -1,0 +1,5 @@
+{
+  "success": "E-mail účtu bol zmenený.",
+  "invalid": "Tento odkaz na potvrdenie e-mailu je neplatný alebo vypršal.",
+  "taken": "Túto adresu už používa iný účet, e-mail nebol zmenený."
+}

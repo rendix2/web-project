@@ -12,6 +12,8 @@ redis:
             options: ['parameters': ['database': 0]]
         session:
             uri: tcp://web-project-redis
-            sessions: true
+            sessions:
+                # = session.expiration (14 days); without it the handler takes php.ini's session.gc_maxlifetime (24 minutes)
+                ttl: 1209600
             storage: false
             options: ['parameters': ['database': 1]]

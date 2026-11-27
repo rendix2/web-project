@@ -13,6 +13,7 @@ use Doctrine\DBAL\Exception as DbalException;
 use Doctrine\ORM\QueryBuilder;
 use Nette\Localization\Translator;
 use stdClass;
+use Tracy\ILogger;
 
 class RoleDataGrid
 {
@@ -23,6 +24,7 @@ class RoleDataGrid
     public function __construct(
         private readonly EntityManagerDecorator $em,
         private readonly Translator             $translator,
+        private readonly ILogger                $logger,
     )
     {
         $this->grid = new SecuredDatagrid();
@@ -124,7 +126,7 @@ class RoleDataGrid
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                bdump($exception);
+                $this->logger->log($exception, ILogger::EXCEPTION);
                 $flash = new stdClass();
                 $flash->place = 'general';
                 $flash->type = 'danger';
@@ -177,7 +179,7 @@ class RoleDataGrid
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                bdump($exception);
+                $this->logger->log($exception, ILogger::EXCEPTION);
                 $flash = new stdClass();
                 $flash->place = 'general';
                 $flash->type = 'danger';

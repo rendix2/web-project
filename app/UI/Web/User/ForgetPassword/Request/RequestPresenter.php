@@ -20,6 +20,7 @@ use Nette\Utils\Random;
 use stdClass;
 use Symfony\Contracts\Translation\LocaleAwareInterface;
 use Throwable;
+use Tracy\ILogger;
 
 class RequestPresenter extends Presenter
 {
@@ -28,6 +29,7 @@ class RequestPresenter extends Presenter
         private readonly Translator                             $translator,
         private readonly IMailBuilderFactory                    $mailBuilderFactory,
         private readonly UserPasswordRequestAttemptCheckService $attemptCheckService,
+        private readonly ILogger                                $logger,
     )
     {
         parent::__construct();
@@ -123,7 +125,7 @@ class RequestPresenter extends Presenter
             // Nikdy neposílat e-mail s odkazem na žádost, která se ve skutečnosti neuložila -
             // odkaz by byl po kliknutí vždy "neplatný". Chyba samotná je jen provozní (neprozrazuje
             // nic o existenci účtu), takže se dá klidně přeložená a jasně ukázat.
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';
@@ -155,7 +157,7 @@ class RequestPresenter extends Presenter
         try {
             $mail->send();
         } catch (Throwable $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';
@@ -178,7 +180,7 @@ class RequestPresenter extends Presenter
         } catch (Throwable $exception) {
             // E-mail se v tuhle chvíli už odeslal - selhalo jen uložení do auditního logu mailů,
             // to uživateli do flash zprávy hlásit nemá smysl (nic z jeho pohledu nezhavarovalo).
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
         }
 
         return true;

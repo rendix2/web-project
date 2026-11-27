@@ -4,6 +4,7 @@ namespace Tests\Support\Http;
 
 use Nette\Http\FetchDest;
 use Nette\Http\FetchSite;
+use Nette\Http\RequestFactory;
 
 /**
  * Adds isFrom() (used by Nette\Application\UI\AccessPolicy since nette/application 3.3),
@@ -13,6 +14,28 @@ use Nette\Http\FetchSite;
  */
 class Request extends \Contributte\Codeception\Http\Request
 {
+    private bool $remoteAddressHidden;
+
+    public function __construct(RequestFactory $factory)
+    {
+        parent::__construct($factory);
+
+        $this->remoteAddressHidden = false;
+    }
+
+    /**
+     * From now on the requests of this container come without a remote address (the NetteConnector always sets 127.0.0.1).
+     */
+    public function hideRemoteAddress() : void
+    {
+        $this->remoteAddressHidden = true;
+    }
+
+    public function getRemoteAddress() : ?string
+    {
+        return $this->remoteAddressHidden ? null : parent::getRemoteAddress();
+    }
+
     /**
      * @param FetchSite|array<mixed> $site
      * @param FetchDest|array<mixed>|null $dest

@@ -28,6 +28,13 @@ import './app.css';
 
 // Datagrid + UI
 document.addEventListener("DOMContentLoaded", () => {
+    // Show / hide the password (PasswordFormControl). No inline script: the Content-Security-Policy blocks it
+    document.querySelectorAll('[data-password-toggle]')
+        .forEach(el => el.addEventListener('click', () => {
+            const input = document.getElementById(el.getAttribute('data-password-target'));
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }))
+
     // Initialize dropdowns
     Array.from(document.querySelectorAll('.dropdown'))
         .forEach(el => new Dropdown(el))

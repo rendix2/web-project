@@ -13,6 +13,7 @@ use Doctrine\DBAL\Exception as DbalException;
 use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
 use stdClass;
+use Tracy\ILogger;
 
 /**
  * class CreatePresenter
@@ -25,6 +26,7 @@ class CreatePresenter extends AdminBasePresenter
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
         private readonly RoleFormMapper             $roleFormMapper,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -69,7 +71,7 @@ class CreatePresenter extends AdminBasePresenter
             $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';

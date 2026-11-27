@@ -20,6 +20,7 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
 use Throwable;
+use Tracy\ILogger;
 
 class EditPresenter extends AdminBasePresenter
 {
@@ -36,6 +37,7 @@ class EditPresenter extends AdminBasePresenter
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly UserFacade                 $userFacade,
         private readonly UserFormMapper             $userFormMapper,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -145,7 +147,7 @@ class EditPresenter extends AdminBasePresenter
             $this['passwordHistoryGrid']->reload();
             $this['rolesGrid']->reload();
         } catch (Throwable $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
 
             $flash = new stdClass();
             $flash->place = 'general';

@@ -33,6 +33,18 @@ class WebUserPagesCest
         }
     }
 
+    public function theInitialsOfTheProfileKeepTheirDiacritics(IntegrationTester $I) : void
+    {
+        $user = $I->createUser('ininitials');
+        $user->name = 'Čeněk';
+        $user->surname = 'Šárka';
+        $I->em()->flush();
+
+        $I->amOnPage('/web.user.view/default/' . $user->uuid->toString());
+        $I->seeResponseCodeIs(200);
+        $I->see('ČŠ');
+    }
+
     public function theRegistrationCreatesAnInactiveUserAndTheLinkActivatesIt(IntegrationTester $I) : void
     {
         $tag = 'inreg' . random_int(100000, 999999);

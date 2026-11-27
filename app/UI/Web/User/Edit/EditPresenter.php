@@ -15,6 +15,7 @@ use Nette\Application\UI\Presenter;
 use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
+use Tracy\ILogger;
 
 /**
  * class EditPresenter
@@ -26,6 +27,7 @@ class EditPresenter extends Presenter
     public function __construct(
         private readonly EntityManagerDecorator $em,
         private readonly Translator             $translator,
+        private readonly ILogger                $logger,
     )
     {
         parent::__construct();
@@ -89,7 +91,7 @@ class EditPresenter extends Presenter
             $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';

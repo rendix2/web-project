@@ -36,6 +36,7 @@ class ChangeEmailPresenter extends Presenter
         private readonly UserEmailChangeService     $emailChangeService,
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -138,7 +139,7 @@ class ChangeEmailPresenter extends Presenter
         } catch (AbortException $exception) {
             throw $exception;
         } catch (Throwable $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             Debugger::log($exception, ILogger::EXCEPTION);
 
             $flash = new stdClass();

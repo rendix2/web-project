@@ -29,6 +29,25 @@ di:
 
 http:
     cookieSecure: auto
+    # X-Frame-Options (older browsers; frame-ancestors below says the same)
+    frames: DENY
+    headers:
+        X-Content-Type-Options: nosniff
+        Referrer-Policy: strict-origin-when-cross-origin
+        # browsers obey it only over HTTPS
+        Strict-Transport-Security: 'max-age=31536000'
+    csp:
+        default-src: self
+        # `nonce` is generated for every request, Tracy uses it for its own scripts; no inline script in the templates
+        script-src: [self, nonce]
+        # style="" attributes of the templates, Tom Select and Bootstrap positioning
+        style-src: [self, unsafe-inline]
+        img-src: [self, 'data:']
+        font-src: [self, 'data:']
+        object-src: none
+        base-uri: self
+        form-action: self
+        frame-ancestors: none
 
 security:
     debugger: true

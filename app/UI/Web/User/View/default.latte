@@ -10,7 +10,7 @@
         <div class="rounded-circle bg-white shadow-sm d-flex align-items-center justify-content-center mx-auto"
              style="width: 80px; height: 80px; margin-top: -40px; border: 4px solid white;">
             <span class="h3 mb-0 text-primary fw-bold">
-                {substr($userEntity->name, 0, 1)}{substr($userEntity->surname, 0, 1)}
+                {$userEntity->name|substr:0,1}{$userEntity->surname|substr:0,1}
             </span>
         </div>
 

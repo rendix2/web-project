@@ -20,6 +20,7 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use stdClass;
+use Tracy\ILogger;
 
 class ChangePresenter extends Presenter
 {
@@ -28,6 +29,7 @@ class ChangePresenter extends Presenter
         private readonly Translator                 $translator,
         private readonly PasswordFormControlFactory $passwordFactory,
         private readonly Passwords                  $passwords,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -220,7 +222,7 @@ class ChangePresenter extends Presenter
 
             $this->redirect(':Web:User:Login:default');
         } catch (DbalException $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';

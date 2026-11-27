@@ -19,6 +19,7 @@ use Nette\Application\UI\Form;
 use Nette\Localization\Translator;
 use Nette\Security\Passwords;
 use stdClass;
+use Tracy\ILogger;
 
 class CreatePresenter extends AdminBasePresenter
 {
@@ -30,6 +31,7 @@ class CreatePresenter extends AdminBasePresenter
         private readonly PasswordFormControlFactory $passwordFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -118,7 +120,7 @@ class CreatePresenter extends AdminBasePresenter
             $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (DbalException $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';

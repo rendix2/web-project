@@ -20,6 +20,7 @@ use Nette\Forms\Container;
 use Nette\Localization\Translator;
 use Ramsey\Uuid\Uuid;
 use stdClass;
+use Tracy\ILogger;
 
 class UserDataGrid
 {
@@ -30,6 +31,7 @@ class UserDataGrid
         private readonly Translator                 $translator,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
         private readonly EmailFormControlFactory    $emailFormControlFactory,
+        private readonly ILogger                    $logger,
     )
     {
         $this->grid = new SecuredDatagrid();
@@ -167,7 +169,7 @@ class UserDataGrid
 
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                bdump($exception);
+                $this->logger->log($exception, ILogger::EXCEPTION);
                 $flash = new stdClass();
                 $flash->place = 'general';
                 $flash->type = 'danger';
@@ -284,7 +286,7 @@ class UserDataGrid
                 $this->grid->getPresenter()->redrawControl('flashes');
                 $this->grid->reload();
             } catch (DbalException $exception) {
-                bdump($exception);
+                $this->logger->log($exception, ILogger::EXCEPTION);
                 $flash = new stdClass();
                 $flash->place = 'general';
                 $flash->type = 'danger';

@@ -265,6 +265,11 @@ class MigrationConventionsCest
             $tables = array_map(strtolower(...), $matches[1]);
         }
 
+        // DROP INDEX names no table, the name of the convention does (UK__<Table>__<Columns>)
+        if (preg_match('~^DROP\s+INDEX\s+(?:CONCURRENTLY\s+)?(?:IF\s+EXISTS\s+)?"?(?:U?K)__([A-Z0-9]+(?:_[A-Z0-9]+)*?)__~', $statement, $match) === 1) {
+            $tables[] = strtolower($match[1]);
+        }
+
         if (!$this->isSpecialSql($statement)) {
             $this->migrationViolations[self::RULE_SCHEMA_API][] = $line . ': raw DDL ' . $firstLine;
 

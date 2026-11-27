@@ -15,6 +15,7 @@ use Nette\Http\IResponse;
 use Nette\Localization\Translator;
 use stdClass;
 use Throwable;
+use Tracy\ILogger;
 
 /**
  * class EditPresenter
@@ -29,6 +30,7 @@ class EditPresenter extends AdminBasePresenter
         private readonly Translator                 $translator,
         private readonly EntityManagerDecorator     $em,
         private readonly RoleFormMapper             $roleFormMapper,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -111,7 +113,7 @@ class EditPresenter extends AdminBasePresenter
             $this->redrawControl('editFormWrapper');
             $this->redrawControl('editForm');
         } catch (Throwable $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
 
             $flash = new stdClass();
             $flash->place = 'general';

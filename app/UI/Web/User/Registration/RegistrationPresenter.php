@@ -15,6 +15,7 @@ use Nette\Application\UI\Form;
 use Nette\Application\UI\Presenter;
 use stdClass;
 use Throwable;
+use Tracy\ILogger;
 
 class RegistrationPresenter extends Presenter
 {
@@ -24,6 +25,7 @@ class RegistrationPresenter extends Presenter
         private readonly EmailFormControlFactory    $emailFormControlFactory,
         private readonly UsernameFormControlFactory $usernameFormControlFactory,
         private readonly UserFacade                 $userFacade,
+        private readonly ILogger                    $logger,
     )
     {
         parent::__construct();
@@ -92,7 +94,7 @@ class RegistrationPresenter extends Presenter
             $this->flashMessage($flash);
             $this->redrawControl('flashes');
         } catch (Throwable $exception) {
-            bdump($exception);
+            $this->logger->log($exception, ILogger::EXCEPTION);
             $flash = new stdClass();
             $flash->place = 'general';
             $flash->type = 'danger';

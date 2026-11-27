@@ -17,6 +17,7 @@ use Nette\Application\UI\Presenter;
 use Nette\Localization\Translator;
 use Nette\Security\AuthenticationException;
 use stdClass;
+use Tracy\ILogger;
 
 class LoginPresenter extends Presenter
 {
@@ -26,6 +27,7 @@ class LoginPresenter extends Presenter
         private readonly UsernameAndPasswordAuthenticator $usernameAndPasswordAuthenticator,
         private readonly GeoIpService                     $geoIpService,
         private readonly AutoLoginService                 $autoLoginService,
+        private readonly ILogger                          $logger,
     )
     {
         parent::__construct();
@@ -108,8 +110,9 @@ class LoginPresenter extends Presenter
                 }
 
                 if ($ip === null) {
-                    $geoIpCountry = 'Unknown';
-                    $ip = 'Unknown';
+                    // the column of the address is `inet`: a request without a remote address is stored as the unspecified one
+                    $ip = '0.0.0.0';
+                    $geoIpCountry = null;
                 } else {
                     $geoIpArray = $this->geoIpService->getInfo($ip);
 
@@ -120,7 +123,7 @@ class LoginPresenter extends Presenter
                     // token + cookie, která přežije zavření prohlížeče (AutoLoginService::remember())
                     $this->autoLoginService->remember($this, $userEntity, $ip, $geoIpCountry);
                 } catch (DbalException $exception) {
-                    bdump($exception);
+                    $this->logger->log($exception, ILogger::EXCEPTION);
                     $flash = new stdClass();
                     $flash->place = 'general';
                     $flash->type = 'danger';
